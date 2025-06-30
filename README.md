@@ -45,9 +45,8 @@ These challenges result in missed opportunities, poor initial trading experience
 * **Database**: Supabase for relational data and real-time hooks
 * **Authentication**: Clerk for secure session and identity management
 
-### AI Model (Planned)
-
-* **Engine**: Python-based Reinforcement Learning agent
+### PPO (RL) Model
+* **Proximal Policy Optimization**:  reinforcement learning algorithm that trains an agent 
 * **Functionality**: Generates buy/sell/hold signals using market indicators
 * **Evaluation**: Trained on historical data, validated via backtesting
 * **Frameworks**: Stable-Baselines3, TensorFlow, pandas, NumPy
