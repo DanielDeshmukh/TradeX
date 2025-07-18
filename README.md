@@ -73,7 +73,7 @@ To maintain system integrity and user trust, TradeX enforces:
 | ----- | ----------- | ---------- | ------------ | ----------------- |
 | Base  | ₹199        | 15         | 5            | +10 trades @ ₹49  |
 | Pro   | ₹499        | 30         | 10           | +20 trades @ ₹99  |
-| Elite | ₹1,999      | 50         | 20           | +30 trades @ ₹299 |
+| Elite | ₹999      | 50         | 20           | +30 trades @ ₹299 |
 
 ---
 
