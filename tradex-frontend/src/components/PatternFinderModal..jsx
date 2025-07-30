@@ -1,40 +1,70 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { usePatternFinderStore } from '../store/usePatternFinderStore';
+import { usePatternMatcher } from '../utils/usePatternMatcher.js';
 import { X } from 'lucide-react';
 
 import mockData from '../DataCreation/mockData.js';
-import { usePatternMatcher } from '../utils/usePatternMatcher';
-const predefinedPatterns = {
-  'Head & Shoulders': [[50, 150], [100, 50], [150, 150], [200, 100], [250, 150]],
-  'Double Top': [[50, 150], [100, 50], [150, 150], [200, 50], [250, 150]],
-  'Double Bottom': [[50, 50], [100, 150], [150, 50], [200, 150], [250, 50]],
-  Triangle: [[50, 150], [150, 50], [250, 150]],
-  Wedge: [[50, 150], [125, 100], [200, 130], [250, 100]],
-  Flag: [[50, 150], [100, 100], [150, 150], [200, 100], [250, 150]],
-  'Cup & Handle': [[50, 150], [100, 100], [150, 100], [200, 150], [230, 140], [250, 130]],
-};
+
 
 const PatternFinderModal = () => {
-  const { setMatchedSegments } = usePatternFinderStore();
-  const { isOpen, close } = usePatternFinderStore();
+  const { matchedSegments, isOpen, close } = usePatternFinderStore();
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawnPoints, setDrawnPoints] = useState([]);
-  const [chartPoints] = useState(mockData); 
+  const { matchPattern } = usePatternMatcher();
+  const [chartPoints] = useState(mockData);
   const accuracySliderRef = useRef();
 
   const handleFindPatterns = () => {
-    if (!drawnPoints.length || chartPoints.length) return;
+    if (!drawnPoints.length || !chartPoints.length) return;
 
     const accuracy = parseFloat(accuracySliderRef.current.value || 0.5);
-    const matches = matchPattern(drawnPoints, chartPoints, accuracy, true);
-     console.log("Raw matches: ", matches);
 
-     const matchedSegments = matches.matchPattern(({start, end }) =>
-      chartPoints.slice(start, end + 1 ));
+    const canvas = canvasRef.current;
+    const canvasHeight = canvas.height;
 
-    setMatchedSegments(matchedSegments);
+    const normalizedDrawn = drawnPoints.map(([x, y], index) => {
+      const relativeY = 1 - y / canvasHeight;
+      return [index, relativeY];
+    });
+
+    const chartSeries = chartPoints.map((p, i) => [i, p.close]);
+
+    const matches = matchPattern(normalizedDrawn, chartSeries, accuracy, true);
+
+    const convertMatchesToSegments = (matches, fullChartData) => {
+      return matches
+        .map(({ start, end }) => {
+          const rawSlice = fullChartData.slice(start, end + 1);
+          const segment = rawSlice
+            .map(p => ({ time: p.time, value: p.close }))
+            .filter(p => p.time && typeof p.value === 'number');
+
+          return segment.length > 0 ? segment : null;
+        })
+        .filter(Boolean);
+    };
+
+
+    const overlaySegments = convertMatchesToSegments(matches, chartPoints)
+    usePatternFinderStore.getState().setMatchedSegments(overlaySegments);
+
+    console.log("✅ Matched Segments:", overlaySegments.length);
+    if (overlaySegments.length) {
+      console.log("🟢 First segment sample:", overlaySegments[0]);
+    }
+
+    console.log('drawnPoints:', drawnPoints);
+    console.log('normalizedDrawn:', normalizedDrawn);
+    console.log('chartPoints:', chartPoints);
+    console.log('Raw matches:', matches);
+
+    requestAnimationFrame(() => {
+      close();
+    });
   };
+
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -54,30 +84,30 @@ const PatternFinderModal = () => {
   };
 
   const startDrawing = (e) => {
-  const ctx = getContext();
-  if (!ctx) return;
-  const rect = canvasRef.current.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+    const ctx = getContext();
+    if (!ctx) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-  ctx.beginPath();
-  ctx.moveTo(x, y);
-  setDrawnPoints([[x, y]]);
-  setIsDrawing(true);
-};
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    setDrawnPoints([[x, y]]);
+    setIsDrawing(true);
+  };
 
-const draw = (e) => {
-  if (!isDrawing) return;
-  const ctx = getContext();
-  if (!ctx) return;
-  const rect = canvasRef.current.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const ctx = getContext();
+    if (!ctx) return;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-  ctx.lineTo(x, y);
-  ctx.stroke();
-  setDrawnPoints((prev) => [...prev, [x, y]]);
-};
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    setDrawnPoints((prev) => [...prev, [x, y]]);
+  };
 
 
   const endDrawing = () => {
@@ -116,34 +146,19 @@ const draw = (e) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
-      <div className="bg-[#0e1629] text-white rounded-xl p-6 w-[90%] max-w-5xl relative">
+      <div className="bg-[#0e1629] text-white rounded-xl p-6  min-w-[40%]   relative">
         <button onClick={close} className="absolute top-4 right-4 hover:text-red-500">
           <X size={24} />
         </button>
 
         <h2 className="text-xl font-semibold mb-4 text-purple-400">Chart Pattern Finder</h2>
 
-        <div className="flex">
-          <div className="w-1/4 pr-4 border-r border-gray-700">
-            <h3 className="font-semibold text-lg mb-2">Pattern Library</h3>
-            <ul className="space-y-2">
-              {Object.keys(predefinedPatterns).map((pattern) => (
-                <li
-                  key={pattern}
-                  className="hover:text-purple-400 cursor-pointer"
-                  onClick={() => renderPattern(pattern)}
-                >
-                  {pattern}
-                </li>
-              ))}
+        <div className="flex justify-center">
 
-            </ul>
-          </div>
 
           <div className="flex-1 px-4">
-            <p className="text-gray-400 text-center mt-10">
-              Select a pattern from the library to begin<br />
-              or draw your own pattern on the canvas
+            <p className="text-gray-400 text-center mt-10 max-w-4xl">
+              Draw your own pattern on the canvas
             </p>
             <canvas
               ref={canvasRef}
@@ -151,30 +166,29 @@ const draw = (e) => {
               onMouseMove={draw}
               onMouseUp={endDrawing}
               onMouseLeave={endDrawing}
-              className="mt-6 h-72 bg-[#1e2a3f] rounded-md border border-gray-600"
+              className="mt-6 flex  h-72 bg-[#1e2a3f] rounded-md border border-gray-600"
             />
           </div>
         </div>
 
-        <div className="mt-6 flex justify-between">
+        <div className="mt-6 flex justify-around">
           <div className="flex items-center space-x-2">
-    <label htmlFor="accuracy" className="text-sm text-gray-300">Accuracy</label>
-    <input
-      id="accuracy"
-      ref={accuracySliderRef}
-      type="range"
-      min="0.1"
-      max="1"
-      step="0.1"
-      defaultValue="0.5"
-      className="w-48"
-    />
-  </div>
+            <label htmlFor="accuracy" className="text-sm text-gray-300">Accuracy</label>
+            <input
+              id="accuracy"
+              ref={accuracySliderRef}
+              type="range"
+              min="0.1"
+              max="1"
+              step="0.1"
+              defaultValue="0.75"
+              className="w-48"
+            />
+          </div>
           <button onClick={handleFindPatterns} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md">Find Patterns</button>
           <button className=" bg-red-600 hover:bg-red-700 cursor-pointer px-4 py-2 rounded-md" onClick={clearCanvas}>
             Clear Canvas
           </button>
-          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">Save</button>
         </div>
       </div>
     </div>

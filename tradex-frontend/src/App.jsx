@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import supabase from './lib/supabase';
 import { AssetProvider } from './context/AssetContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
+import Settings from './components/Settings'
 import Footer from './components/Footer'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import FullscreenChartPage from './components/FullscreenChartPage';
@@ -9,10 +11,12 @@ import PatternFinderModal from './components/PatternFinderModal.'
 import ProfilePage from './components/ProfilePage'
 import ChartContainer from './components/ChartContainer'
 import SplashScreen from './components/SplashScreen';
+import Auth from "./components/Auth"
 import './App.css'
 import MobileComingSoon from './components/MobileCommingSoon'
 function App() {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(false);
+  const [user, setUser ] = useState(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,6 +28,16 @@ function App() {
 
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+ 
+
+useEffect(() => {
+    const getUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+      if (data?.user) setUser(data.user);
+    };
+    getUser();
+  }, []);
 
   return (
   
@@ -51,6 +65,9 @@ function App() {
           />
           <Route path="/fullscreen-chart" element={<FullscreenChartPage />} />
           <Route path="/profile-page" element={<ProfilePage/>}/>
+          <Route path="/settings-page" element={<Settings/>}/>
+          <Route path="/auth-page" element={<Auth/>}/>
+
         </Routes>
       )}
     </AssetProvider>

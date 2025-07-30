@@ -11,8 +11,12 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.31.9",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.53.0",
     "autoprefixer": "^10.4.21",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.1",
     "lightweight-charts": "^5.0.7",
     "lucide-react": "^0.514.0",
     "postcss": "^8.5.4",

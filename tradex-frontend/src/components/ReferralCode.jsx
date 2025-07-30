@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 
 function ReferralCode() {
+  const code = '2005';
+  const userName = "DANIEL";
   const [copied, setCopied] = useState(false);
   const referral = {
-    code: "TRADX-DANIEL-27A3",
-  
+    code: `TRADX-${userName}-${code}`,
+
   };
 
   const copyToClipboard = () => {
@@ -28,7 +30,7 @@ function ReferralCode() {
           </button>
         </div>
 
-       
+
       </div>
     </div>
   );

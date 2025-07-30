@@ -5,21 +5,25 @@ import ShortcutModal from './ShortcutModal.jsx';
 import TimeFrameModal from './TimeFrameModal';
 import ChartTypeModal from './ChartTypeModal';
 import { MdFullscreenExit } from 'react-icons/md';
+import { FaChartBar } from "react-icons/fa";
 import mockData from '../DataCreation/mockData.js';
 import useKeyPress from './useKeyPress.js';
+import { usePatternFinderStore } from '../store/usePatternFinderStore';
+
 
 
 const FullscreenChartPage = () => {
 
+  const { open } = usePatternFinderStore();
   const [searchParams] = useSearchParams();
   const asset = searchParams.get('asset') || 'N/A';
   const chartTypeFromURL = searchParams.get('chartType') || 'Candlestick';
   const [chartType, setChartType] = useState(chartTypeFromURL);
-  const chartRef = useRef(null);
   const chartApiRef = useRef(null);
   const [chartReady, setChartReady] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [timeFrame, setTimeFrame] = useState('5m');
+  const timeframeFromURL = searchParams.get('timeFrame') || '5m';
+  const [timeFrame, setTimeFrame] = useState(timeframeFromURL);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showChartModal, setShowChartModal] = useState(false);
 
@@ -30,7 +34,7 @@ const FullscreenChartPage = () => {
   }, []);
 
 
-   const zoomIn = () => {
+  const zoomIn = () => {
     const ts = chartApiRef.current?.timeScale;
     if (!ts) return;
     const range = ts.getVisibleLogicalRange?.();
@@ -52,27 +56,27 @@ const FullscreenChartPage = () => {
     ts.setVisibleLogicalRange({ from: center - newRangeSize / 2, to: center + newRangeSize / 2 });
   };
 
- const scrollLeft = () => {
-  const ts = chartApiRef.current?.timeScale;
-  const range = ts?.getVisibleLogicalRange?.();
-  if (!range) return;
+  const scrollLeft = () => {
+    const ts = chartApiRef.current?.timeScale;
+    const range = ts?.getVisibleLogicalRange?.();
+    if (!range) return;
 
-  const newFrom = range.from - 20;
-  const newTo = range.to - 20;
+    const newFrom = range.from - 20;
+    const newTo = range.to - 20;
 
-  ts.setVisibleLogicalRange({ from: newFrom, to: newTo });
-};
+    ts.setVisibleLogicalRange({ from: newFrom, to: newTo });
+  };
 
-const scrollRight = () => {
-  const ts = chartApiRef.current?.timeScale;
-  const range = ts?.getVisibleLogicalRange?.();
-  if (!range) return;
+  const scrollRight = () => {
+    const ts = chartApiRef.current?.timeScale;
+    const range = ts?.getVisibleLogicalRange?.();
+    if (!range) return;
 
-  const newFrom = range.from + 20;
-  const newTo = range.to + 20;
+    const newFrom = range.from + 20;
+    const newTo = range.to + 20;
 
-  ts.setVisibleLogicalRange({ from: newFrom, to: newTo });
-};
+    ts.setVisibleLogicalRange({ from: newFrom, to: newTo });
+  };
 
   const resetView = () => {
     const ts = chartApiRef.current?.timeScale;
@@ -81,17 +85,17 @@ const scrollRight = () => {
       setTimeout(() => ts.setBarSpacing?.(10), 100);
     }
   };
- 
+
 
   useEffect(() => {
-      const escHandler = (e) => {
-        if (e.key === 'Escape') {
-          window.close();
-        }
-      };
-      window.addEventListener('keydown', escHandler);
-      return () => window.removeEventListener('keydown', escHandler);
-    }, []);
+    const escHandler = (e) => {
+      if (e.key === 'Escape') {
+        window.close();
+      }
+    };
+    window.addEventListener('keydown', escHandler);
+    return () => window.removeEventListener('keydown', escHandler);
+  }, []);
   useKeyPress(['Ctrl + /'], () => setShowShortcuts(true));
   useKeyPress(['Shift + ArrowUp'], () => chartReady && zoomIn());
   useKeyPress(['Shift + ArrowDown'], () => chartReady && zoomOut());
@@ -112,8 +116,12 @@ const scrollRight = () => {
         </p>
       </div>
 
+
       <div className="absolute top-4 right-4 z-50 flex space-x-4">
-        {/* Timeframes */}
+      <button onClick={open} className="bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] text-white text-sm font-semibold px-4 py-2 rounded-md shadow-md hover:opacity-90 transition flex items-center justify-center gap-x-2">
+        <FaChartBar />
+        Find Chart Patterns
+      </button>
         <div className="relative">
           <button
             onClick={() => {
@@ -133,7 +141,6 @@ const scrollRight = () => {
           )}
         </div>
 
-        {/* Chart Types */}
         <div className="relative">
           <button
             onClick={() => {
@@ -156,7 +163,6 @@ const scrollRight = () => {
 
 
       <div className="absolute top-4 right-4 z-50 flex space-x-3">
-        {/* Buttons omitted for brevity */}
         <button
           title="Exit Fullscreen"
           onClick={() => window.close()}
@@ -166,11 +172,10 @@ const scrollRight = () => {
         </button>
       </div>
 
-      {/* Chart Canvas */}
       <div className="absolute inset-0 z-10">
-        <Chart chartType={chartType} data={mockData}  onReady={handleChartReady}/>
+        <Chart chartType={chartType} data={mockData} onReady={handleChartReady} />
       </div>
-            {showShortcuts && <ShortcutModal onClose={() => setShowShortcuts(false)} />}
+      {showShortcuts && <ShortcutModal onClose={() => setShowShortcuts(false)} />}
 
     </div>
   );

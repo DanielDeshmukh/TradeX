@@ -4,12 +4,9 @@ import { usePatternFinderStore } from '../store/usePatternFinderStore';
 import { FaChartBar, FaRegLightbulb } from "react-icons/fa";
 
 function Header() {
-    const toUser = () => {
-        console.log("Heading To User Profile!!!!! SUSUMEE!!");
-
-    }
+    
     const { open } = usePatternFinderStore();
-
+     
     return (
         <header className="flex items-center justify-between px-6 py-3 bg-[#0F1117] border-b border-[#1F2937]">
 
@@ -32,9 +29,11 @@ function Header() {
                         Press Ctrl + / for shortcuts
                     </div>
                 </div>
-                <Bell className="text-gray-300 hover:text-white cursor-pointer" size={20} />
+                    <Bell className="text-gray-300 hover:text-white cursor-pointer" size={20} />
+                <Link to='/settings-page'>
                 <Settings className="text-gray-300 hover:text-white cursor-pointer" size={20} />
-                <Link to='/profile-page' onClick={toUser()}>
+                </Link>
+                <Link to='/profile-page'>
                     <User className="text-gray-300 hover:text-white cursor-pointer" size={20} />
                 </Link>
             </div>

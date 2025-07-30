@@ -26,7 +26,7 @@ function SubscriptionPlan() {
         },
         {
             name: "Elite",
-            price: "₹1,999/mo",
+            price: "₹999/mo",
             features: [
                 "50 Trades per day",
                 "Add-on 30 Trades",

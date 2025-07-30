@@ -15,7 +15,7 @@ const dummyActivity = [
   { date: "2025-04-12", count: 2 },
   { date: "2025-06-28", count: 30 },
   { date: "2025-06-10", count: 5 },
-  { date: "2024-07-01", count: 88 },
+  { date: "2025-07-01", count: 88 },
   { date: "2025-02-15", count: 5 },
   { date: "2025-06-29", count: 15 },
 ];

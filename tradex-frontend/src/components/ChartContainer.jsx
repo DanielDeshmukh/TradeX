@@ -4,37 +4,81 @@ import TimeFrameModal from './TimeFrameModal.jsx';
 import Chart from './Chart';
 import { usePatternFinderStore } from '../store/usePatternFinderStore';
 import ChartTypeModal from './ChartTypeModal.jsx';
+import { usePatternMatcher, remapSegmentsToTimestamps } from '../utils/usePatternMatcher.js';
 import mockData from '../DataCreation/mockData.js';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import useKeyPress from './useKeyPress';
 import ShortcutModal from './ShortcutModal';
 
-const ChartContainer = ({ assetName }) => {
+const ChartContainer = () => {
   const { selectedAsset } = useAsset();
+  const [matchedSegments, setMatchedSegments] = useState([]);
   const chartRef = useRef(null);
+  const [updateKey, setUpdateKey] = useState(0);
   const chartApiRef = useRef(null);
-  const { matchedSegments } = usePatternFinderStore();
+  const [chartReady, setChartReady] = useState(false);
+  const { matchedSegments: rawSegments } = usePatternFinderStore(state => state.matchedSegments);
+  const [timestampedSegments, setTimestampedSegments] = useState([]);
+  const { matchPattern } = usePatternMatcher();
   const [timeFrame, setTimeFrame] = useState('5m');
   const [chartType, setChartType] = useState('Candlestick');
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showChartModal, setShowChartModal] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [chartReady, setChartReady] = useState(false);
 
   const handleFullscreen = () => {
     const url = `/fullscreen-chart?asset=${encodeURIComponent(selectedAsset?.name)}&chartType=${encodeURIComponent(chartType)}&timeFrame=${encodeURIComponent(timeFrame)}`;
     window.open(url, '_blank');
   };
 
-  const handleChartReady = useCallback(({ chart, timeScale }) => {
-    if (chart && timeScale) {
-      chartApiRef.current = { chart, timeScale };
-      timeScale.scrollToRealTime();
-      setChartReady(true);
-    } else {
-      console.warn('Invalid chart or timeScale passed to handleChartReady');
-    }
+  useEffect(() => {
+    const chartSeries = mockData.map((d, i) => [i, d.close]); 
+    const drawnPattern = chartSeries.slice(20, 30); 
+
+    const rawMatches = matchPattern(drawnPattern, chartSeries, 0.8);
+
+    const matchedSegments = rawMatches.map(({ start, end }) =>
+      chartSeries.slice(start, end + 1)
+    );
+
+    console.log("Simulated Matched Segments:", matchedSegments);
+    usePatternFinderStore.getState().setMatchedSegments(matchedSegments);
   }, []);
+
+  useEffect(() => {
+  if (Array.isArray(mockData) && Array.isArray(rawSegments) && mockData.length && rawSegments.length) {
+    const converted = remapSegmentsToTimestamps(rawSegments, mockData);
+    setTimestampedSegments(converted);
+  }
+}, [rawSegments, mockData]);
+
+  const handleChartReady = useCallback(({ chart, timeScale, series }) => {
+  if (chart && timeScale && series) {
+    chartApiRef.current = { chart, timeScale, series };
+    timeScale.scrollToRealTime();
+    setChartReady(true);
+  } else {
+    console.warn('Invalid chart/timeScale/series passed to handleChartReady');
+  }
+}, []);
+
+const remapSegmentsToTimestamps = (segments, candles) => {
+  return segments.map(segment =>
+    segment.map(([index, price]) => {
+      const candle = candles[index];
+      if (!candle) return null;
+      return [candle.time, price];
+    }).filter(Boolean)
+  );
+};
+
+  const drawnSegments = matchedSegments.map(segment =>
+  segment.map(([index, price]) => {
+    const candle = mockData[index];
+    return [candle?.time, price]; 
+    }).filter(([time]) => time !== undefined)
+);
+
 
   const resetView = () => {
     const ts = chartApiRef.current?.timeScale;
@@ -61,9 +105,7 @@ const ChartContainer = ({ assetName }) => {
     ts.setVisibleLogicalRange({ from: newFrom, to: newTo });
   };
 
-  useEffect(() => {
-  console.log("Matched Segments for Drawing:", matchedSegments);
-}, [matchedSegments]);
+
 
 
   const zoomOut = () => {
@@ -92,6 +134,33 @@ const ChartContainer = ({ assetName }) => {
 
     ts.setVisibleLogicalRange({ from: newFrom, to: newTo });
   };
+
+  useEffect(() => {
+  if (!chartReady) return;
+
+  const timeScale = chartApiRef.current?.timeScale;
+
+  const handleVisibleRangeChange = () => {
+    setUpdateKey((prev) => prev + 1); 
+  };
+
+  const unsubscribe = timeScale?.subscribeVisibleTimeRangeChange?.(handleVisibleRangeChange);
+
+  return () => {
+    unsubscribe && unsubscribe();
+  };
+}, [chartReady]);
+
+
+  useEffect(() => {
+    console.log("Mapped Segment Coordinates:", drawnSegments.map(seg =>
+  seg.map(([t, p]) => ({
+    x: chartApiRef.current?.timeScale?.timeToCoordinate?.(t),
+    y: chartApiRef.current?.priceScale?.priceToCoordinate?.(p),
+  }))
+));
+  }, [drawnSegments]);
+
 
   const scrollRight = () => {
     const ts = chartApiRef.current?.timeScale;
@@ -188,27 +257,39 @@ const ChartContainer = ({ assetName }) => {
         </div>
       </div>
 
-      <svg className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        {matchedSegments.map((segment, index) => (
-          <polyline
-            key={index}
-            points={segment.map(([x, y]) => `${x},${y}`).join(' ')}
-            fill="none"
-            stroke="yellow"
-            strokeWidth="2"
-          />
-        ))}
-      </svg>
+      <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-20">
+  {chartReady && matchedSegments.map((segment, index) => {
+    const points = segment
+      .map(([time, price]) => {
+        const x = chartApiRef.current?.timeScale?.timeToCoordinate?.(time);
+        const y = chartApiRef.current?.series?.priceToCoordinate?.(price); // ✅ FIXED
 
-      {matchedSegments.length > 0 && (
-        <p className="text-yellow-400 text-xs mt-2">
-          {matchedSegments.length} similar patterns found
-        </p>
-      )}
+        return x !== undefined && y !== undefined ? `${x},${y}` : null;
+      })
+      .filter(Boolean)
+      .join(' ');
+
+    return (
+      <polyline
+        key={index}
+        points={points}
+        fill="none"
+        stroke="yellow"
+        strokeWidth="2"
+      />
+    );
+  })}
+</svg>
 
 
       <div ref={chartRef} className="w-full h-[500px] rounded-xl bg-[#1C1F24] p-4">
-        <Chart chartType={chartType} data={mockData} onReady={handleChartReady} />
+        <Chart
+          chartType={chartType}
+          data={mockData}
+          onReady={(refs) => chartApiRef.current = refs.chart}
+          overlays={matchedSegments}
+          
+        />
       </div>
 
       {showShortcuts && <ShortcutModal onClose={() => setShowShortcuts(false)} />}

@@ -4,6 +4,7 @@ export const usePatternFinderStore = create((set) => ({
   isOpen: false,
   open: () => set({ isOpen: true }),
   close: () => set({ isOpen: false }),
+  
 
     matchedSegments: [],
 
