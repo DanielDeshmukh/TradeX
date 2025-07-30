@@ -15,6 +15,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 import ForgotPassword from './components/ForgotPassword';
 import MagicLink from './components/MagicLink';
+import UpdatePassword from './components/UpdatePassword';
 import './App.css'
 import MobileComingSoon from './components/MobileCommingSoon'
 function App() {
@@ -64,6 +65,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/magic-link" element={<MagicLink />} />
+          <Route path="/update-password" element={<UpdatePassword />} />
           <Route path="/fullscreen-chart" element={<FullscreenChartPage />} />
           <Route path="/profile-page" element={<ProfilePage/>}/>
           <Route path="/settings-page" element={<Settings/>}/>
