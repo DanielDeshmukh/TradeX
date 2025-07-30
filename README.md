@@ -36,7 +36,7 @@ These challenges result in missed opportunities, poor initial trading experience
 
 * **Framework**: ReactJS with TailwindCSS for modern UI/UX
 * **Charting**: TradingView Lightweight Charts for market visualizations
-* **Navigation**: Intuitive, mobile-responsive design
+
 
 ### Backend
 
