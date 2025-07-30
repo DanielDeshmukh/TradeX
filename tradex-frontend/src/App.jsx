@@ -11,7 +11,10 @@ import PatternFinderModal from './components/PatternFinderModal.'
 import ProfilePage from './components/ProfilePage'
 import ChartContainer from './components/ChartContainer'
 import SplashScreen from './components/SplashScreen';
-import Auth from "./components/Auth"
+import Register from './components/Register';
+import Login from './components/Login';
+import ForgotPassword from './components/ForgotPassword';
+import MagicLink from './components/MagicLink';
 import './App.css'
 import MobileComingSoon from './components/MobileCommingSoon'
 function App() {
@@ -31,13 +34,7 @@ function App() {
 
  
 
-useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (data?.user) setUser(data.user);
-    };
-    getUser();
-  }, []);
+
 
   return (
   
@@ -63,10 +60,13 @@ useEffect(() => {
               </div>
             }
           />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/magic-link" element={<MagicLink />} />
           <Route path="/fullscreen-chart" element={<FullscreenChartPage />} />
           <Route path="/profile-page" element={<ProfilePage/>}/>
           <Route path="/settings-page" element={<Settings/>}/>
-          <Route path="/auth-page" element={<Auth/>}/>
 
         </Routes>
       )}
