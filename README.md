@@ -43,7 +43,7 @@ These challenges result in missed opportunities, poor initial trading experience
 * **Core Logic**: Node.js for API routing and data handling
 * **Real-Time Data**: WebSocket for live trade feeds
 * **Database**: Supabase for relational data and real-time hooks
-* **Authentication**: Clerk for secure session and identity management
+
 
 ### PPO (RL) Model
 * **Proximal Policy Optimization**:  reinforcement learning algorithm that trains an agent 
