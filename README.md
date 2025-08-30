@@ -36,14 +36,14 @@ These challenges result in missed opportunities, poor initial trading experience
 
 * **Framework**: ReactJS with TailwindCSS for modern UI/UX
 * **Charting**: TradingView Lightweight Charts for market visualizations
-* **Navigation**: Intuitive, mobile-responsive design
+
 
 ### Backend
 
 * **Core Logic**: Node.js for API routing and data handling
 * **Real-Time Data**: WebSocket for live trade feeds
 * **Database**: Supabase for relational data and real-time hooks
-* **Authentication**: Clerk for secure session and identity management
+
 
 ### PPO (RL) Model
 * **Proximal Policy Optimization**:  reinforcement learning algorithm that trains an agent 
