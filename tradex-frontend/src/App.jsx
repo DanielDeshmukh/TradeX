@@ -13,6 +13,7 @@ import ChartContainer from './components/ChartContainer'
 import SplashScreen from './components/SplashScreen';
 import Register from './components/Register';
 import Login from './components/Login';
+import Notifications from './components/Notifications';
 import ForgotPassword from './components/ForgotPassword';
 import MagicLink from './components/MagicLink';
 import UpdatePassword from './components/UpdatePassword';
@@ -40,9 +41,9 @@ function App() {
   return (
   
     <AssetProvider>
-      {isMobile ? (
-        <MobileComingSoon />
-      ) : (
+      {/* {isMobile ? ( */}
+        {/* <MobileComingSoon /> */}
+      {/* ) : ( */}
         <Routes>
           <Route path="/" element={<SplashScreen/>}/>
           <Route
@@ -68,10 +69,11 @@ function App() {
           <Route path="/update-password" element={<UpdatePassword />} />
           <Route path="/fullscreen-chart" element={<FullscreenChartPage />} />
           <Route path="/profile-page" element={<ProfilePage/>}/>
+          <Route path="/notifications" element={<Notifications />}/>
           <Route path="/settings-page" element={<Settings/>}/>
 
         </Routes>
-      )}
+      {/* )} */}
     </AssetProvider>
   
 );

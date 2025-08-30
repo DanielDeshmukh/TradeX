@@ -13,9 +13,7 @@ import {
 
 const Chart = ({ chartType, data, onReady, overlays = [], }) => {
   const { matchedSegments } = usePatternOverlaySegments();
-  console.log("✅ Matched Segments in Chart:", matchedSegments?.length ?? 0);
 if (Array.isArray(matchedSegments) && matchedSegments.length > 0) {
-  console.log("🔍 First segment sample:", matchedSegments[0]);
 } else {
   console.warn("⚠️ No matched segments or invalid format:", matchedSegments);
 }
@@ -51,7 +49,6 @@ if (Array.isArray(matchedSegments) && matchedSegments.length > 0) {
       );
 
       overlaySeries.setData(validatedData);
-      console.log(`🟡 Overlay ${index}: Plotted ${validatedData.length} points`);
     });
   }, [chart, series, allOverlaySegments, matchedSegments]);
 

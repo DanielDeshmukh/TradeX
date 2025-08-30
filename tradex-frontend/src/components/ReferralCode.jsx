@@ -1,38 +1,194 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import supabase from "../lib/supabase";
 
 function ReferralCode() {
-  const code = '2005';
-  const userName = "DANIEL";
-  const [copied, setCopied] = useState(false);
-  const referral = {
-    code: `TRADX-${userName}-${code}`,
+  const [session, setSession] = useState(null);
+  const [codes, setCodes] = useState([]);
+  const [totalGenerated, setTotalGenerated] = useState(0); 
+  const [loading, setLoading] = useState(false);
+  const [generateLoading, setGenerateLoading] = useState(false);
+  const [redeemCode, setRedeemCode] = useState("");
+  const MAX_PER_YEAR = 3;
 
+  useEffect(() => {
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session || null);
+      if (session?.user) await fetchCodes(session.user.id);
+    };
+
+    init();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s || null);
+      if (s?.user) fetchCodes(s.user.id);
+      else {
+        setCodes([]);
+        setTotalGenerated(0);
+      }
+    });
+
+    return () => listener?.subscription?.unsubscribe?.();
+  }, []);
+
+  const fetchCodes = async (userIdParam) => {
+    setLoading(true);
+    try {
+      const userId = userIdParam || session?.user?.id;
+      if (!userId) {
+        setCodes([]);
+        setTotalGenerated(0);
+        return;
+      }
+
+      const { count, error: countError } = await supabase
+        .from("referral_codes")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId)
+        .gte("created_at", new Date(new Date().getFullYear(), 0, 1).toISOString());
+
+      if (countError) throw countError;
+      setTotalGenerated(count ?? 0);
+
+      const { data, error } = await supabase
+        .from("referral_codes")
+        .select("id, code, created_at")
+        .eq("user_id", userId)
+        .eq("used", false)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setCodes(data || []);
+    } catch (err) {
+      console.error("fetchCodes error", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(referral.link);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleGenerate = async () => {
+    setGenerateLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase.functions.invoke("generate-referral", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { action: "generate" }
+      });
+
+      if (error) throw error;
+      await fetchCodes(session.user.id);
+      alert(`Generated: ${data?.code}`);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setGenerateLoading(false);
+    }
   };
+
+  const handleUseCode = async () => {
+    const trimmedCode = redeemCode.trim();
+    if (!trimmedCode) return;
+
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase.functions.invoke("use-referral", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: { code: trimmedCode }
+      });
+
+      if (error) throw error;
+      alert("Referral used successfully!");
+      setRedeemCode("");
+      await fetchCodes(session.user.id);
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("Copied!");
+    } catch {
+      alert("Failed to copy");
+    }
+  };
+
+  const remaining = Math.max(0, MAX_PER_YEAR - totalGenerated);
 
   return (
     <div className="bg-[#232323] p-6 rounded-xl shadow-md">
-      <h3 className="text-lg font-semibold mb-4">Referral Code</h3>
+      <h3 className="text-lg font-semibold mb-4 text-white">Referral Codes</h3>
+
+      <div className="mb-3 text-sm text-gray-300">
+        Generated:{" "}
+        <span className="font-semibold text-white">{totalGenerated}</span> / {MAX_PER_YEAR}
+        {remaining === 0 ? (
+          <span className="ml-2 text-yellow-300">Limit reached for this year</span>
+        ) : (
+          <span className="ml-2 text-green-300">You can generate {remaining} more</span>
+        )}
+      </div>
 
       <div className="space-y-2">
-        <div className="bg-[#1a1a1a] px-4 py-2 rounded-lg flex justify-between items-center">
-          <span className="text-purple-300 font-mono">{referral.code}</span>
-          <button
-            onClick={copyToClipboard}
-            className="text-sm text-purple-400 hover:text-purple-200"
+        {loading && <div className="text-sm text-gray-400">Loading...</div>}
+        {!loading && codes.length === 0 && (
+          <div className="text-sm text-gray-400">
+            No active referral codes. Generate one.
+          </div>
+        )}
+
+        {codes.map((c) => (
+          <div
+            key={c.id}
+            className="bg-[#1a1a1a] px-4 py-2 rounded-lg flex justify-between items-center"
           >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
+            <span className="text-white font-mono">{c.code}</span>
+            <button
+              onClick={() => copyToClipboard(c.code)}
+              className="text-sm text-purple-400 hover:text-purple-200"
+            >
+              Copy
+            </button>
+          </div>
+        ))}
+      </div>
 
+      <div className="mt-4 flex gap-2">
+        <button
+          onClick={handleGenerate}
+          disabled={generateLoading || remaining <= 0}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+        >
+          {generateLoading ? "Generating..." : "Generate New Code"}
+        </button>
+      </div>
 
+      <div className="mt-6">
+        <input
+          type="text"
+          placeholder="Enter referral code to redeem"
+          value={redeemCode}
+          onChange={(e) => setRedeemCode(e.target.value)}
+          className="w-full px-3 py-2 rounded-md bg-[#1a1a1a] text-white border border-purple-500"
+        />
+        <button
+          onClick={handleUseCode}
+          disabled={loading || !redeemCode.trim()}
+          className="mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+        >
+          {loading ? "Using..." : "Use Referral"}
+        </button>
       </div>
     </div>
   );
 }
+
 export default ReferralCode;
