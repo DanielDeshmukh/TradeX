@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
-import supabase from './lib/supabase';
 import { AssetProvider } from './context/AssetContext'
 import Header from './components/Header'
 import Sidebar from './components/Sidebar'
 import Settings from './components/Settings'
+import { ToastContainer } from 'react-toastify';
 import Footer from './components/Footer'
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {Routes, Route } from 'react-router-dom';
 import FullscreenChartPage from './components/FullscreenChartPage';
 import PatternFinderModal from './components/PatternFinderModal.'
 import ProfilePage from './components/ProfilePage'
@@ -21,7 +21,6 @@ import './App.css'
 import MobileComingSoon from './components/MobileCommingSoon'
 function App() {
   const [isMobile, setIsMobile] = useState(false);
-  const [user, setUser ] = useState(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -41,9 +40,9 @@ function App() {
   return (
   
     <AssetProvider>
-      {/* {isMobile ? ( */}
-        {/* <MobileComingSoon /> */}
-      {/* ) : ( */}
+      {isMobile ? (
+        <MobileComingSoon />
+      ) : (
         <Routes>
           <Route path="/" element={<SplashScreen/>}/>
           <Route
@@ -73,7 +72,8 @@ function App() {
           <Route path="/settings-page" element={<Settings/>}/>
 
         </Routes>
-      {/* )} */}
+       )} 
+       <ToastContainer position="top-right" autoClose={3000} />
     </AssetProvider>
   
 );

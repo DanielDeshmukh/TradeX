@@ -7,7 +7,7 @@ function Header() {
   const { open } = usePatternFinderStore();
   const location = useLocation();
 
-  const showFindChartButton = ["/main-page"].includes(location.pathname);
+  const showFindChartButton = ["/main-page","/fullscreen-chart"].includes(location.pathname);
 
   return (
     <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 bg-[#0F1117] border-b border-[#1F2937] gap-3 sm:gap-0">

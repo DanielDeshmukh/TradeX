@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import supabase from "../lib/supabase";
+import { toast, ToastContainer } from "react-toastify";
 
 function SubscriptionPlan({ user }) {
   const [plans, setPlans] = useState([
@@ -32,7 +33,6 @@ function SubscriptionPlan({ user }) {
     },
   ]);
 
-  // Highlight current plan from DB
   useEffect(() => {
     if (!user?.id) return;
 
@@ -44,7 +44,9 @@ function SubscriptionPlan({ user }) {
         .single();
 
       if (error) {
-        console.error("Failed to fetch current plan:", error);
+        toast.error(`Failed to fetch current plan: ${error.message}`, {
+          style: { background: "#1f1f1f", color: "#ff6b6b" },
+        });
         return;
       }
 
@@ -61,27 +63,45 @@ function SubscriptionPlan({ user }) {
 
   const assignPlanToUser = async (planName) => {
     if (!user?.id) {
-      console.warn("No user provided. Cannot assign plan.");
+      toast.error("No user provided. Cannot assign plan.", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
       return;
     }
 
-    // Update UI immediately
     setPlans((prevPlans) =>
       prevPlans.map((p) => ({ ...p, current: p.name === planName }))
     );
 
-    // Update Supabase profile
     const { error } = await supabase
       .from("profiles")
       .update({ current_plan: planName })
       .eq("id", user.id);
 
-    if (error) console.error("Failed to update plan:", error);
-    else console.log(`Plan "${planName}" assigned to user ${user.id}`);
+    if (error) {
+      toast.error(`Failed to update plan: ${error.message}`, {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
+    } else {
+      toast.success(`Plan "${planName}" assigned successfully!`, {
+        style: { background: "#1f1f1f", color: "#4ade80" },
+      });
+    }
   };
 
   return (
     <div className="bg-[#232323] p-6 rounded-xl shadow-md">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+
       <h3 className="text-lg font-semibold mb-6">Subscription Plans</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {plans.map((plan, idx) => (

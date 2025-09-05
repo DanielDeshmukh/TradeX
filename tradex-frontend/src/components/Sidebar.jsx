@@ -16,7 +16,6 @@ function Sidebar() {
 
   return (
     <>
-      {/* Mobile Toggle Button */}
       <button
         onClick={() => setOpen(!open)}
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#7F3DFF] text-white rounded-md shadow-md"
@@ -24,7 +23,6 @@ function Sidebar() {
         {open ? "✕" : "☰"}
       </button>
 
-      {/* Backdrop for mobile */}
       {open && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -32,7 +30,6 @@ function Sidebar() {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed lg:static top-0 left-0 h-full w-[270px] bg-[#0F1117] border-r border-[#1F2937] text-white px-4 py-5 overflow-y-auto space-y-4 transform transition-transform duration-300 z-50 lg:translate-x-0 
         ${open ? "translate-x-0" : "-translate-x-full"}`}

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import supabase from "../lib/supabase";
+import { toast, ToastContainer } from "react-toastify";
 
 function ReferralCode() {
   const [session, setSession] = useState(null);
   const [codes, setCodes] = useState([]);
-  const [totalGenerated, setTotalGenerated] = useState(0); 
+  const [totalGenerated, setTotalGenerated] = useState(0);
   const [loading, setLoading] = useState(false);
   const [generateLoading, setGenerateLoading] = useState(false);
   const [redeemCode, setRedeemCode] = useState("");
@@ -60,7 +61,9 @@ function ReferralCode() {
       if (error) throw error;
       setCodes(data || []);
     } catch (err) {
-      console.error("fetchCodes error", err);
+      toast.error(`Error fetching codes: ${err.message}`, {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
     } finally {
       setLoading(false);
     }
@@ -78,10 +81,15 @@ function ReferralCode() {
       });
 
       if (error) throw error;
+
       await fetchCodes(session.user.id);
-      alert(`Generated: ${data?.code}`);
+      toast.success(`Generated: ${data?.code}`, {
+        style: { background: "#1f1f1f", color: "#4ade80" },
+      });
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message, {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
     } finally {
       setGenerateLoading(false);
     }
@@ -102,11 +110,16 @@ function ReferralCode() {
       });
 
       if (error) throw error;
-      alert("Referral used successfully!");
+
+      toast.success("Referral used successfully!", {
+        style: { background: "#1f1f1f", color: "#4ade80" },
+      });
       setRedeemCode("");
       await fetchCodes(session.user.id);
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message, {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
     } finally {
       setLoading(false);
     }
@@ -115,9 +128,13 @@ function ReferralCode() {
   const copyToClipboard = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
-      alert("Copied!");
+      toast.success("Copied!", {
+        style: { background: "#1f1f1f", color: "#4ade80" },
+      });
     } catch {
-      alert("Failed to copy");
+      toast.error("Failed to copy", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
     }
   };
 
@@ -125,6 +142,17 @@ function ReferralCode() {
 
   return (
     <div className="bg-[#232323] p-6 rounded-xl shadow-md">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+
       <h3 className="text-lg font-semibold mb-4 text-white">Referral Codes</h3>
 
       <div className="mb-3 text-sm text-gray-300">

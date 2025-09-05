@@ -1,5 +1,4 @@
-// src/components/MobileComingSoon.jsx
-import mobileComingSoon from '../assets/comming-soon.png' // your image path
+import mobileComingSoon from '../assets/comming-soon.png' 
 
 export default function MobileComingSoon() {
   return (

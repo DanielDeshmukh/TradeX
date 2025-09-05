@@ -2,12 +2,13 @@ import { useState } from "react";
 import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import supabase from "../lib/supabase";
+import { toast, ToastContainer } from "react-toastify";
 
 function Register() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
 
@@ -18,15 +19,29 @@ function Register() {
   };
 
   const signup = async () => {
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: "http://localhost:5173/" },
       });
-      setMessage(error ? error.message : "Redirecting to Google sign-in...");
+
+      if (error) {
+        toast.error(error.message, {
+          style: { background: "#1f1f1f", color: "#ff6b6b" },
+        });
+      } else {
+        toast.info("Redirecting to Google sign-in...", {
+          style: { background: "#1f1f1f", color: "#4ade80" },
+        });
+      }
     } catch (err) {
       console.error("Error during Google sign-in:", err);
-      setMessage("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,12 +49,16 @@ function Register() {
     e.preventDefault();
 
     if (!isStrongPassword(form.password)) {
-      setMessage(
-        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
+      toast.error(
+        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
+        {
+          style: { background: "#1f1f1f", color: "#ff6b6b" },
+        }
       );
       return;
     }
 
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
         email: form.email,
@@ -47,15 +66,37 @@ function Register() {
         options: { emailRedirectTo: "http://localhost:5173/" },
       });
 
-      setMessage(error ? error.message : "Check your email to confirm sign-up.");
+      if (error) {
+        toast.error(error.message, {
+          style: { background: "#1f1f1f", color: "#ff6b6b" },
+        });
+      } else {
+        toast.success("Check your email to confirm sign-up.", {
+          style: { background: "#1f1f1f", color: "#4ade80" },
+        });
+      }
     } catch (err) {
       console.error("Error during sign-up:", err);
-      setMessage("An error occurred. Please try again.");
+      toast.error("An error occurred. Please try again.", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0D0E11]">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <form
         onSubmit={handleRegister}
         className="bg-[#1C1C1C] mx-4 p-8 rounded-2xl shadow-lg w-full max-w-md"
@@ -92,8 +133,9 @@ function Register() {
         <button
           type="submit"
           className="w-full bg-[#A24EFF] text-white p-3 rounded-xl hover:opacity-90"
+          disabled={loading}
         >
-          Sign Up
+          {loading ? "Signing Up..." : "Sign Up"}
         </button>
 
         <div>
@@ -102,13 +144,12 @@ function Register() {
             onClick={signup}
             type="button"
             className="w-full my-2 bg-[#A24EFF] text-white p-3 rounded-xl hover:opacity-90 flex items-center justify-center space-x-2"
+            disabled={loading}
           >
             <FaGoogle className="text-white" />
             <span>Sign in with Google</span>
           </button>
         </div>
-
-        <p className="mt-4 text-sm text-purple-400">{message}</p>
 
         <div className="mt-6 text-gray-400 text-sm flex justify-between">
           <Link to="/login">Already have an account?</Link>

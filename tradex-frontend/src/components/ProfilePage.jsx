@@ -11,13 +11,13 @@ const signOut = async () => {
   try {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("❌ Error signing out:", error.message);
+      console.error("Error signing out:", error.message);
     } else {
-      console.log("✅ User signed out successfully");
+      console.log("User signed out successfully");
       window.location.href = "/register";
     }
   } catch (err) {
-    console.error("⚠️ Unexpected error signing out:", err);
+    console.error("Unexpected error signing out:", err);
   }
 };
 

@@ -94,7 +94,6 @@ const ActivityHeatmap = () => {
     <div className="mt-6 text-white p-4">
       <h2 className="text-lg font-semibold mb-3">Daily Activity</h2>
       
-      {/* Scrollable container */}
       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-[#7F3DFF] scrollbar-track-[#1F2937] rounded-lg">
         <div className="min-w-[700px]"> 
           <CalendarHeatmap

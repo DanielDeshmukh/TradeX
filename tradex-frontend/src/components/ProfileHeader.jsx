@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import supabase from "../lib/supabase";
+import { toast, ToastContainer } from "react-toastify";
 
 function ProfileHeader() {
   const [session, setSession] = useState(null);
@@ -49,11 +50,14 @@ function ProfileHeader() {
 
         if (checkError) throw checkError;
         if (existingUser) {
-          alert("Username already taken. Please choose another.");
+          toast.error("Username already taken. Please choose another.", {
+            style: { background: "#1f1f1f", color: "#ff6b6b" },
+          });
           setLoading(false);
           return;
         }
       }
+
       const { error } = await supabase.from("profiles").upsert({
         id: session.user.id,
         username: username?.trim() || null,
@@ -62,60 +66,75 @@ function ProfileHeader() {
 
       if (error) throw error;
 
-      alert("Profile updated successfully.");
+      toast.success("Profile updated successfully!", {
+        style: { background: "#1f1f1f", color: "#4ade80" },
+      });
       setIsEditing(false);
     } catch (err) {
       console.error("Error updating profile:", err.message);
-      alert("Failed to update profile.");
+      toast.error("Failed to update profile.", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
     } finally {
       setLoading(false);
     }
   };
 
- const handleUpload = async (e) => {
-  if (!session?.user) return;
+  const handleUpload = async (e) => {
+    if (!session?.user) return;
 
-  const file = e.target.files[0];
-  if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const filePath = `${session.user.id}/${Date.now()}_${file.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
+    try {
+      const filePath = `${session.user.id}/${Date.now()}_${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
 
-    if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
 
-    const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    setProfilePic(data.publicUrl);
+      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      setProfilePic(data.publicUrl);
 
-    await supabase.from("profiles").update({
-      id: session.user.id,
-      profile_pic: data.publicUrl
-    }).eq("id", session.user.id);
+      await supabase
+        .from("profiles")
+        .update({ profile_pic: data.publicUrl })
+        .eq("id", session.user.id);
 
-  } catch (err) {
-    console.error("Error uploading file:", err.message);
-    alert("Failed to upload profile picture.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+      toast.success("Profile picture uploaded!", {
+        style: { background: "#1f1f1f", color: "#4ade80" },
+      });
+    } catch (err) {
+      console.error("Error uploading file:", err.message);
+      toast.error("Failed to upload profile picture.", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const displayName =
-    username && username.trim() !== ""
-      ? username
-      : "Set your username";
+    username && username.trim() !== "" ? username : "Set your username";
 
   const avatarUrl =
-    profilePic ||
-    "https://api.dicebear.com/7.x/bottts/svg?seed=defaultUser";
+    profilePic || "https://api.dicebear.com/7.x/bottts/svg?seed=defaultUser";
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <div className="relative">
         <img
           src={avatarUrl}

@@ -1,29 +1,74 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import supabase from '../lib/supabase';
+import { toast, ToastContainer } from 'react-toastify';
 
 function MagicLink() {
     const [email, setEmail] = useState('');
-    const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleMagicLink = async (e) => {
         e.preventDefault();
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: 'http://localhost:5173/'
+        setLoading(true);
+        try {
+            const { error } = await supabase.auth.signInWithOtp({
+                email,
+                options: {
+                    emailRedirectTo: 'http://localhost:5173/'
+                }
+            });
+
+            if (error) {
+                toast.error(error.message, {
+                    style: { background: '#1f1f1f', color: '#ff6b6b' },
+                });
+            } else {
+                toast.success('Check your email for the login link.', {
+                    style: { background: '#1f1f1f', color: '#4ade80' },
+                });
             }
-        });
-        setMessage(error ? error.message : 'Check your email for the login link.');
+        } catch (err) {
+            console.error("Error sending magic link:", err);
+            toast.error("An unexpected error occurred. Please try again.", {
+                style: { background: '#1f1f1f', color: '#ff6b6b' },
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0D0E11]">
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar
+                newestOnTop
+                closeOnClick
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             <form onSubmit={handleMagicLink} className="bg-[#1C1C1C] p-8 rounded-2xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl text-white font-bold mb-6">One Tap Login</h2>
-                <input type="email" placeholder="Enter your email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 mb-4 rounded-xl bg-[#2B2B2B] text-white" required />
-                <button type="submit" className="w-full bg-[#A24EFF] text-white p-3 rounded-xl hover:opacity-90">Send Link</button>
-                <p className="mt-4 text-sm text-purple-400">{message}</p>
+
+                <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 mb-4 rounded-xl bg-[#2B2B2B] text-white"
+                    required
+                />
+
+                <button
+                    type="submit"
+                    className="w-full bg-[#A24EFF] text-white p-3 rounded-xl hover:opacity-90"
+                    disabled={loading}
+                >
+                    {loading ? "Sending..." : "Send Link"}
+                </button>
+
                 <div className="mt-6 text-gray-400 text-sm">
                     <Link to="/login">Back to Login</Link>
                 </div>

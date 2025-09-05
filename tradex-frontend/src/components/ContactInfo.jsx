@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import supabase from "../lib/supabase";
+import { toast, ToastContainer } from "react-toastify";
 
 function ContactInfo() {
   const [email, setEmail] = useState("");
@@ -22,13 +23,8 @@ function ContactInfo() {
           .eq("id", session.user.id)
           .single();
 
-        if (error) {
-          console.warn("No profile row found yet:", error.message);
-        }
-
-        if (userRow?.phone) {
-          setPhone(userRow.phone);
-        }
+        if (error) console.warn("No profile row found yet:", error.message);
+        if (userRow?.phone) setPhone(userRow.phone);
       }
     };
 
@@ -43,7 +39,9 @@ function ContactInfo() {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      console.error("User not authenticated");
+      toast.error("User not authenticated.", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
       setLoading(false);
       return;
     }
@@ -52,7 +50,9 @@ function ContactInfo() {
       if (email !== user.email) {
         const { error: emailError } = await supabase.auth.updateUser({ email });
         if (emailError) throw emailError;
-        alert("Verification email sent. Please confirm to update your email.");
+        toast.info("Verification email sent. Please confirm to update your email.", {
+          style: { background: "#1f1f1f", color: "#facc15" },
+        });
       }
 
       const { data: upsertData, error: phoneError } = await supabase
@@ -62,19 +62,15 @@ function ContactInfo() {
 
       if (phoneError) throw phoneError;
 
-      if (upsertData?.length > 0) {
-        console.log(
-          upsertData[0].created_at
-            ? "Inserted new profile row"
-            : "Updated existing profile row"
-        );
-      }
-
-      alert("Contact information updated successfully.");
+      toast.success("Contact information updated successfully!", {
+        style: { background: "#1f1f1f", color: "#4ade80" },
+      });
       setIsEditing(false);
     } catch (err) {
       console.error("Error saving contact info:", err.message);
-      alert("Failed to save contact info. See console for details.");
+      toast.error("Failed to save contact info. See console for details.", {
+        style: { background: "#1f1f1f", color: "#ff6b6b" },
+      });
     } finally {
       setLoading(false);
     }
@@ -82,10 +78,19 @@ function ContactInfo() {
 
   return (
     <div className="bg-[#232323] p-6 rounded-xl shadow-md">
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        newestOnTop
+        closeOnClick
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-white">
-          Contact Information
-        </h3>
+        <h3 className="text-lg font-semibold text-white">Contact Information</h3>
         <button
           className="text-sm text-purple-400 hover:text-purple-300"
           onClick={() => setIsEditing(!isEditing)}
