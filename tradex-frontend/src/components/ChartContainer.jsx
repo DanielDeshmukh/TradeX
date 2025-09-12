@@ -22,7 +22,6 @@ const ChartContainer = () => {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const { matchedSegments } = usePatternFinderStore();
 
-  // Load saved chart settings from Supabase
   useEffect(() => {
     const fetchSettings = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -59,7 +58,6 @@ const ChartContainer = () => {
     }
   }, []);
 
-  // 🔑 Trigger Supabase shortcut function and apply results
   const triggerShortcut = async (keyCombo) => {
     try {
       const { data, error } = await supabase.functions.invoke("shortcut-handler", {
@@ -67,18 +65,17 @@ const ChartContainer = () => {
       });
 
       if (error) {
-        console.error("❌ Shortcut function error:", error);
+        console.error("Shortcut function error:", error);
         return;
       }
 
-      console.log("✅ Shortcut function response:", data);
+      console.log("Shortcut function response:", data);
 
-      // Apply chartState if backend returned zoom/scroll info
       if (data?.status === "success" && data.chartState) {
-        chartApiRef.current?.timeScale?.setVisibleLogicalRange(data.chartState);
+        const { from, to } = data.chartState;
+        chartApiRef.current?.timeScale?.setVisibleLogicalRange({ from, to });
       }
 
-      // Handle frontend-only actions
       switch (data?.action) {
         case "enter_fullscreen":
           handleFullscreen();
@@ -92,17 +89,16 @@ const ChartContainer = () => {
           setShowShortcuts(true);
           break;
         default:
-          break; // zoom/scroll already handled
+          break; 
       }
     } catch (err) {
       console.error("Error triggering shortcut:", err);
     }
   };
 
-  // Keyboard handler
   useEffect(() => {
     const keyHandler = (e) => {
-      if (e.repeat) return; // 👈 ignore held keys
+      if (e.repeat) return;
 
       const keyCombo = [
         e.ctrlKey ? "Ctrl" : null,
@@ -112,7 +108,6 @@ const ChartContainer = () => {
 
       triggerShortcut(keyCombo);
 
-      // Prevent browser defaults
       if (["Ctrl + /", "Shift + ArrowUp", "Shift + ArrowDown"].includes(keyCombo)) {
         e.preventDefault();
       }
@@ -128,7 +123,6 @@ const ChartContainer = () => {
 
   return (
     <div className="relative group w-full h-full">
-      {/* Fullscreen button */}
       <div className="absolute z-10 top-4 right-4 sm:top-12 sm:right-12">
         <button
           onClick={handleFullscreen}
@@ -139,7 +133,6 @@ const ChartContainer = () => {
         </button>
       </div>
 
-      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between m-4 gap-3 sm:gap-0">
         <div>
           <h2 className="text-lg sm:text-xl font-bold">{selectedAsset?.name}</h2>
@@ -149,7 +142,6 @@ const ChartContainer = () => {
         </div>
 
         <div className="flex flex-wrap gap-3 sm:gap-4">
-          {/* Timeframe */}
           <div className="relative">
             <button
               onClick={() => { setShowTimeModal(!showTimeModal); setShowChartModal(false); }}
@@ -158,11 +150,14 @@ const ChartContainer = () => {
               Timeframes
             </button>
             {showTimeModal && (
-              <TimeFrameModal selected={timeFrame} onSelect={setTimeFrame} onClose={() => setShowTimeModal(false)} />
+              <TimeFrameModal
+                selected={timeFrame}
+                onSelect={setTimeFrame}
+                onClose={() => setShowTimeModal(false)}
+              />
             )}
           </div>
 
-          {/* Chart type */}
           <div className="relative">
             <button
               onClick={() => { setShowChartModal(!showChartModal); setShowTimeModal(false); }}
@@ -171,13 +166,17 @@ const ChartContainer = () => {
               Charts
             </button>
             {showChartModal && (
-              <ChartTypeModal selected={chartType} onSelect={setChartType} data={Data} onClose={() => setShowChartModal(false)} />
+              <ChartTypeModal
+                selected={chartType}
+                onSelect={setChartType}
+                data={Data}
+                onClose={() => setShowChartModal(false)}
+              />
             )}
           </div>
         </div>
       </div>
 
-      {/* Overlays */}
       <svg className="absolute top-0 left-0 w-full h-full pointer-events-none z-20">
         {chartReady && matchedSegments.map((segment, index) => {
           const points = segment
@@ -188,16 +187,25 @@ const ChartContainer = () => {
             })
             .filter(Boolean)
             .join(" ");
-          return <polyline key={index} points={points} fill="none" stroke="yellow" strokeWidth="2" />;
+          return (
+            <polyline
+              key={index}
+              points={points}
+              fill="none"
+              stroke="yellow"
+              strokeWidth="2"
+            />
+          );
         })}
       </svg>
 
-      {/* Chart */}
-      <div ref={chartRef} className="w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-xl bg-[#1C1F24] p-4">
+      <div
+        ref={chartRef}
+        className="w-full h-[400px] sm:h-[500px] md:h-[600px] rounded-xl bg-[#1C1F24] p-4"
+      >
         <Chart chartType={chartType} onReady={handleChartReady} overlays={matchedSegments} />
       </div>
 
-      {/* Shortcuts modal */}
       {showShortcuts && (
         <ShortcutModal
           onClose={() => setShowShortcuts(false)}
