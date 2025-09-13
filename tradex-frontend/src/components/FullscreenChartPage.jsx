@@ -8,51 +8,23 @@ import { MdFullscreenExit } from "react-icons/md";
 import { FaChartBar } from "react-icons/fa";
 import useKeyPress from "./useKeyPress.js";
 import { usePatternFinderStore } from "../store/usePatternFinderStore";
-import supabase from "../lib/supabase.js";
 
 const FullscreenChartPage = () => {
   const { open } = usePatternFinderStore();
   const [searchParams] = useSearchParams();
   const asset = searchParams.get("asset") || "N/A";
-  const [chartType, setChartType] = useState(null);
-  const [timeFrame, setTimeFrame] = useState(null);
+  const initialChartType = searchParams.get("chartType") || "Candlestick";
+  const initialTimeFrame = searchParams.get("timeFrame") || "5m";
+  const [chartType, setChartType] = useState(initialChartType);
+  const [timeFrame, setTimeFrame] = useState(initialTimeFrame);
   const chartApiRef = useRef(null);
   const [chartReady, setChartReady] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showChartModal, setShowChartModal] = useState(false);
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        setChartType("Candlestick");
-        setTimeFrame("5m");
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("chart_type, chart_interval")
-        .eq("id", user.id)
-        .single();
-
-      if (!error && data) {
-        setChartType(data.chart_type || "Candlestick");
-        setTimeFrame(data.chart_interval || "5m");
-      } else {
-        setChartType("Candlestick");
-        setTimeFrame("5m");
-      }
-    };
-
-    fetchSettings();
-  }, []);
-
-  const handleChartReady = useCallback(({ chart, timeScale }) => {
-    chartApiRef.current = { chart, timeScale };
+  const handleChartReady = useCallback(({ chart, timeScale, series }) => {
+    chartApiRef.current = { chart, timeScale, series };
     timeScale.scrollToRealTime();
     setChartReady(true);
   }, []);
@@ -71,14 +43,6 @@ const FullscreenChartPage = () => {
 
   const price = "₹19,425.35";
   const change = "+1.24%";
-
-  if (!chartType || !timeFrame) {
-    return (
-      <div className="w-full h-full flex items-center justify-center text-gray-400">
-        Loading chart...
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 w-full h-full bg-[#0f1117] flex flex-col overflow-hidden">
@@ -157,13 +121,12 @@ const FullscreenChartPage = () => {
 
       <div className="flex-1 w-full relative">
         <Chart
+          chartType={chartType}
           onReady={handleChartReady}
         />
       </div>
 
-      {showShortcuts && (
-        <ShortcutModal onClose={() => setShowShortcuts(false)} />
-      )}
+      {showShortcuts && <ShortcutModal onClose={() => setShowShortcuts(false)} />}
     </div>
   );
 };

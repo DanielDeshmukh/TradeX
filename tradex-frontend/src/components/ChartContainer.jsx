@@ -1,13 +1,12 @@
 import { useAsset } from "../context/AssetContext";
 import { MdFullscreen } from "react-icons/md";
-import TimeFrameModal from "./TimeFrameModal.jsx";
 import Chart from "./Chart";
 import { usePatternFinderStore } from "../store/usePatternFinderStore";
+import TimeFrameModal from "./TimeFrameModal.jsx";
 import ChartTypeModal from "./ChartTypeModal.jsx";
-import { useState, useRef, useCallback, useEffect } from "react";
 import ShortcutModal from "./ShortcutModal";
+import { useState, useRef, useCallback, useEffect } from "react";
 import mockData from "../DataCreation/mockData.js";
-import supabase from "../lib/supabase.js";
 
 const ChartContainer = () => {
   const { selectedAsset } = useAsset();
@@ -15,38 +14,16 @@ const ChartContainer = () => {
   const chartRef = useRef(null);
   const chartApiRef = useRef(null);
   const [chartReady, setChartReady] = useState(false);
-  const [timeFrame, setTimeFrame] = useState(null);
-  const [chartType, setChartType] = useState(null);
+  const [timeFrame, setTimeFrame] = useState("5m");
+  const [chartType, setChartType] = useState("Candlestick");
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showChartModal, setShowChartModal] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+
   const { matchedSegments } = usePatternFinderStore();
 
-  useEffect(() => {
-    const fetchSettings = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("chart_type, chart_interval")
-        .eq("id", user.id)
-        .single();
-
-      if (!error && data) {
-        setChartType(data.chart_type || "Candlestick");
-        setTimeFrame(data.chart_interval || "5m");
-      } else {
-        setChartType("Candlestick");
-        setTimeFrame("5m");
-      }
-    };
-
-    fetchSettings();
-  }, []);
-
   const handleFullscreen = () => {
-    const url = `/fullscreen-chart?asset=${encodeURIComponent(selectedAsset?.name)}`;
+    const url = `/fullscreen-chart?asset=${encodeURIComponent(selectedAsset?.name)}&chartType=${encodeURIComponent(chartType)}&timeFrame=${encodeURIComponent(timeFrame)}`;
     window.open(url, "_blank");
   };
 
@@ -59,41 +36,7 @@ const ChartContainer = () => {
   }, []);
 
   const triggerShortcut = async (keyCombo) => {
-    try {
-      const { data, error } = await supabase.functions.invoke("shortcut-handler", {
-        body: { keyCombos: [keyCombo] },
-      });
-
-      if (error) {
-        console.error("Shortcut function error:", error);
-        return;
-      }
-
-      console.log("Shortcut function response:", data);
-
-      if (data?.status === "success" && data.chartState) {
-        const { from, to } = data.chartState;
-        chartApiRef.current?.timeScale?.setVisibleLogicalRange({ from, to });
-      }
-
-      switch (data?.action) {
-        case "enter_fullscreen":
-          handleFullscreen();
-          break;
-        case "exit_fullscreen":
-          setShowShortcuts(false);
-          setShowTimeModal(false);
-          setShowChartModal(false);
-          break;
-        case "show_shortcuts":
-          setShowShortcuts(true);
-          break;
-        default:
-          break; 
-      }
-    } catch (err) {
-      console.error("Error triggering shortcut:", err);
-    }
+    console.log("Shortcut triggered:", keyCombo);
   };
 
   useEffect(() => {
@@ -107,19 +50,11 @@ const ChartContainer = () => {
       ].filter(Boolean).join(" + ");
 
       triggerShortcut(keyCombo);
-
-      if (["Ctrl + /", "Shift + ArrowUp", "Shift + ArrowDown"].includes(keyCombo)) {
-        e.preventDefault();
-      }
     };
 
     window.addEventListener("keydown", keyHandler);
     return () => window.removeEventListener("keydown", keyHandler);
   }, [chartReady]);
-
-  if (!chartType || !timeFrame) {
-    return <div className="text-gray-400 p-2">Loading charts please wait...</div>;
-  }
 
   return (
     <div className="relative group w-full h-full">
@@ -188,13 +123,7 @@ const ChartContainer = () => {
             .filter(Boolean)
             .join(" ");
           return (
-            <polyline
-              key={index}
-              points={points}
-              fill="none"
-              stroke="yellow"
-              strokeWidth="2"
-            />
+            <polyline key={index} points={points} fill="none" stroke="yellow" strokeWidth="2" />
           );
         })}
       </svg>

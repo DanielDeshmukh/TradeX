@@ -35,7 +35,7 @@ function Header() {
           <div className="text-gray-300 hover:text-white cursor-pointer text-xl">
             <FaRegLightbulb />
           </div>
-          <div className="absolute top-full mt-1 justify scale-0 group-hover:scale-100 origin-center transition-all bg-gray-800 text-white text-xs px-5 py-3 rounded shadow-lg">
+          <div className="absolute top-full mt-1 justify scale-0 group-hover:scale-100 origin-center transition-all bg-gray-800 text-white z-50 text-xs px-5 py-3 rounded shadow-lg">
             Press Ctrl + / for shortcuts
           </div>
         </div>

@@ -7,19 +7,21 @@ import {
   AreaSeries,
 } from "lightweight-charts";
 import useCandles from "../utils/useCandles";
-import supabase from "../lib/supabase";
 
+const ANIMATION_DURATION = 260;
+const MIN_VISIBLE_BARS = 50;
+const MAX_VISIBLE_BARS = 1000;
+const DEFAULT_VISIBLE_BARS = 100;
+const ZOOM_STEP = 0.1;
+const SCROLL_STEP = 10;
 
-const ANIMATION_DURATION = 220;
-const MIN_VISIBLE_BARS = 2;
-
-const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
+const Chart = ({ chartType: propChartType, overlays = [] }) => {
   const containerRef = useRef(null);
   const chartRef = useRef(null);
-  const seriesRef = useRef(null); 
+  const seriesRef = useRef(null);
   const timeScaleRef = useRef(null);
-  const rafRef = useRef(null); 
-  const mountedRef = useRef(true);
+  const rafRef = useRef(null);
+  const mountedRef = useRef(false);
 
   const [defaultSettings, setDefaultSettings] = useState({
     chart_type: "candlestick",
@@ -28,7 +30,7 @@ const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
 
   const dedupeAndSort = (data) => {
     const seen = new Set();
-    return [...data]
+    return [...(data || [])]
       .sort((a, b) => a.time - b.time)
       .filter((item) => {
         if (seen.has(item.time)) return false;
@@ -46,16 +48,18 @@ const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
     }
   };
 
-  const animateRange = (timeScale, targetFrom, targetTo, duration = ANIMATION_DURATION) => {
-    cancelAnimation();
-    if (!timeScale) return;
+  const easeOutQuad = (t) => t * (2 - t);
 
-    const start = performance.now();
+  const animateRange = (timeScale, targetFrom, targetTo, duration = ANIMATION_DURATION) => {
+    if (!timeScale) return;
+    cancelAnimation();
+
+    const nowStart = performance.now();
     const current = timeScale.getVisibleLogicalRange?.();
     if (!current) {
       try {
         timeScale.setVisibleLogicalRange({ from: targetFrom, to: targetTo });
-      } catch {}
+      } catch { }
       return;
     }
 
@@ -64,116 +68,77 @@ const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
     const deltaFrom = targetFrom - startFrom;
     const deltaTo = targetTo - startTo;
 
-    const step = (now) => {
+    const step = (t) => {
       if (!mountedRef.current) return;
-      const t = clamp((now - start) / duration, 0, 1);
-      const ease = t * (2 - t);
-      const newFrom = startFrom + deltaFrom * ease;
-      const newTo = startTo + deltaTo * ease;
+      const elapsed = t - nowStart;
+      const progress = clamp(elapsed / duration, 0, 1);
+      const eased = easeOutQuad(progress);
+
+      const newFrom = startFrom + deltaFrom * eased;
+      const newTo = startTo + deltaTo * eased;
 
       try {
         timeScale.setVisibleLogicalRange({ from: newFrom, to: newTo });
-      } catch (err) {
-      }
+      } catch { }
 
-      if (t < 1) {
-        rafRef.current = requestAnimationFrame(step);
-      } else {
-        rafRef.current = null;
-      }
+      if (progress < 1) rafRef.current = requestAnimationFrame(step);
+      else rafRef.current = null;
     };
 
     rafRef.current = requestAnimationFrame(step);
   };
 
-  const applyChartStateSafely = (chartState) => {
-    if (!chartRef.current || !timeScaleRef.current || !seriesRef.current) {
-      console.warn("applyChartStateSafely: chart not ready");
-      return false;
-    }
-    if (!chartState || typeof chartState.from !== "number" || typeof chartState.to !== "number") {
-      console.warn("applyChartStateSafely: invalid chartState", chartState);
-      return false;
-    }
+  const applyShortcut = (action) => {
+    if (!chartRef.current || !timeScaleRef.current || !seriesRef.current) return;
 
-    const { from: rawFrom, to: rawTo } = chartState;
+    const series = seriesRef.current.series;
+    const timeScale = timeScaleRef.current;
+    const bars = seriesRef.current.data.length;
+    if (!bars) return;
 
-    const data = seriesRef.current.data;
-    if (!Array.isArray(data) || data.length === 0) {
-      console.warn("applyChartStateSafely: no series data to map to");
-      return false;
-    }
-    const bars = data.length;
+    const visible = timeScale.getVisibleLogicalRange();
+    let from = visible?.from ?? Math.max(0, bars - DEFAULT_VISIBLE_BARS);
+    let to = visible?.to ?? bars - 1;
+    let width = to - from;
 
-    const likelyPercentSpace = Math.abs(rawFrom) <= 100 && Math.abs(rawTo) <= 100;
-
-    const scaledFrom = likelyPercentSpace
-      ? Math.floor((rawFrom / 100) * bars)
-      : Math.floor(rawFrom);
-
-    const scaledTo = likelyPercentSpace
-      ? Math.floor((rawTo / 100) * bars)
-      : Math.floor(rawTo);
-
-    const clampedFrom = clamp(scaledFrom, 0, bars - 1);
-    const clampedTo = clamp(scaledTo, 0, bars - 1);
-
-    let targetFrom = Math.min(clampedFrom, clampedTo);
-    let targetTo = Math.max(clampedFrom, clampedTo);
-
-    if (targetTo - targetFrom < MIN_VISIBLE_BARS) {
-      const extra = MIN_VISIBLE_BARS - (targetTo - targetFrom);
-      const expandLeft = Math.floor(extra / 2);
-      const expandRight = extra - expandLeft;
-      targetFrom = clamp(targetFrom - expandLeft, 0, bars - 1);
-      targetTo = clamp(targetTo + expandRight, 0, bars - 1);
-    }
-
-    const curRange = timeScaleRef.current.getVisibleLogicalRange?.();
-    if (curRange) {
-      const curFrom = Number(curRange.from);
-      const curTo = Number(curRange.to);
-      const epsilon = 0.5;
-      if (Math.abs(curFrom - targetFrom) < epsilon && Math.abs(curTo - targetTo) < epsilon) {
-        return true;
-      }
-    }
-
-    animateRange(timeScaleRef.current, targetFrom, targetTo);
-    return true;
-  };
-
-  useEffect(() => {
-    mountedRef.current = true;
-    let canceled = false;
-    (async () => {
-      try {
-        const {
-          data: { user } = {},
-        } = await supabase.auth.getUser();
-        if (!user || canceled) return;
-
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("chart_type, chart_interval")
-          .eq("id", user.id)
-          .single();
-
-        if (!error && data && !canceled) {
-          setDefaultSettings({
-            chart_type: data.chart_type || "candlestick",
-            chart_interval: data.chart_interval || "1h",
-          });
+    switch (action) {
+      case "zoom_in":
+        {
+          const delta = width * ZOOM_STEP;
+          from += delta / 2;
+          to -= delta / 2;
         }
-      } catch (err) {
-        console.warn("fetchSettings failed, using defaults", err?.message ?? err);
-      }
-    })();
+        break;
+      case "zoom_out":
+        {
+          const delta = width * ZOOM_STEP;
+          from -= delta / 2;
+          to += delta / 2;
+        }
+        break;
+      case "scroll_left":
+        from -= SCROLL_STEP;
+        to -= SCROLL_STEP;
+        break;
+      case "scroll_right":
+        from += SCROLL_STEP;
+        to += SCROLL_STEP;
+        break;
+      case "reset_view":
+        from = Math.max(0, bars - DEFAULT_VISIBLE_BARS);
+        to = bars - 1;
+        break;
+      default:
+        return;
+    }
 
-    return () => {
-      canceled = true;
-    };
-  }, []);
+    from = clamp(from, 0, bars - 1);
+    to = clamp(to, 0, bars - 1);
+    if (to - from < MIN_VISIBLE_BARS) to = clamp(from + MIN_VISIBLE_BARS, 0, bars - 1);
+    if (to - from > MAX_VISIBLE_BARS) to = clamp(from + MAX_VISIBLE_BARS, 0, bars - 1);
+
+    animateRange(timeScale, from, to);
+  };
 
   const { candles, loading, error } = useCandles(500, defaultSettings.chart_interval);
 
@@ -181,15 +146,11 @@ const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
     if (!containerRef.current || loading || error) return;
 
     if (chartRef.current) {
-      try {
-        chartRef.current.remove();
-      } catch (err) {
-        console.warn("chart.remove() during reinit:", err?.message ?? err);
-      }
+      cancelAnimation();
+      try { chartRef.current.remove(); } catch { }
       chartRef.current = null;
       seriesRef.current = null;
       timeScaleRef.current = null;
-      cancelAnimation();
     }
 
     const chart = createChart(containerRef.current, {
@@ -224,7 +185,6 @@ const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
         lineWidth: 2,
       };
     } else {
-      SeriesClass = CandlestickSeries;
       formattedData = candles;
       seriesOptions = {
         upColor: "#26a69a",
@@ -235,38 +195,28 @@ const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
       };
     }
 
-    const series = chart.addSeries(SeriesClass, seriesOptions);
     const sortedData = dedupeAndSort(formattedData || []);
+    const series = chart.addSeries(SeriesClass, seriesOptions);
     series.setData(sortedData);
     seriesRef.current = { series, data: sortedData };
 
-    // overlays
-    if (Array.isArray(overlays) && overlays.length > 0) {
-      overlays.forEach((segment) => {
-        if (!Array.isArray(segment)) return;
-        const validated = dedupeAndSort(
-          segment.map(({ time, value }) => ({ time, value })).filter((p) => p.time && typeof p.value === "number")
-        );
-        if (validated.length > 0) {
-          const overlaySeries = chart.addSeries(LineSeries, { color: "yellow", lineWidth: 2 });
-          overlaySeries.setData(validated);
-        }
-      });
-    }
-
-    const from = Math.max(0, sortedData.length - 100);
-    const to = sortedData.length - 1;
-    requestAnimationFrame(() => {
-      try {
-        timeScale.setVisibleLogicalRange({ from, to });
-        timeScale.scrollToRealTime();
-      } catch (err) {
+    overlays.forEach((segment) => {
+      if (!Array.isArray(segment)) return;
+      const validated = dedupeAndSort(
+        segment.map(({ time, value }) => ({ time, value })).filter((p) => p.time && typeof p.value === "number")
+      );
+      if (validated.length > 0) {
+        const overlaySeries = chart.addSeries(LineSeries, { color: "yellow", lineWidth: 2 });
+        overlaySeries.setData(validated);
       }
     });
 
-    if (typeof onReady === "function") {
-      onReady({ chart, timeScale, series, data: sortedData });
-    }
+    const bars = sortedData.length;
+    const from = Math.max(0, bars - DEFAULT_VISIBLE_BARS);
+    const to = bars - 1;
+    requestAnimationFrame(() => {
+      try { timeScale.setVisibleLogicalRange({ from, to }); timeScale.scrollToRealTime(); } catch { }
+    });
 
     const resizeObserver = new ResizeObserver(() => {
       if (!containerRef.current || !chartRef.current) return;
@@ -274,41 +224,56 @@ const Chart = ({ chartType: propChartType, onReady, overlays = [] }) => {
     });
     resizeObserver.observe(containerRef.current);
 
-    const onApply = (ev) => {
-      try {
-        const payload = ev?.detail;
-        if (!payload) return;
-        applyChartStateSafely(payload);
-      } catch (err) {
-        console.warn("applyChartState event error", err);
-      }
-    };
-    window.addEventListener("applyChartState", onApply);
-
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener("applyChartState", onApply);
       cancelAnimation();
-      if (chartRef.current) {
-        try {
-          chartRef.current.remove();
-        } catch (err) {
-          console.warn("chart.remove() on unmount:", err?.message ?? err);
-        }
-        chartRef.current = null;
-      }
+      if (chartRef.current) try { chartRef.current.remove(); } catch { }
+      chartRef.current = null;
       seriesRef.current = null;
       timeScaleRef.current = null;
     };
-  }, [propChartType, defaultSettings, candles, overlays, loading, error, onReady]);
+  }, [propChartType, candles, overlays, loading, error]);
 
   useEffect(() => {
     mountedRef.current = true;
+    const pressedKeys = new Set();
+    let loop = null;
+
+    const runLoop = () => {
+      if (pressedKeys.has("Shift")) {
+        if (pressedKeys.has("ArrowUp")) applyShortcut("zoom_in");
+        if (pressedKeys.has("ArrowDown")) applyShortcut("zoom_out");
+        if (pressedKeys.has("ArrowLeft")) applyShortcut("scroll_left");
+        if (pressedKeys.has("ArrowRight")) applyShortcut("scroll_right");
+        if (pressedKeys.has("R")) applyShortcut("reset_view");
+      }
+      loop = requestAnimationFrame(runLoop);
+    };
+
+    const keyDownHandler = (e) => {
+      pressedKeys.add(e.key);
+      if (!loop) runLoop();
+      if (e.shiftKey && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) e.preventDefault();
+    };
+
+    const keyUpHandler = (e) => {
+      pressedKeys.delete(e.key);
+      if (pressedKeys.size === 0) {
+        cancelAnimationFrame(loop);
+        loop = null;
+      }
+    };
+
+    window.addEventListener("keydown", keyDownHandler);
+    window.addEventListener("keyup", keyUpHandler);
+
     return () => {
       mountedRef.current = false;
+      window.removeEventListener("keydown", keyDownHandler);
+      window.removeEventListener("keyup", keyUpHandler);
+      cancelAnimationFrame(loop);
     };
   }, []);
-
 
   if (loading) return <div className="text-gray-400">Loading chart...</div>;
   if (error) return <div className="text-red-500">Error: {error}</div>;
