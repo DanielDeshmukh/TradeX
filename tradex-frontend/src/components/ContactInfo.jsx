@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import supabase from "../lib/supabase";
+import { RiCloseLargeLine } from "react-icons/ri";
 import { toast, ToastContainer } from "react-toastify";
 
 function ContactInfo() {
@@ -50,12 +51,12 @@ function ContactInfo() {
       if (email !== user.email) {
         const { error: emailError } = await supabase.auth.updateUser({ email });
         if (emailError) throw emailError;
-        toast.info("Verification email sent. Please confirm to update your email.", {
+        toast.info("Verification email sent. Confirm to update your email.", {
           style: { background: "#1f1f1f", color: "#facc15" },
         });
       }
 
-      const { data: upsertData, error: phoneError } = await supabase
+      const { error: phoneError } = await supabase
         .from("profiles")
         .upsert({ id: user.id, phone })
         .select();
@@ -68,7 +69,7 @@ function ContactInfo() {
       setIsEditing(false);
     } catch (err) {
       console.error("Error saving contact info:", err.message);
-      toast.error("Failed to save contact info. See console for details.", {
+      toast.error("Failed to save contact info.", {
         style: { background: "#1f1f1f", color: "#ff6b6b" },
       });
     } finally {
@@ -77,7 +78,7 @@ function ContactInfo() {
   };
 
   return (
-    <div className="bg-[#232323] p-6 rounded-xl shadow-md">
+    <div className="bg-[#0F1117]/70 backdrop-blur-md p-6 rounded-xl shadow-lg">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -92,11 +93,11 @@ function ContactInfo() {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-white">Contact Information</h3>
         <button
-          className="text-sm text-purple-400 hover:text-purple-300"
+          className="text-sm text-purple-400 hover:text-purple-300 transition"
           onClick={() => setIsEditing(!isEditing)}
           disabled={loading}
         >
-          {isEditing ? "Cancel" : "Edit"}
+          {isEditing ? <RiCloseLargeLine className="scale-150" /> : "Edit"}
         </button>
       </div>
 
@@ -109,8 +110,8 @@ function ContactInfo() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className={`w-full px-3 py-2 rounded-md bg-[#1a1a1a] text-white border ${
-              isEditing ? "border-purple-500" : "border-transparent"
-            }`}
+              isEditing ? "border-purple-500 focus:ring-2 focus:ring-purple-500" : "border-transparent"
+            } focus:outline-none transition`}
           />
         </div>
 
@@ -122,8 +123,8 @@ function ContactInfo() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             className={`w-full px-3 py-2 rounded-md bg-[#1a1a1a] text-white border ${
-              isEditing ? "border-purple-500" : "border-transparent"
-            }`}
+              isEditing ? "border-purple-500 focus:ring-2 focus:ring-purple-500" : "border-transparent"
+            } focus:outline-none transition`}
           />
         </div>
 
@@ -131,7 +132,7 @@ function ContactInfo() {
           <button
             onClick={handleSave}
             disabled={loading}
-            className="mt-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+            className="mt-2 w-full sm:w-auto bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] hover:opacity-90 text-white px-4 py-2 rounded-lg font-medium shadow-lg transition disabled:opacity-50"
           >
             {loading ? "Saving..." : "Save"}
           </button>

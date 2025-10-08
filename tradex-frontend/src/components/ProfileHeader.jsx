@@ -23,11 +23,9 @@ function ProfileHeader() {
           .eq("id", session.user.id)
           .single();
 
-        if (error) {
-          console.warn("No profile row yet:", error.message);
-        } else {
-          setUsername(profile?.username || "");
-          setProfilePic(profile?.profile_pic || null);
+        if (!error && profile) {
+          setUsername(profile.username || "");
+          setProfilePic(profile.profile_pic || null);
         }
       }
     };
@@ -41,16 +39,15 @@ function ProfileHeader() {
 
     try {
       if (username) {
-        const { data: existingUser, error: checkError } = await supabase
+        const { data: existingUser } = await supabase
           .from("profiles")
           .select("id")
           .eq("username", username)
           .neq("id", session.user.id)
           .maybeSingle();
 
-        if (checkError) throw checkError;
         if (existingUser) {
-          toast.error("Username already taken. Please choose another.", {
+          toast.error("Username already taken.", {
             style: { background: "#1f1f1f", color: "#ff6b6b" },
           });
           setLoading(false);
@@ -71,7 +68,7 @@ function ProfileHeader() {
       });
       setIsEditing(false);
     } catch (err) {
-      console.error("Error updating profile:", err.message);
+      console.error(err.message);
       toast.error("Failed to update profile.", {
         style: { background: "#1f1f1f", color: "#ff6b6b" },
       });
@@ -108,7 +105,7 @@ function ProfileHeader() {
         style: { background: "#1f1f1f", color: "#4ade80" },
       });
     } catch (err) {
-      console.error("Error uploading file:", err.message);
+      console.error(err.message);
       toast.error("Failed to upload profile picture.", {
         style: { background: "#1f1f1f", color: "#ff6b6b" },
       });
@@ -119,7 +116,6 @@ function ProfileHeader() {
 
   const displayName =
     username && username.trim() !== "" ? username : "Set your username";
-
   const avatarUrl =
     profilePic || "https://api.dicebear.com/7.x/bottts/svg?seed=defaultUser";
 
@@ -139,14 +135,14 @@ function ProfileHeader() {
         <img
           src={avatarUrl}
           alt="User Avatar"
-          className="w-20 h-20 rounded-full border-4 border-purple-600 object-cover"
+          className="w-20 h-20 rounded-full border-4 border-purple-600 object-cover shadow-lg"
         />
         {isEditing && (
           <input
             type="file"
             accept="image/*"
             onChange={handleUpload}
-            className="mt-2 text-sm"
+            className="mt-2 text-sm w-full text-white"
             disabled={loading}
           />
         )}
@@ -154,25 +150,25 @@ function ProfileHeader() {
 
       <div className="text-center sm:text-left w-full sm:w-auto">
         {isEditing ? (
-          <div className="flex flex-col sm:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 bg-[#0F1117]/60 backdrop-blur-md p-3 rounded-xl">
             <input
               type="text"
               value={username || ""}
               onChange={(e) => setUsername(e.target.value)}
-              className="px-3 py-2 rounded-md bg-[#1a1a1a] text-white border border-purple-500 flex-1"
+              className="px-3 py-2 rounded-md bg-[#1a1a1a] text-white border border-purple-500 flex-1 focus:ring-2 focus:ring-purple-500 focus:outline-none"
               disabled={loading}
               placeholder="Enter your username"
             />
             <button
               onClick={handleSave}
               disabled={loading}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-sm font-medium text-white disabled:opacity-50"
+              className="px-4 py-2 bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] rounded-md text-white font-medium shadow-lg hover:opacity-90 transition"
             >
               {loading ? "Saving..." : "Save"}
             </button>
             <button
               onClick={() => setIsEditing(false)}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-800 rounded-md text-sm font-medium text-white"
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-800 rounded-md text-white font-medium"
               disabled={loading}
             >
               Cancel
@@ -188,7 +184,7 @@ function ProfileHeader() {
             </p>
             <button
               onClick={() => setIsEditing(true)}
-              className="mt-2 px-4 py-1 bg-purple-700 hover:bg-purple-800 rounded-md text-sm font-medium w-full sm:w-auto"
+              className="mt-2 px-4 py-1 bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] hover:opacity-90 rounded-md text-white font-medium w-full sm:w-auto shadow-md"
             >
               Edit Profile
             </button>

@@ -3,9 +3,10 @@ import ProfileHeader from "../components/ProfileHeader";
 import ContactInfo from "../components/ContactInfo";
 import SubscriptionPlan from "../components/SubscriptionPlan";
 import ReferralCode from "../components/ReferralCode";
+import ProfilePageSkeleton from "./ProfilePageSkeleton";
 import ActivityHeatmap from "../components/ActivityHeatmap";
 import Header from "./Header";
-import  supabase  from "../lib/supabase"; 
+import supabase from "../lib/supabase";
 
 const signOut = async () => {
   try {
@@ -40,24 +41,31 @@ function ProfilePage() {
     fetchUser();
   }, []);
 
-  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
-  if (!user) return <p className="text-center mt-10">User not logged in.</p>;
+  if (loading)
+    return <ProfilePageSkeleton />;
+  if (!user)
+    return <p className="text-center mt-10 text-gray-300">User not logged in.</p>;
 
   return (
-    <div className="p-4 sm:p-6 bg-[#0F1117] text-white min-h-screen">
+    <div className="min-h-screen bg-[#0B0E15] text-white p-4 sm:p-6">
       <Header />
-      <div className="w-full max-w-6xl mx-auto rounded-xl shadow-lg bg-[#0F1117] p-4 sm:p-8 space-y-6 sm:space-y-8">
+
+      <div className="mt-10 w-full max-w-6xl mx-auto rounded-2xl shadow-lg shadow-[#7F3DFF]/20
+                      bg-[#0F1117]/70 backdrop-blur-md p-4 sm:p-8 space-y-6 sm:space-y-8">
         <ProfileHeader user={user} />
         <ContactInfo user={user} />
         <ReferralCode user={user} />
         <SubscriptionPlan user={user} />
+
         <div className="overflow-x-auto">
           <ActivityHeatmap user={user} />
         </div>
+
         <div className="flex justify-center sm:justify-end">
           <button
             onClick={signOut}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold w-full sm:w-auto"
+            className="px-4 py-2 bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] 
+                       hover:opacity-90 rounded-lg font-semibold shadow-lg transition w-full sm:w-auto"
           >
             Logout
           </button>

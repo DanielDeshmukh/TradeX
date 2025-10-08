@@ -51,10 +51,7 @@ function SubscriptionPlan({ user }) {
       }
 
       setPlans((prevPlans) =>
-        prevPlans.map((p) => ({
-          ...p,
-          current: p.name === data.current_plan,
-        }))
+        prevPlans.map((p) => ({ ...p, current: p.name === data.current_plan }))
       );
     };
 
@@ -90,7 +87,7 @@ function SubscriptionPlan({ user }) {
   };
 
   return (
-    <div className="bg-[#232323] p-6 rounded-xl shadow-md">
+    <div className="bg-[#0F1117]/70 backdrop-blur-md p-6 rounded-xl shadow-lg">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -102,7 +99,7 @@ function SubscriptionPlan({ user }) {
         theme="dark"
       />
 
-      <h3 className="text-lg font-semibold mb-6">Subscription Plans</h3>
+      <h3 className="text-lg font-semibold mb-6 text-white">Subscription Plans</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {plans.map((plan, idx) => (
           <div
@@ -111,7 +108,7 @@ function SubscriptionPlan({ user }) {
               plan.current
                 ? "border-purple-500 bg-[#2a2a2a]"
                 : "border-gray-600 bg-[#1a1a1a]"
-            }`}
+            } flex flex-col`}
           >
             <div className="flex justify-between items-center mb-3">
               <h4 className="text-xl font-semibold text-white">{plan.name}</h4>
@@ -131,10 +128,10 @@ function SubscriptionPlan({ user }) {
             </ul>
 
             <button
-              className={`w-full mt-auto py-2 text-sm rounded-md ${
+              className={`mt-auto py-2 rounded-md text-sm font-medium transition ${
                 plan.current
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-purple-700 hover:bg-purple-800"
+                  ? "bg-gray-600 cursor-not-allowed text-gray-400"
+                  : "bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] hover:opacity-90 text-white"
               }`}
               disabled={plan.current}
               onClick={() => assignPlanToUser(plan.name)}

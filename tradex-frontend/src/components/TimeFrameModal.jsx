@@ -17,8 +17,10 @@ const TimeFrameModal = ({ selected, onSelect, onClose }) => {
             onSelect(frame);
             onClose();
           }}
-          className={`w-full text-left px-3 py-1 text-sm rounded transition-colors duration-150 ${
-            selected === frame ? 'bg-[#7F3DFF] text-white' : 'text-gray-300 hover:bg-[#2C3036]'
+          className={`w-full text-left px-3 py-1 text-sm rounded-lg transition-colors duration-150 ${
+            selected === frame
+              ? 'bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] text-white shadow-lg'
+              : 'text-gray-300 hover:bg-[#2C3036]/80 hover:shadow hover:shadow-[#7F3DFF]/20'
           }`}
         >
           {frame}

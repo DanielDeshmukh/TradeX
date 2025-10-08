@@ -18,7 +18,7 @@ function Register() {
     return strongPassword.test(password);
   };
 
-  const signup = async () => {
+  const signupWithGoogle = async () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -51,9 +51,7 @@ function Register() {
     if (!isStrongPassword(form.password)) {
       toast.error(
         "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
-        {
-          style: { background: "#1f1f1f", color: "#ff6b6b" },
-        }
+        { style: { background: "#1f1f1f", color: "#ff6b6b" } }
       );
       return;
     }
@@ -141,7 +139,7 @@ function Register() {
         <div>
           <hr className="my-5" />
           <button
-            onClick={signup}
+            onClick={signupWithGoogle}
             type="button"
             className="w-full my-2 bg-[#A24EFF] text-white p-3 rounded-xl hover:opacity-90 flex items-center justify-center space-x-2"
             disabled={loading}

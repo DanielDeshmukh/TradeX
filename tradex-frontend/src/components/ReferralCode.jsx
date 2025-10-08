@@ -141,7 +141,7 @@ function ReferralCode() {
   const remaining = Math.max(0, MAX_PER_YEAR - totalGenerated);
 
   return (
-    <div className="bg-[#232323] p-6 rounded-xl shadow-md">
+    <div className="bg-[#0F1117]/70 backdrop-blur-md p-6 rounded-xl shadow-lg">
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -168,20 +168,18 @@ function ReferralCode() {
       <div className="space-y-2">
         {loading && <div className="text-sm text-gray-400">Loading...</div>}
         {!loading && codes.length === 0 && (
-          <div className="text-sm text-gray-400">
-            No active referral codes. Generate one.
-          </div>
+          <div className="text-sm text-gray-400">No active referral codes. Generate one.</div>
         )}
 
         {codes.map((c) => (
           <div
             key={c.id}
-            className="bg-[#1a1a1a] px-4 py-2 rounded-lg flex justify-between items-center"
+            className="bg-[#1a1a1a] px-4 py-2 rounded-lg flex justify-between items-center hover:bg-[#2c2c2c] transition"
           >
             <span className="text-white font-mono">{c.code}</span>
             <button
               onClick={() => copyToClipboard(c.code)}
-              className="text-sm text-purple-400 hover:text-purple-200"
+              className="text-sm text-purple-400 hover:text-purple-200 transition"
             >
               Copy
             </button>
@@ -193,24 +191,24 @@ function ReferralCode() {
         <button
           onClick={handleGenerate}
           disabled={generateLoading || remaining <= 0}
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+          className="bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50 transition"
         >
           {generateLoading ? "Generating..." : "Generate New Code"}
         </button>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-col sm:flex-row gap-2">
         <input
           type="text"
           placeholder="Enter referral code to redeem"
           value={redeemCode}
           onChange={(e) => setRedeemCode(e.target.value)}
-          className="w-full px-3 py-2 rounded-md bg-[#1a1a1a] text-white border border-purple-500"
+          className="flex-1 px-3 py-2 rounded-md bg-[#1a1a1a] text-white border border-purple-500"
         />
         <button
           onClick={handleUseCode}
           disabled={loading || !redeemCode.trim()}
-          className="mt-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50"
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50 transition"
         >
           {loading ? "Using..." : "Use Referral"}
         </button>
