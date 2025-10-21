@@ -1,62 +1,135 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import supabase from "../lib/supabase";
-import ChartContainer from "./ChartContainer";
+// src/pages/ChartPage.jsx
+import { useSearchParams } from "react-router-dom";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import ChartContainer from "../components/ChartContainer";
+
+const EXCHANGE_OPTIONS = [
+  { label: "NSE", value: "NSE_EQ" },
+  { label: "BSE", value: "BSE_EQ" },
+];
 
 function ChartPage() {
-  const { symbol } = useParams(); // from /chart/:symbol
-  const [exchange, setExchange] = useState(null);
-  const [availableExchanges, setAvailableExchanges] = useState([]);
+  const [searchParams] = useSearchParams();
 
-  // 🔹 Fetch all exchange variants for this symbol
+  // Query params
+  const securityId = searchParams.get("securityId");
+  const exchangeSegment = searchParams.get("exchangeSegment") || "NSE_EQ";
+  const displayName = searchParams.get("displayName") || securityId;
+
+  const [exchange, setExchange] = useState(exchangeSegment);
+  const [ohlcvData, setOhlcvData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const selectedAsset = useMemo(() => ({
+    securityId,
+    exchangeSegment: exchange,
+    name: displayName,
+    instrumentType: "EQUITY",
+  }), [securityId, exchange, displayName]);
+
+  const fetchOHLCV = useCallback(async (asset) => {
+    if (!asset?.securityId || !asset?.exchangeSegment) return [];
+    try {
+      const res = await fetch("http://127.0.0.1:8000/live_feed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          security_id: asset.securityId,
+          exchange: asset.exchangeSegment,
+          instrument_type: asset.instrumentType,
+          symbolName: asset.name,
+        }),
+      });
+      if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+      const data = await res.json();
+      return data?.data?.length ? data.data : [];
+    } catch (err) {
+      console.error("fetchOHLCV Error:", err);
+      return [];
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchExchanges = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("master_symbols")
-          .select("exchange_segment")
-          .ilike("symbol_name", symbol);
+    if (!securityId || !exchange) return;
 
-        if (error) throw error;
+    let active = true;
+    setLoading(true);
+    setOhlcvData([]);
 
-        const exchanges = [...new Set(data.map((d) => d.exchange_segment))];
-        setAvailableExchanges(exchanges);
-        setExchange(exchanges[0] || null); // default to first exchange
-      } catch (err) {
-        console.error("Error fetching exchanges:", err.message);
+    const loadData = async () => {
+      const data = await fetchOHLCV(selectedAsset);
+      if (active) {
+        setOhlcvData(data);
+        setLoading(false);
       }
     };
 
-    fetchExchanges();
-  }, [symbol]);
+    loadData();
+    const interval = setInterval(loadData, 3000);
 
-  // 🔹 Exchange selector handler
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [securityId, exchange, fetchOHLCV, selectedAsset]);
+
   const handleExchangeChange = (e) => setExchange(e.target.value);
 
-  if (!exchange) return <div className="text-white p-6">Loading {symbol}...</div>;
+  const lastCandle = ohlcvData.length ? ohlcvData[ohlcvData.length - 1] : null;
+
+  const getColor = (type) => {
+    if (!lastCandle) return "text-gray-400";
+    if (type === "close") return lastCandle.close >= lastCandle.open ? "text-green-400" : "text-red-400";
+    return "text-gray-300";
+  };
+
+  if (!securityId) return (
+    <div className="flex items-center justify-center min-h-screen text-gray-400">
+      <p>No security selected. Go back to the main page.</p>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-[#0B0E15] text-white">
-      {/* Header with exchange selector */}
-      <div className="p-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold">{symbol}</h1>
-        {availableExchanges.length > 1 && (
-          <select
-            value={exchange}
-            onChange={handleExchangeChange}
-            className="bg-[#1a1a1a] text-white px-3 py-1 rounded-xl border border-gray-600"
-          >
-            {availableExchanges.map((ex) => (
-              <option key={ex} value={ex}>
-                {ex}
-              </option>
-            ))}
-          </select>
-        )}
+    <div className="min-h-screen bg-[#0B0E15] text-white flex flex-col">
+      {/* Header */}
+      <div className="p-4 flex flex-col md:flex-row md:items-center justify-between border-b border-[#1E2233] bg-[#0F1117] gap-3">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-bold tracking-wide">{displayName}</h1>
+          {lastCandle && (
+            <div className="flex flex-wrap gap-2 mt-1 text-xs font-mono">
+              <span className={getColor("open")}>O: {lastCandle.open.toFixed(2)}</span>
+              <span className={getColor("high")}>H: {lastCandle.high.toFixed(2)}</span>
+              <span className={getColor("low")}>L: {lastCandle.low.toFixed(2)}</span>
+              <span className={getColor("close")}>C: {lastCandle.close.toFixed(2)}</span>
+              <span className="text-gray-400">V: {lastCandle.volume.toLocaleString()}</span>
+            </div>
+          )}
+        </div>
+        <select
+          value={exchange}
+          onChange={handleExchangeChange}
+          className="bg-[#1a1a1a] border border-gray-700 text-sm text-gray-300 px-3 py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6C4FE0]"
+        >
+          {EXCHANGE_OPTIONS.map(opt => (
+            <option key={opt.value} value={opt.value}>{opt.label}</option>
+          ))}
+        </select>
       </div>
 
-      {/* ChartContainer receives symbol + exchange_segment */}
-      <ChartContainer symbol={symbol} exchange_segment={exchange} />
+      {/* Chart Container */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center mt-6">
+          <div className="animate-pulse">
+            <div className="h-8 w-32 bg-gray-700 rounded mb-4"></div>
+            <div className="h-4 w-48 bg-gray-800 rounded"></div>
+          </div>
+          <p className="text-gray-400 mt-4 text-sm">Loading {displayName}...</p>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-hidden">
+          <ChartContainer key={securityId} selectedAsset={selectedAsset} />
+        </div>
+      )}
     </div>
   );
 }

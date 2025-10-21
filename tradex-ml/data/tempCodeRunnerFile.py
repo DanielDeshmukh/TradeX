@@ -1,38 +1,17 @@
-from dhanhq import DhanContext, MarketFeed
-import dotenv
-import os
-import time
 
-dotenv.load_dotenv()
+# =====================================================
+#  INITIALIZE DHAN CONTEXT AND SUPABASE CLIENT
+# =====================================================
+dhan_context = DhanContext(client_id=CLIENT_ID, access_token=ACCESS_TOKEN)
+dhan = dhanhq(dhan_context)
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-client_id = os.getenv("DHAN_CLIENT_ID")
-access_token = os.getenv("DHAN_ACCESS_TOKEN")
-
-# Initialize context properly with variables (not strings)
-dhan_context = DhanContext(client_id, access_token)
-
-instruments = [
-
-    (MarketFeed.NSE, "1333", MarketFeed.Quote),
-
-]
-
-version = "v2"
-
-data = MarketFeed(dhan_context, instruments, version)
-
-try:
-    data.run_forever()
-    while True:
-        response = data.get_data()
-        if response:
-            print(response)
-        time.sleep(1)
-
-except KeyboardInterrupt:
-    print("Interrupted. Closing connection gracefully...")
-    data.close()   # Graceful shutdown
-
-except Exception as e:
-    print("Error:", e)
-    data.close()
+# =====================================================
+#  FETCH WISHLIST FROM SUPABASE
+# =====================================================
+def fetch_wishlist_from_supabase(user_id: str) -> List[Dict[str, Any]]:
+    headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "Content-Type": "application/json"}
+    payload = {"user_id": user_id, "action": "fetch"}
+    try:
+        resp = requests.post(EDGE_FUNCTION_WISHLIST_URL, headers=headers, json=payload, timeout=15)
+        resp.raise_for_status()
