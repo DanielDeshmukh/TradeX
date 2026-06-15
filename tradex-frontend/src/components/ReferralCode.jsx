@@ -144,20 +144,20 @@ function ReferralCode() {
     <div className="glass-card p-6">
       <h3 className="text-lg font-semibold mb-4 text-white">Referral Codes</h3>
 
-      <div className="mb-3 text-sm text-gray-300">
+      <div className="mb-3 text-sm text-content-secondary">
         Generated:{" "}
         <span className="font-semibold text-white">{totalGenerated}</span> / {MAX_PER_YEAR}
         {remaining === 0 ? (
-          <span className="ml-2 text-yellow-300">Limit reached for this year</span>
+          <span className="ml-2 text-yellow-400">Limit reached for this year</span>
         ) : (
-          <span className="ml-2 text-green-300">You can generate {remaining} more</span>
+          <span className="ml-2 text-bullish-muted">You can generate {remaining} more</span>
         )}
       </div>
 
       <div className="space-y-2">
-        {loading && <div className="text-sm text-gray-400">Loading...</div>}
+        {loading && <div className="text-sm text-content-secondary">Loading...</div>}
         {!loading && codes.length === 0 && (
-          <div className="text-sm text-gray-400">No active referral codes. Generate one.</div>
+          <div className="text-sm text-content-secondary">No active referral codes. Generate one.</div>
         )}
 
         {codes.map((c) => (
@@ -168,7 +168,7 @@ function ReferralCode() {
             <span className="text-white font-mono">{c.code}</span>
             <button
               onClick={() => copyToClipboard(c.code)}
-              className="text-sm text-purple-400 hover:text-purple-200 transition"
+              className="text-sm text-brand hover:text-brand-hover transition"
             >
               Copy
             </button>

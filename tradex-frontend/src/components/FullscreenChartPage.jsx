@@ -184,10 +184,10 @@ const FullscreenChartPage = () => {
         <div className="fixed inset-0 w-full h-full bg-[#0B0E15] flex flex-col overflow-hidden">
             {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 sm:p-6
-                            z-50 bg-[#0F1117]/60 backdrop-blur-md shadow-lg shadow-[#7F3DFF]/20 gap-3 sm:gap-0">
+                            z-50 bg-bg-secondary/60 backdrop-blur-md shadow-lg shadow-brand/20 gap-3 sm:gap-0">
                 <div>
                     <h1 className="text-xl sm:text-2xl font-bold text-white drop-shadow-md">{assetName}</h1>
-                    <p className={`text-base sm:text-lg font-semibold ${isPositive ? "text-green-400 drop-shadow-md" : "text-red-400 drop-shadow-md"}`}>
+                    <p className={`text-base sm:text-lg font-semibold ${isPositive ? "text-bullish drop-shadow-md" : "text-bearish drop-shadow-md"}`}>
                         {price} <span className="ml-2">{change}</span>
                     </p>
                 </div>
@@ -232,7 +232,7 @@ const FullscreenChartPage = () => {
             </div>
 
             {/* Chart */}
-            <div className="flex-1 w-full relative bg-[#1C1F24]/70 backdrop-blur-sm p-4 rounded-2xl shadow-inner shadow-[#7F3DFF]/20 flex items-center justify-center">
+            <div className="flex-1 w-full relative bg-surface-elevated/70 backdrop-blur-sm p-4 rounded-2xl shadow-inner shadow-brand/20 flex items-center justify-center">
                 {loading ? (
                     <p className="text-white">Loading chart data...</p>
                 ) : candles.length === 0 ? (

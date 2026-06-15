@@ -38,7 +38,7 @@ const heatmapClassForValue = (value) => {
 
 const ActivityHeatmap = () => {
   return (
-    <div className="mt-6 text-white p-4 bg-[#0F1117]/70 backdrop-blur-md rounded-xl shadow-lg">
+    <div className="mt-6 text-white p-4 bg-bg-secondary/70 backdrop-blur-md rounded-xl shadow-lg">
       <h2 className="text-lg font-semibold mb-3">Daily Activity</h2>
       
       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-[#7F3DFF] scrollbar-track-[#1F2937] rounded-lg">

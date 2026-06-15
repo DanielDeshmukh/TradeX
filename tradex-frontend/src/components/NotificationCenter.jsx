@@ -129,7 +129,7 @@ export default function NotificationCenter() {
                     )}
                     <button
                       onClick={() => deleteNotification(notif.id)}
-                      className="text-content-tertiary hover:text-red-400 text-[10px]"
+                      className="text-content-tertiary hover:text-bearish text-[10px]"
                     >
                       Delete
                     </button>

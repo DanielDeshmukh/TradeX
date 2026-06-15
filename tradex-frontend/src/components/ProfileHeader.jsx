@@ -169,7 +169,7 @@ function ProfileHeader() {
             <h2 className="text-xl sm:text-2xl font-semibold break-all">
               {displayName}
             </h2>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-content-secondary">
               {session?.user?.email || "Not logged in"}
             </p>
             <button

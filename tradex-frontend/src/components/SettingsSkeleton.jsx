@@ -1,7 +1,7 @@
 import React from "react";
 
 const Skeleton = ({ className }) => (
-  <div className={`animate-pulse bg-[#1a1a1a] rounded-md ${className}`} />
+  <div className={`animate-pulse bg-surface rounded-md ${className}`} />
 );
 
 const SettingsSkeleton = () => {
@@ -14,19 +14,19 @@ const SettingsSkeleton = () => {
 
       <div className="w-full max-w-6xl mx-auto space-y-6 mt-6 sm:space-y-8">
         {/* Chart Type Skeleton */}
-        <div className="bg-[#0F1117]/70 p-6 rounded-2xl border border-[#2D2F36] space-y-3">
+        <div className="bg-bg-secondary/70 p-6 rounded-2xl border border-[#2D2F36] space-y-3">
           <Skeleton className="h-6 w-44" />
           <Skeleton className="h-10 w-full rounded-xl" />
         </div>
 
         {/* Chart Interval Skeleton */}
-        <div className="bg-[#0F1117]/70 p-6 rounded-2xl border border-[#2D2F36] space-y-3">
+        <div className="bg-bg-secondary/70 p-6 rounded-2xl border border-[#2D2F36] space-y-3">
           <Skeleton className="h-6 w-56" />
           <Skeleton className="h-10 w-full rounded-xl" />
         </div>
 
         {/* Wishlist Skeleton */}
-        <div className="bg-[#0F1117]/70 p-6 rounded-2xl border border-[#2D2F36] space-y-4">
+        <div className="bg-bg-secondary/70 p-6 rounded-2xl border border-[#2D2F36] space-y-4">
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-10 w-full rounded-xl" />
           <div className="flex flex-wrap gap-2">

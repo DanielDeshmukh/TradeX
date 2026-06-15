@@ -105,7 +105,7 @@ export default function SubscriptionPlan({ currentPlan = 'free', onSelectPlan })
               <ul className="space-y-3 mb-6">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm">
-                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span className="text-bullish mt-0.5">✓</span>
                     <span className="text-content-secondary">{feature}</span>
                   </li>
                 ))}

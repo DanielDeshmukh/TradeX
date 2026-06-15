@@ -53,7 +53,7 @@ function Login() {
                     placeholder="Email"
                     value={form.email}
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="w-full p-3 mb-4 rounded-xl bg-[#2B2B2B] text-white"
+                    className="w-full p-3 mb-4 rounded-xl bg-surface-input text-white"
                     required
                 />
 
@@ -83,7 +83,7 @@ function Login() {
                     {loading ? "Signing In..." : "Sign In"}
                 </button>
 
-                <div className="mt-6 text-gray-400 text-sm flex justify-between">
+                <div className="mt-6 text-content-secondary text-sm flex justify-between">
                     <Link to="/register">Don't have an account?</Link>
                     <Link to="/forgot-password">Forgot Password?</Link>
                 </div>

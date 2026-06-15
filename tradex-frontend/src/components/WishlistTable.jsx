@@ -10,26 +10,26 @@ const AssetRow = React.memo(({ asset, flash }) => {
 
   return (
     <tr
-      className="hover:bg-[#1A1D29]/60 transition-colors cursor-pointer border-b border-[#6C4FE0]/10"
+      className="hover:bg-surface transition-colors cursor-pointer border-b border-[#6C4FE0]/10"
       onClick={handleClick}
     >
-      <td className="px-4 py-3 font-medium text-gray-200">{asset.name}</td>
-      <td className="px-4 py-3 text-gray-400 text-xs">{asset.exchangeSegment}</td>
-      <td className="px-4 py-3 text-gray-400 text-xs">{asset.instrumentType}</td>
+      <td className="px-4 py-3 font-medium text-content">{asset.name}</td>
+      <td className="px-4 py-3 text-content-secondary text-xs">{asset.exchangeSegment}</td>
+      <td className="px-4 py-3 text-content-secondary text-xs">{asset.instrumentType}</td>
       <td className={`px-4 py-3 text-right font-mono transition-colors duration-500 ${
         flash[asset.securityId] === "up"
-          ? "bg-green-900/30 text-green-300"
+          ? "bg-bullish/10 text-bullish-muted"
           : flash[asset.securityId] === "down"
-          ? "bg-red-900/30 text-red-300"
-          : "text-gray-300"
+          ? "bg-bearish/10 text-bearish-muted"
+          : "text-content-secondary"
       }`}>
-        {asset.price > 0 ? `₹${asset.price.toFixed(2)}` : <span className="text-gray-600 text-xs">Loading...</span>}
+        {asset.price > 0 ? `₹${asset.price.toFixed(2)}` : <span className="text-content-muted text-xs">Loading...</span>}
       </td>
-      <td className={`px-4 py-3 text-right font-medium font-mono ${asset.change >= 0 ? "text-green-400" : "text-red-400"}`}>
-        {asset.price > 0 ? `${asset.change >= 0 ? "+" : ""}${asset.change.toFixed(2)}%` : <span className="text-gray-600 text-xs">-</span>}
+      <td className={`px-4 py-3 text-right font-medium font-mono ${asset.change >= 0 ? "text-bullish" : "text-bearish"}`}>
+        {asset.price > 0 ? `${asset.change >= 0 ? "+" : ""}${asset.change.toFixed(2)}%` : <span className="text-content-muted text-xs">-</span>}
       </td>
-      <td className="px-4 py-3 text-right text-gray-500 text-xs font-mono">
-        {asset.volume > 0 ? formatVolume(asset.volume) : <span className="text-gray-600">-</span>}
+      <td className="px-4 py-3 text-right text-content-muted text-xs font-mono">
+        {asset.volume > 0 ? formatVolume(asset.volume) : <span className="text-content-muted">-</span>}
       </td>
     </tr>
   );
@@ -142,29 +142,29 @@ function WishlistTable({ userId }) {
   }, [fetchWatchlist]);
 
   if (loading) return (
-    <div className="w-full bg-[#0F1117]/80 border border-[#6C4FE0]/20 rounded-lg shadow-lg p-8 flex items-center justify-center">
+    <div className="w-full bg-bg-secondary/80 border border-[#6C4FE0]/20 rounded-lg shadow-lg p-8 flex items-center justify-center">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6C4FE0]"></div>
-      <span className="ml-3 text-gray-400">Loading watchlist...</span>
+      <span className="ml-3 text-content-secondary">Loading watchlist...</span>
     </div>
   );
 
   if (!assets.length) return (
-    <div className="w-full bg-[#0F1117]/80 border border-[#6C4FE0]/20 rounded-lg shadow-lg p-8 text-center text-gray-400">
+    <div className="w-full bg-bg-secondary/80 border border-[#6C4FE0]/20 rounded-lg shadow-lg p-8 text-center text-content-secondary">
       <p className="text-sm">No assets in watchlist</p>
-      <p className="text-xs mt-2 text-gray-600">Add securities to start tracking</p>
+      <p className="text-xs mt-2 text-content-muted">Add securities to start tracking</p>
     </div>
   );
 
   return (
-    <div className="w-full bg-[#0F1117]/80 border border-[#6C4FE0]/20 rounded-lg shadow-lg">
+    <div className="w-full bg-bg-secondary/80 border border-[#6C4FE0]/20 rounded-lg shadow-lg">
       <div className="px-4 py-3 border-b border-[#6C4FE0]/20 bg-[#12141C]/70 flex items-center justify-between">
         <h2 className="text-sm text-[#C1C1FF] uppercase tracking-wide font-semibold">Market Watch</h2>
-        {error ? <span className="text-xs text-red-400">{error}</span> : <span className="text-xs text-gray-500 font-mono">{assets.length} {assets.length === 1 ? "asset" : "assets"}</span>}
+        {error ? <span className="text-xs text-bearish">{error}</span> : <span className="text-xs text-content-muted font-mono">{assets.length} {assets.length === 1 ? "asset" : "assets"}</span>}
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-gray-400 text-xs uppercase tracking-wider bg-[#141721]">
+            <tr className="text-content-secondary text-xs uppercase tracking-wider bg-[#141721]">
               <th className="text-left px-4 py-2 font-medium">Symbol</th>
               <th className="text-left px-4 py-2 font-medium">Market</th>
               <th className="text-left px-4 py-2 font-medium">Type</th>

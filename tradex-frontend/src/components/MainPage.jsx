@@ -94,11 +94,11 @@ function MainPage({ userId: propUserId }) {
       <Header />
       <div className="flex flex-1 gap-4 p-4 overflow-hidden">
         <div className="flex-1 flex flex-col gap-4 min-w-0">
-          <div className="h-[500px] rounded-xl bg-[#0F1117]/90 border border-[#6C4FE0]/30 shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+          <div className="h-[500px] rounded-xl bg-bg-secondary/90 border border-[#6C4FE0]/30 shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
             {selectedAsset ? (
               <ChartContainer selectedAsset={selectedAsset} />
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-400">
+              <div className="flex items-center justify-center h-full text-content-secondary">
                 Loading asset data...
               </div>
             )}
@@ -107,17 +107,17 @@ function MainPage({ userId: propUserId }) {
           <WishlistTable userId={propUserId} onAssetSelect={handleAssetSelect} />
 
           {error && (
-            <div className="bg-red-900/20 border border-red-500/50 rounded-lg p-3 text-sm text-red-300">
+            <div className="bg-bearish/20 border border-bearish/50 rounded-lg p-3 text-sm text-bearish-muted">
               <span className="font-semibold">Quote error:</span> {error}
             </div>
           )}
         </div>
 
-        <div className="w-[400px] flex-shrink-0 flex flex-col bg-[#0F1117]/90 border border-[#6C4FE0]/30 rounded-xl shadow-xl overflow-hidden">
+        <div className="w-[400px] flex-shrink-0 flex flex-col bg-bg-secondary/90 border border-[#6C4FE0]/30 rounded-xl shadow-xl overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-[#6C4FE0]/20">
             <h2 className="text-base font-bold tracking-wider text-[#6C4FE0]">PRICE ACTION</h2>
             {priceActionData.length > 0 && (
-              <span className="text-xs text-gray-400 font-mono">
+              <span className="text-xs text-content-secondary font-mono">
                 {priceActionData.length} {priceActionData.length === 1 ? "symbol" : "symbols"}
               </span>
             )}
@@ -125,14 +125,14 @@ function MainPage({ userId: propUserId }) {
 
           <div className="flex-1 overflow-y-auto">
             {priceActionData.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-center text-gray-500 px-4">
+              <div className="flex items-center justify-center h-full text-center text-content-muted px-4">
                 <p className="text-sm">No securities in watchlist</p>
-                <p className="text-xs mt-2 text-gray-600">Add securities to start tracking</p>
+                <p className="text-xs mt-2 text-content-muted">Add securities to start tracking</p>
               </div>
             ) : (
               <table className="w-full text-[11px] font-mono">
-                <thead className="sticky top-0 bg-[#0F1117] z-10">
-                  <tr className="border-b border-gray-700/50 text-gray-400">
+                <thead className="sticky top-0 bg-bg-secondary z-10">
+                  <tr className="border-b border-white/5 text-content-secondary">
                     <th className="text-left py-2 px-3 font-medium">SYMBOL</th>
                     <th className="text-right py-2 px-2 font-medium">LTP</th>
                     <th className="text-right py-2 px-2 font-medium">CHG%</th>
@@ -156,31 +156,31 @@ function MainPage({ userId: propUserId }) {
                       <td className="py-2.5 px-3 font-semibold text-white">
                         <div className="flex flex-col">
                           <span className="text-xs">{row.displayName}</span>
-                          <span className="text-[9px] text-gray-500">{row.exchangeSegment}</span>
+                          <span className="text-[9px] text-content-muted">{row.exchangeSegment}</span>
                         </div>
                       </td>
                       <td
                         className={clsx(
                           "text-right px-2 transition-colors duration-500",
                           flash[row.securityId] === "up"
-                            ? "bg-green-900/40 text-green-300"
+                            ? "bg-bullish/10 text-bullish-muted"
                             : flash[row.securityId] === "down"
-                            ? "bg-red-900/40 text-red-300"
+                            ? "bg-bearish/10 text-bearish-muted"
                             : "text-white"
                         )}
                       >
-                        {row.price > 0 ? row.price.toFixed(2) : <span className="text-gray-600 text-[10px]">Loading...</span>}
+                        {row.price > 0 ? row.price.toFixed(2) : <span className="text-content-muted text-[10px]">Loading...</span>}
                       </td>
-                      <td className={clsx("text-right px-2 font-semibold", row.change >= 0 ? "text-green-400" : "text-red-400")}>
+                      <td className={clsx("text-right px-2 font-semibold", row.change >= 0 ? "text-bullish" : "text-bearish")}>
                         {row.price > 0 ? (
                           <div className="flex items-center justify-end gap-0.5">
                             {row.change >= 0 ? <HiArrowUp className="w-3 h-3" /> : <HiArrowDown className="w-3 h-3" />}
                             <span className="text-[10px]">{Math.abs(row.change).toFixed(2)}%</span>
                           </div>
-                        ) : <span className="text-gray-600 text-[10px]">-</span>}
+                        ) : <span className="text-content-muted text-[10px]">-</span>}
                       </td>
-                      <td className="text-right px-2 text-yellow-300/80">
-                        {row.price > 0 ? formatVolume(row.vol) : <span className="text-gray-600 text-[10px]">-</span>}
+                      <td className="text-right px-2 text-yellow-400/80">
+                        {row.price > 0 ? formatVolume(row.vol) : <span className="text-content-muted text-[10px]">-</span>}
                       </td>
                     </tr>
                   ))}

@@ -30,7 +30,7 @@ export function Leaderboard() {
           >
             <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
               trader.rank === 1 ? 'bg-yellow-500/20 text-yellow-400' :
-              trader.rank === 2 ? 'bg-gray-300/20 text-gray-300' :
+              trader.rank === 2 ? 'bg-gray-300/20 text-content-secondary' :
               trader.rank === 3 ? 'bg-orange-500/20 text-orange-400' :
               'bg-surface text-content-secondary'
             }`}>
@@ -41,7 +41,7 @@ export function Leaderboard() {
               <div className="text-content text-sm font-medium truncate">{trader.name}</div>
               <div className="text-content-secondary text-xs">{trader.trades} trades</div>
             </div>
-            <span className="text-green-400 text-sm font-medium">+{trader.return}%</span>
+            <span className="text-bullish text-sm font-medium">+{trader.return}%</span>
           </div>
         ))}
       </div>
@@ -68,7 +68,7 @@ export function Achievements({ unlockedIds = [] }) {
               <span className="text-2xl mb-1">{ach.icon}</span>
               <span className="text-content text-xs text-center font-medium">{ach.label}</span>
               {isUnlocked && (
-                <span className="text-green-400 text-[10px] mt-1">Unlocked</span>
+                <span className="text-bullish text-[10px] mt-1">Unlocked</span>
               )}
             </div>
           );

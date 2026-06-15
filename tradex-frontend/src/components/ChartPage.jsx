@@ -78,13 +78,13 @@ function ChartPage() {
   const lastCandle = ohlcvData.length ? ohlcvData[ohlcvData.length - 1] : null;
 
   const getColor = (type) => {
-    if (!lastCandle) return "text-gray-400";
-    if (type === "close") return lastCandle.close >= lastCandle.open ? "text-green-400" : "text-red-400";
-    return "text-gray-300";
+    if (!lastCandle) return "text-content-secondary";
+    if (type === "close") return lastCandle.close >= lastCandle.open ? "text-bullish" : "text-bearish";
+    return "text-content-secondary";
   };
 
   if (!securityId) return (
-    <div className="flex items-center justify-center min-h-screen text-gray-400">
+    <div className="flex items-center justify-center min-h-screen text-content-secondary">
       <p>No security selected. Go back to the main page.</p>
     </div>
   );
@@ -92,7 +92,7 @@ function ChartPage() {
   return (
     <div className="min-h-screen bg-[#0B0E15] text-white flex flex-col">
       {/* Header */}
-      <div className="p-4 flex flex-col md:flex-row md:items-center justify-between border-b border-[#1E2233] bg-[#0F1117] gap-3">
+      <div className="p-4 flex flex-col md:flex-row md:items-center justify-between border-b border-[#1E2233] bg-bg-secondary gap-3">
         <div className="flex flex-col">
           <h1 className="text-2xl font-bold tracking-wide">{displayName}</h1>
           {lastCandle && (
@@ -101,14 +101,14 @@ function ChartPage() {
               <span className={getColor("high")}>H: {lastCandle.high.toFixed(2)}</span>
               <span className={getColor("low")}>L: {lastCandle.low.toFixed(2)}</span>
               <span className={getColor("close")}>C: {lastCandle.close.toFixed(2)}</span>
-              <span className="text-gray-400">V: {lastCandle.volume.toLocaleString()}</span>
+              <span className="text-content-secondary">V: {lastCandle.volume.toLocaleString()}</span>
             </div>
           )}
         </div>
         <select
           value={exchange}
           onChange={handleExchangeChange}
-          className="bg-[#1a1a1a] border border-gray-700 text-sm text-gray-300 px-3 py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#6C4FE0]"
+          className="bg-surface border border-white/10 text-sm text-content-secondary px-3 py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-hover"
         >
           {EXCHANGE_OPTIONS.map(opt => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -123,7 +123,7 @@ function ChartPage() {
             <div className="h-8 w-32 bg-gray-700 rounded mb-4"></div>
             <div className="h-4 w-48 bg-gray-800 rounded"></div>
           </div>
-          <p className="text-gray-400 mt-4 text-sm">Loading {displayName}...</p>
+          <p className="text-content-secondary mt-4 text-sm">Loading {displayName}...</p>
         </div>
       ) : (
         <div className="flex-1 overflow-hidden">

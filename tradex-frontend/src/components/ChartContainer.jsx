@@ -163,9 +163,9 @@ const ChartContainer = ({ selectedAsset }) => {
   const lastCandle = useMemo(() => ohlcvData[ohlcvData.length - 1] || null, [ohlcvData]);
   const getColor = useCallback(
     (type) => {
-      if (!lastCandle) return "text-gray-400";
-      if (type === "close") return lastCandle.close >= lastCandle.open ? "text-green-400" : "text-red-400";
-      return "text-gray-300";
+      if (!lastCandle) return "text-content-secondary";
+      if (type === "close") return lastCandle.close >= lastCandle.open ? "text-bullish" : "text-bearish";
+      return "text-content-secondary";
     },
     [lastCandle]
   );
@@ -181,7 +181,7 @@ const ChartContainer = ({ selectedAsset }) => {
               <span className={`${getColor("high")}`}>H: {safeToFixed(lastCandle.high)}</span>
               <span className={`${getColor("low")}`}>L: {safeToFixed(lastCandle.low)}</span>
               <span className={`${getColor("close")}`}>C: {safeToFixed(lastCandle.close)}</span>
-              <span className="text-gray-400">V: {lastCandle.volume.toLocaleString()}</span>
+              <span className="text-content-secondary">V: {lastCandle.volume.toLocaleString()}</span>
             </div>
           )}
         </div>

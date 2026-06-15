@@ -2,7 +2,7 @@
 import React from "react";
 
 const Skeleton = ({ className }) => (
-  <div className={`animate-pulse bg-[#1a1a1a] rounded-md ${className}`} />
+  <div className={`animate-pulse bg-surface rounded-md ${className}`} />
 );
 
 const MainPageSkeleton = () => {
@@ -19,7 +19,7 @@ const MainPageSkeleton = () => {
           <main className="flex-1 overflow-y-auto p-4 flex flex-col items-start">
             <div className="w-full max-w-5xl space-y-6">
               {/* Chart Skeleton */}
-              <div className="h-[500px] rounded-2xl bg-[#0F1117]/80 border border-[#6C4FE0]/20 shadow-lg overflow-hidden flex items-center justify-center">
+              <div className="h-[500px] rounded-2xl bg-bg-secondary/80 border border-[#6C4FE0]/20 shadow-lg overflow-hidden flex items-center justify-center">
                 <Skeleton className="w-full h-full rounded-2xl" />
               </div>
 

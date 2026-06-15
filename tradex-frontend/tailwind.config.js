@@ -43,9 +43,15 @@ export default {
       boxShadow: {
         'brand': '0 0 20px var(--color-primary-glow)',
         'brand-lg': '0 0 40px var(--color-primary-glow)',
+        'glass': '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
       },
       backdropBlur: {
         xs: '2px',
+      },
+      backgroundImage: {
+        'gradient-brand': 'linear-gradient(135deg, var(--color-primary), var(--color-primary-muted))',
+        'gradient-success': 'linear-gradient(135deg, var(--color-bullish), var(--color-bullish-muted))',
+        'gradient-danger': 'linear-gradient(135deg, var(--color-bearish), var(--color-bearish-muted))',
       },
       animation: {
         'fade-in': 'fadeIn 0.2s ease-out',

@@ -55,8 +55,8 @@ export default function AIDashboard() {
           </>
         ) : (
           <>
-            <StatCard label="BUY Signals" value={stats.buy} color="text-green-400" />
-            <StatCard label="SELL Signals" value={stats.sell} color="text-red-400" />
+            <StatCard label="BUY Signals" value={stats.buy} color="text-bullish" />
+            <StatCard label="SELL Signals" value={stats.sell} color="text-bearish" />
             <StatCard label="HOLD Signals" value={stats.hold} color="text-yellow-400" />
             <StatCard label="Avg Confidence" value={`${stats.avgConfidence}%`} color="text-blue-400" />
           </>

@@ -45,7 +45,7 @@ export default function PriceAlerts({ securityId, currentPrice, onAddAlert, aler
               onClick={() => setDirection('above')}
               className={`flex-1 py-2 text-sm font-medium rounded-lg border transition-colors ${
                 direction === 'above'
-                  ? 'bg-green-500/20 border-green-500/50 text-green-400'
+                  ? 'bg-bullish/20 border-bullish/50 text-bullish'
                   : 'border-border text-content-secondary hover:border-border-hover'
               }`}
             >
@@ -55,7 +55,7 @@ export default function PriceAlerts({ securityId, currentPrice, onAddAlert, aler
               onClick={() => setDirection('below')}
               className={`flex-1 py-2 text-sm font-medium rounded-lg border transition-colors ${
                 direction === 'below'
-                  ? 'bg-red-500/20 border-red-500/50 text-red-400'
+                  ? 'bg-bearish/20 border-bearish/50 text-bearish'
                   : 'border-border text-content-secondary hover:border-border-hover'
               }`}
             >
@@ -85,7 +85,7 @@ export default function PriceAlerts({ securityId, currentPrice, onAddAlert, aler
                     <span className="text-content text-sm">
                       {alert.direction === 'above' ? '↑' : '↓'} ₹{alert.targetPrice.toFixed(2)}
                     </span>
-                    <button className="text-content-tertiary hover:text-red-400 text-xs">Remove</button>
+                    <button className="text-content-tertiary hover:text-bearish text-xs">Remove</button>
                   </div>
                 ))}
               </div>
@@ -99,7 +99,7 @@ export default function PriceAlerts({ securityId, currentPrice, onAddAlert, aler
               <div className="space-y-2">
                 {triggeredAlerts.slice(0, 3).map((alert, i) => (
                   <div key={i} className="flex items-center gap-2 p-2 bg-surface rounded-lg opacity-60">
-                    <span className="text-green-400 text-xs">✓</span>
+                    <span className="text-bullish text-xs">✓</span>
                     <span className="text-content-secondary text-sm line-through">
                       {alert.direction === 'above' ? '↑' : '↓'} ₹{alert.targetPrice.toFixed(2)}
                     </span>
