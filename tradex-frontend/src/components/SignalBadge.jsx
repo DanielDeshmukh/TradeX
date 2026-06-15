@@ -3,12 +3,12 @@ import Badge from './ui/Badge';
 
 const SIGNAL_CONFIG = {
   buy: {
-    color: 'bg-green-500/20 text-green-400 border-green-500/30',
+    color: 'bg-bullish/20 text-bullish border-bullish/30',
     icon: '↑',
     label: 'BUY',
   },
   sell: {
-    color: 'bg-red-500/20 text-red-400 border-red-500/30',
+    color: 'bg-bearish/20 text-bearish border-bearish/30',
     icon: '↓',
     label: 'SELL',
   },

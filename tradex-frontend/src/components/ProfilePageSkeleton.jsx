@@ -1,7 +1,7 @@
 import React from "react";
 
 const Skeleton = ({ className }) => (
-  <div className={`animate-pulse bg-[#1a1a1a] rounded-md ${className}`} />
+  <div className={`animate-pulse bg-surface rounded-md ${className}`} />
 );
 
 const ProfilePageSkeleton = () => {
@@ -11,8 +11,8 @@ const ProfilePageSkeleton = () => {
         <Skeleton className="h-full w-full rounded-xl" />
       </div>
 
-      <div className="mt-10 w-full max-w-6xl mx-auto rounded-2xl shadow-lg shadow-[#7F3DFF]/20
-                      bg-[#0F1117]/70 backdrop-blur-md p-4 sm:p-8 space-y-6 sm:space-y-8">
+      <div className="mt-10 w-full max-w-6xl mx-auto rounded-2xl shadow-lg shadow-brand/20
+                      bg-bg-secondary/70 backdrop-blur-md p-4 sm:p-8 space-y-6 sm:space-y-8">
 
         <div className="flex items-center gap-4">
           <Skeleton className="h-16 w-16 rounded-full" />

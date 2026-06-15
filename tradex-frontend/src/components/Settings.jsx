@@ -205,8 +205,8 @@ const Settings = () => {
   if (!userId) return (
     <div className="p-6 bg-[#0B0E15] text-white min-h-screen">
       <Header />
-      <div className="flex flex-col items-center justify-center mt-20 text-center text-gray-400">
-        <p className="text-red-400 text-xl mb-2">User not logged in</p>
+      <div className="flex flex-col items-center justify-center mt-20 text-center text-content-secondary">
+        <p className="text-bearish text-xl mb-2">User not logged in</p>
         <p>Please log in to access settings</p>
       </div>
     </div>
@@ -294,7 +294,7 @@ const Settings = () => {
             <input type="text" name="security_id" value={searchForm.security_id} onChange={handleFormChange} placeholder="Security ID" className="bg-surface-input text-white px-3 py-2 rounded-xl border border-white/10 hover:border-brand/50 transition-all"/>
           </div>
           
-          {isSearching && <div className="text-gray-400 mb-2">Searching...</div>}
+          {isSearching && <div className="text-content-secondary mb-2">Searching...</div>}
           
           {Object.keys(symbolSuggestions).length > 0 && (
             <ul className="bg-surface-input border border-white/10 rounded-xl max-h-60 overflow-y-auto shadow-2xl mb-4">
@@ -306,10 +306,10 @@ const Settings = () => {
                       <li 
                         key={s.security_id} 
                         onClick={() => addSymbol(s)} 
-                        className="px-6 py-2 hover:bg-purple-700 cursor-pointer text-sm text-gray-300 transition-colors flex justify-between"
+                        className="px-6 py-2 hover:bg-brand-muted cursor-pointer text-sm text-content-secondary transition-colors flex justify-between"
                       >
                         <span>{s.exchange_segment}</span>
-                        <span className="text-xs text-gray-500">{s.instrument_type}</span>
+                        <span className="text-xs text-content-muted">{s.instrument_type}</span>
                       </li>
                     ))}
                   </ul>
@@ -319,7 +319,7 @@ const Settings = () => {
           )}
           
           {settings.wishlist.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="text-center py-8 text-content-secondary">
               <p>Your wishlist is empty</p>
               <p className="text-sm mt-2">Search and add symbols above</p>
             </div>
@@ -330,7 +330,7 @@ const Settings = () => {
                   <span className="text-sm">{s.display_name} ({s.exchange_segment})</span>
                   <button 
                     onClick={() => removeSymbol(s.security_id, s.display_name)} 
-                    className="text-white font-bold hover:text-red-300 transition-colors w-5 h-5 flex items-center justify-center" 
+                    className="text-white font-bold hover:text-bearish-muted transition-colors w-5 h-5 flex items-center justify-center" 
                     aria-label={`Remove ${s.display_name}`}
                   >
                     &times;

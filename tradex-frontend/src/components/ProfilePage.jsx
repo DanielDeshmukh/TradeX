@@ -44,14 +44,14 @@ function ProfilePage() {
   if (loading)
     return <ProfilePageSkeleton />;
   if (!user)
-    return <p className="text-center mt-10 text-gray-300">User not logged in.</p>;
+    return <p className="text-center mt-10 text-content-secondary">User not logged in.</p>;
 
   return (
     <div className="min-h-screen bg-[#0B0E15] text-white p-4 sm:p-6">
       <Header />
 
-      <div className="mt-10 w-full max-w-6xl mx-auto rounded-2xl shadow-lg shadow-[#7F3DFF]/20
-                      bg-[#0F1117]/70 backdrop-blur-md p-4 sm:p-8 space-y-6 sm:space-y-8">
+      <div className="mt-10 w-full max-w-6xl mx-auto rounded-2xl shadow-lg shadow-brand/20
+                      bg-bg-secondary/70 backdrop-blur-md p-4 sm:p-8 space-y-6 sm:space-y-8">
         <ProfileHeader user={user} />
         <ContactInfo user={user} />
         <ReferralCode user={user} />

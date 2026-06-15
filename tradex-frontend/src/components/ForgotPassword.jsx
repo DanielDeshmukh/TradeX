@@ -57,7 +57,7 @@ function ForgotPassword() {
           {loading ? "Sending..." : "Send Reset Link"}
         </button>
 
-        <div className="mt-6 text-gray-400 text-sm">
+        <div className="mt-6 text-content-secondary text-sm">
           <Link to="/login">Back to Login</Link>
         </div>
       </form>

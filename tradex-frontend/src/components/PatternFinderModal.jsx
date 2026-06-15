@@ -139,18 +139,18 @@ const PatternFinderModal = () => {
       <div className="bg-[#0e1629] text-white rounded-xl p-6 min-w-[40%] relative">
         <button
           onClick={close}
-          className="absolute top-4 right-4 hover:text-red-500"
+          className="absolute top-4 right-4 hover:text-bearish"
         >
           <X size={24} />
         </button>
 
-        <h2 className="text-xl font-semibold mb-4 text-purple-400">
+        <h2 className="text-xl font-semibold mb-4 text-brand">
           Chart Pattern Finder
         </h2>
 
         <div className="flex justify-center">
           <div className="flex-1 px-4">
-            <p className="text-gray-400 text-center mt-10 max-w-4xl">
+            <p className="text-content-secondary text-center mt-10 max-w-4xl">
               Draw your own pattern on the canvas
             </p>
             <canvas
@@ -166,7 +166,7 @@ const PatternFinderModal = () => {
 
         <div className="mt-6 flex flex-col items-center space-y-4">
           <div className="flex items-center space-x-2 w-full justify-center">
-            <label htmlFor="accuracy" className="text-sm text-gray-300">
+            <label htmlFor="accuracy" className="text-sm text-content-secondary">
               Accuracy: {sliderValue.toFixed(2)}
             </label>
             <input

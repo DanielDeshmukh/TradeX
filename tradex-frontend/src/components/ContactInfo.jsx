@@ -82,7 +82,7 @@ function ContactInfo() {
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-white">Contact Information</h3>
         <button
-          className="text-sm text-purple-400 hover:text-purple-300 transition"
+          className="text-sm text-brand hover:text-brand-hover transition"
           onClick={() => setIsEditing(!isEditing)}
           disabled={loading}
         >
@@ -92,7 +92,7 @@ function ContactInfo() {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Email</label>
+          <label className="block text-sm text-content-secondary mb-1">Email</label>
           <input
             type="email"
             disabled={!isEditing || loading}
@@ -105,7 +105,7 @@ function ContactInfo() {
         </div>
 
         <div>
-          <label className="block text-sm text-gray-400 mb-1">Phone</label>
+          <label className="block text-sm text-content-secondary mb-1">Phone</label>
           <input
             type="text"
             disabled={!isEditing || loading}

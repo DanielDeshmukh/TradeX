@@ -161,6 +161,23 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
   }
 
+  .glass-border {
+    border: 1px solid var(--color-border-strong);
+    backdrop-filter: blur(8px);
+  }
+
+  .gradient-brand {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-muted));
+  }
+
+  .gradient-success {
+    background: linear-gradient(135deg, var(--color-bullish), var(--color-bullish-muted));
+  }
+
+  .gradient-danger {
+    background: linear-gradient(135deg, var(--color-bearish), var(--color-bearish-muted));
+  }
+
   .btn-primary {
     background: linear-gradient(135deg, var(--color-primary), var(--color-primary-muted));
     color: var(--color-bg);

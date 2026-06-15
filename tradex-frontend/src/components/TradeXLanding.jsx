@@ -131,7 +131,7 @@ const TradeXLanding = () => {
 </h1>
 
 <p
-  className="text-lg md:text-xl text-gray-400 mb-12 max-w-3xl mx-auto animate-fade-in-up"
+  className="text-lg md:text-xl text-content-secondary mb-12 max-w-3xl mx-auto animate-fade-in-up"
   style={{ animationDelay: '0.3s' }}
 >
   We build intuitive trading tools that simplify complex market analysis,
@@ -317,29 +317,29 @@ const TradeXLanding = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
               <span className="text-[#7826F0]">Live Market Data</span> at Your Fingertips
             </h2>
-            <p className="text-gray-400">Real-time tracking and comprehensive insights</p>
+            <p className="text-content-secondary">Real-time tracking and comprehensive insights</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {mockStocks.map((stock, idx) => (
-              <div key={idx} className="bg-[#1A1D29] border border-[#7826F0]/20 rounded-xl p-5 hover:border-[#7826F0]/40 transition-all hover:scale-105">
+              <div key={idx} className="bg-surface border border-[#7826F0]/20 rounded-xl p-5 hover:border-[#7826F0]/40 transition-all hover:scale-105">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-bold text-sm">{stock.symbol}</h3>
-                    <p className="text-xs text-gray-500">NSE</p>
+                    <p className="text-xs text-content-muted">NSE</p>
                   </div>
                   {stock.positive ? (
-                    <ArrowUpRight className="w-5 h-5 text-green-500" />
+                    <ArrowUpRight className="w-5 h-5 text-bullish" />
                   ) : (
-                    <ArrowDownRight className="w-5 h-5 text-red-500" />
+                    <ArrowDownRight className="w-5 h-5 text-bearish" />
                   )}
                 </div>
                 <div className="text-2xl font-bold mb-2">₹{stock.price}</div>
                 <div className="flex justify-between items-center">
-                  <span className={`text-sm font-semibold ${stock.positive ? 'text-green-500' : 'text-red-500'}`}>
+                  <span className={`text-sm font-semibold ${stock.positive ? 'text-bullish' : 'text-bearish'}`}>
                     {stock.change}
                   </span>
-                  <span className="text-xs text-gray-500">{stock.vol}</span>
+                  <span className="text-xs text-content-muted">{stock.vol}</span>
                 </div>
               </div>
             ))}
@@ -353,7 +353,7 @@ const TradeXLanding = () => {
             <h2 className="text-4xl md:text-5xl font-bold  mb-6">
                 Why choose <span className='text-[#7826F0]'>Trade</span>X <span className='text-4xl md:text-5xl font-bold mb-6'>?</span>
             </h2>
-            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-content-secondary max-w-2xl mx-auto">
               Built for beginners, designed for success
             </p>
           </div>
@@ -365,10 +365,10 @@ const TradeXLanding = () => {
               { icon: TrendingUp, title: 'Tiered Plans', desc: 'Flexible subscription models that grow with your trading journey' },
               { icon: Users, title: 'Referral Rewards', desc: 'Earn up to 100% off through our generous referral program' }
             ].map((feature, idx) => (
-              <div key={idx} className="bg-[#1A1D29] border border-[#7826F0]/20 p-8 rounded-2xl hover:bg-[#1F2937] hover:border-[#7826F0]/40 transition-all group hover:scale-105">
+              <div key={idx} className="bg-surface border border-[#7826F0]/20 p-8 rounded-2xl hover:bg-[#1F2937] hover:border-[#7826F0]/40 transition-all group hover:scale-105">
                 <feature.icon className="w-12 h-12 text-[#7826F0] mb-4 group-hover:scale-110 transition-transform" />
                 <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-gray-400">{feature.desc}</p>
+                <p className="text-content-secondary">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -381,7 +381,7 @@ const TradeXLanding = () => {
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-xl text-gray-400">50% off on your first month!</p>
+            <p className="text-xl text-content-secondary">50% off on your first month!</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -390,7 +390,7 @@ const TradeXLanding = () => {
               { name: 'Pro', price: '499', trades: '30', alerts: '10', addon: '+20 trades @ ₹99', popular: true },
               { name: 'Elite', price: '999', trades: '50', alerts: '20', addon: '+30 trades @ ₹299', popular: false }
             ].map((plan, idx) => (
-              <div key={idx} className={`bg-[#1A1D29] border p-8 rounded-2xl hover:scale-105 transition-all relative ${plan.popular ? 'border-[#7826F0]' : 'border-[#7826F0]/20'}`}>
+              <div key={idx} className={`bg-surface border p-8 rounded-2xl hover:scale-105 transition-all relative ${plan.popular ? 'border-[#7826F0]' : 'border-[#7826F0]/20'}`}>
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-[#7826F0] px-4 py-1 rounded-full text-sm font-semibold flex items-center space-x-1">
                     <Star className="w-4 h-4" />
@@ -402,25 +402,25 @@ const TradeXLanding = () => {
                   <h3 className="text-2xl font-bold mb-4">{plan.name}</h3>
                   <div className="flex items-baseline justify-center">
                     <span className="text-5xl font-bold">₹{plan.price}</span>
-                    <span className="text-gray-400 ml-2">/month</span>
+                    <span className="text-content-secondary ml-2">/month</span>
                   </div>
                 </div>
 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center space-x-3">
-                    <Check className="w-5 h-5 text-green-400" />
+                    <Check className="w-5 h-5 text-bullish" />
                     <span>{plan.trades} Trades/Day</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Check className="w-5 h-5 text-green-400" />
+                    <Check className="w-5 h-5 text-bullish" />
                     <span>{plan.alerts} Alerts/Month</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Check className="w-5 h-5 text-green-400" />
+                    <Check className="w-5 h-5 text-bullish" />
                     <span>{plan.addon}</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <Check className="w-5 h-5 text-green-400" />
+                    <Check className="w-5 h-5 text-bullish" />
                     <span>Secure Authentication</span>
                   </div>
                 </div>
@@ -436,9 +436,9 @@ const TradeXLanding = () => {
             ))}
           </div>
 
-          <div className="mt-12 bg-[#1A1D29] border border-[#7826F0]/20 p-8 rounded-2xl text-center  hover:border-[#7826F0]/40 transition-all">
+          <div className="mt-12 bg-surface border border-[#7826F0]/20 p-8 rounded-2xl text-center  hover:border-[#7826F0]/40 transition-all">
             <h3 className="text-2xl font-bold mb-4">TradeX for Business (Planned Future Scope)</h3>
-            <p className="text-gray-400 mb-4">For professional traders and institutions - ₹1,000/month with up to 5 devices</p>
+            <p className="text-content-secondary mb-4">For professional traders and institutions - ₹1,000/month with up to 5 devices</p>
             <button onClick={() => scrollToSection('register')} className="bg-[#7826F0] px-8 py-3 rounded-full font-semibold hover:shadow-lg hover:shadow-[#7826F0]/50 transition-all hover:brightness-110">
               Contact Sales
             </button>

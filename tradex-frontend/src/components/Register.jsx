@@ -139,7 +139,7 @@ function Register() {
           </button>
         </div>
 
-        <div className="mt-6 text-gray-400 text-sm flex justify-between">
+        <div className="mt-6 text-content-secondary text-sm flex justify-between">
           <Link to="/login">Already have an account?</Link>
         </div>
       </form>

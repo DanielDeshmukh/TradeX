@@ -42,7 +42,7 @@ export default function MobileWatchlist({ items = [], onSelect, onRemove, signal
                 <div className="flex items-center gap-3 text-xs">
                   <span className="text-content-secondary">{item.exchange}</span>
                   <span className="text-content font-medium">₹{item.last_price?.toFixed(2) || '--'}</span>
-                  <span className={item.change >= 0 ? 'text-green-400' : 'text-red-400'}>
+                  <span className={item.change >= 0 ? 'text-bullish' : 'text-bearish'}>
                     {item.change >= 0 ? '+' : ''}{item.change?.toFixed(2) || '0.00'}%
                   </span>
                 </div>
@@ -50,7 +50,7 @@ export default function MobileWatchlist({ items = [], onSelect, onRemove, signal
               {onRemove && (
                 <button
                   onClick={() => onRemove(item.security_id)}
-                  className="p-2 text-content-tertiary hover:text-red-400 transition-colors"
+                  className="p-2 text-content-tertiary hover:text-bearish transition-colors"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M18 6L6 18M6 6l12 12" />

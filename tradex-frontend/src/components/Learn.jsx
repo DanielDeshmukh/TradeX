@@ -198,7 +198,7 @@ export default function Learn() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-content-secondary text-xs">Chapter {chapter.id}</span>
-                      {isComplete && <span className="text-green-400 text-xs">✓</span>}
+                      {isComplete && <span className="text-bullish text-xs">✓</span>}
                     </div>
                     <h4 className="text-content font-medium">{chapter.title}</h4>
                   </div>

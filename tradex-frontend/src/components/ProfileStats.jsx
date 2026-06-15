@@ -13,7 +13,7 @@ export default function ProfileStats({ stats = {} }) {
   } = stats;
 
   const planBadges = {
-    free: { label: 'Free', color: 'bg-gray-500/20 text-gray-400' },
+    free: { label: 'Free', color: 'bg-surface-input/20 text-content-muted' },
     pro: { label: 'Pro', color: 'bg-brand/20 text-brand' },
     elite: { label: 'Elite', color: 'bg-yellow-500/20 text-yellow-400' },
   };
@@ -47,13 +47,13 @@ export default function ProfileStats({ stats = {} }) {
         <StatCard
           label="Total Return"
           value={`${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(1)}%`}
-          color={totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}
+          color={totalReturn >= 0 ? 'text-bullish' : 'text-bearish'}
         />
         <StatCard label="Total Trades" value={totalTrades} />
         <StatCard
           label="Win Rate"
           value={`${winRate.toFixed(1)}%`}
-          color={winRate >= 50 ? 'text-green-400' : 'text-yellow-400'}
+          color={winRate >= 50 ? 'text-bullish' : 'text-yellow-400'}
         />
       </div>
     </div>
