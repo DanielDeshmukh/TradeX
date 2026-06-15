@@ -7,7 +7,18 @@ import json
 import logging
 import requests
 import datetime
+import time
 from typing import List, Dict, Any
+
+# =====================================================
+#  LOGGING SETUP
+# =====================================================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+log = logging.getLogger(__name__)
 
 # =====================================================
 #  LOAD ENVIRONMENT VARIABLES
@@ -19,7 +30,7 @@ ACCESS_TOKEN = os.getenv("DHAN_ACCESS_TOKEN")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 DEFAULT_USER_ID = os.getenv("SUPABASE_DEFAULT_USER_ID")
-EDGE_FUNCTION_WISHLIST_URL = "https://pqrnxozftaccuamdaavi.supabase.co/functions/v1/wishlist"
+EDGE_FUNCTION_WISHLIST_URL = f"{SUPABASE_URL}/functions/v1/wishlist" if SUPABASE_URL else ""
 
 if not CLIENT_ID or not ACCESS_TOKEN:
     raise ValueError("Missing Dhan credentials. Check your .env file!")
@@ -64,7 +75,7 @@ def clean_security_ids(wishlist_data: List[Dict[str, Any]]) -> List[str]:
 # =====================================================
 #  FETCH AND SAVE HISTORICAL DATA (per-security loop)
 # =====================================================
-def fetch_and_save_loop(security_id: str, interval="1min", batch_days=90) -> bool:
+def fetch_and_save_loop(security_id: str, interval="1min", batch_days=90, max_retries=3) -> bool:
     today = datetime.datetime.now().date()
     from_date = today - datetime.timedelta(days=batch_days)
     success = True
@@ -73,8 +84,7 @@ def fetch_and_save_loop(security_id: str, interval="1min", batch_days=90) -> boo
         to_date = min(from_date + datetime.timedelta(days=batch_days), today)
         from_date_str, to_date_str = from_date.strftime("%Y-%m-%d"), to_date.strftime("%Y-%m-%d")
 
-        print(f"\nFetching {interval} data for Security ID {security_id}")
-        print(f"[DATE RANGE] FROM: {from_date_str} TO: {to_date_str}")
+        log.info(f"Fetching {interval} data for Security ID {security_id} [{from_date_str} to {to_date_str}]")
 
         existing_data = supabase.table("candles")\
             .select("timestamp", count="exact")\
@@ -86,26 +96,31 @@ def fetch_and_save_loop(security_id: str, interval="1min", batch_days=90) -> boo
         existing_count = getattr(existing_data, "count", 0)
 
         if existing_count >= 20000:
-            print(f"Existing data sufficient ({existing_count} records). Skipping this batch.")
-            from_date = to_date  
-            continue
-
-        try:
-            response = dhan.intraday_minute_data(
-                security_id=security_id,
-                exchange_segment="NSE_EQ",
-                instrument_type="EQUITY",
-                from_date=from_date_str,
-                to_date=to_date_str
-            )
-        except Exception as e:
-            print(f"Fetch error for {security_id} [{from_date_str} - {to_date_str}]: {e}")
-            success = False
+            log.info(f"Existing data sufficient ({existing_count} records). Skipping batch.")
             from_date = to_date
             continue
 
+        response = None
+        for attempt in range(1, max_retries + 1):
+            try:
+                response = dhan.intraday_minute_data(
+                    security_id=security_id,
+                    exchange_segment="NSE_EQ",
+                    instrument_type="EQUITY",
+                    from_date=from_date_str,
+                    to_date=to_date_str
+                )
+                break
+            except Exception as e:
+                log.warning(f"Attempt {attempt}/{max_retries} failed for {security_id}: {e}")
+                if attempt < max_retries:
+                    time.sleep(2 ** attempt)
+                else:
+                    log.error(f"All retries exhausted for {security_id} [{from_date_str}-{to_date_str}]")
+                    success = False
+
         if not response or response.get("status") != "success" or not response.get("data"):
-            print(f"No data returned for {security_id} [{from_date_str} - {to_date_str}]")
+            log.warning(f"No data returned for {security_id} [{from_date_str}-{to_date_str}]")
             success = False
             from_date = to_date
             continue
@@ -118,8 +133,8 @@ def fetch_and_save_loop(security_id: str, interval="1min", batch_days=90) -> boo
         with open(json_path, "w") as f: json.dump(response, f, indent=4)
         df.to_csv(csv_path, index=False)
 
-        print(f"Saved {len(df)} records for {security_id} [{from_date_str} - {to_date_str}]")
-        from_date = to_date  
+        log.info(f"Saved {len(df)} records for {security_id} [{from_date_str}-{to_date_str}]")
+        from_date = to_date
 
     return success
 
@@ -185,20 +200,20 @@ def insert_candles_to_supabase(security_id: str, interval="1min") -> bool:
 #  MAIN EXECUTION FLOW
 # =====================================================
 if __name__ == "__main__":
-    print("\n=== STARTING HISTORICAL DATA SYNC ===")
+    log.info("=== STARTING HISTORICAL DATA SYNC ===")
     wishlist = fetch_wishlist_from_supabase(DEFAULT_USER_ID)
-    if not wishlist: print("No wishlist found. Exiting."); exit()
+    if not wishlist: log.error("No wishlist found. Exiting."); exit()
     security_ids = clean_security_ids(wishlist)
-    if not security_ids: print("No NSE EQUITY IDs. Exiting."); exit()
+    if not security_ids: log.error("No NSE EQUITY IDs. Exiting."); exit()
 
     success, skipped, failed = 0, 0, 0
     for idx, sec_id in enumerate(security_ids, 1):
-        print(f"\nProcessing {idx}/{len(security_ids)}: {sec_id}")
+        log.info(f"Processing {idx}/{len(security_ids)}: {sec_id}")
         fetched = fetch_and_save_loop(sec_id)
-        if not fetched: print(f"Fetch failed for {sec_id}"); failed += 1; continue
+        if not fetched: log.warning(f"Fetch failed for {sec_id}"); failed += 1; continue
 
         inserted = insert_candles_to_supabase(sec_id)
         success += 1 if inserted else 0
         failed += 0 if inserted else 1
 
-    print(f"\n=== SYNC COMPLETED ===\nSuccess: {success} | Failed: {failed}")
+    log.info(f"=== SYNC COMPLETED === Success: {success} | Failed: {failed}")
