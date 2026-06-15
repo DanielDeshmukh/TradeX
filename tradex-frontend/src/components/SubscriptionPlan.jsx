@@ -1,137 +1,134 @@
-import React, { useState, useEffect } from "react";
-import supabase from "../lib/supabase";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import Button from './ui/Button';
+import Card from './ui/Card';
 
-function SubscriptionPlan({ user }) {
-  const [plans, setPlans] = useState([
-    {
-      name: "Basic",
-      base_amount: 199,
-      features: [
-        "15 Trades per day",
-        `₹${Math.floor(199 * 0.2)} Add-on 10 Trades per day`,
-        "5 alerts per day",
-      ],
-    },
-    {
-      name: "Pro",
-      base_amount: 499,
-      features: [
-        "30 Trades per day",
-        `₹${Math.floor(499 * 0.2)} Add-on 20 Trades per day`,
-        "10 alerts per day",
-      ],
-    },
-    {
-      name: "Elite",
-      base_amount: 999,
-      features: [
-        "50 Trades per day",
-        `₹${Math.floor(999 * 0.2)} Add-on 30 Trades per day`,
-        "20 alerts per day",
-      ],
-    },
-  ]);
+const PLANS = [
+  {
+    id: 'free',
+    name: 'Free',
+    price: 0,
+    period: 'forever',
+    features: [
+      'Basic charting (daily timeframe)',
+      'Limited watchlist (5 stocks)',
+      'Delayed AI signals (15min)',
+      'Basic technical indicators',
+    ],
+    limits: { watchlist: 5, signals: 'delayed', indicators: 'basic' },
+  },
+  {
+    id: 'pro',
+    name: 'Pro',
+    price: 499,
+    period: 'month',
+    popular: true,
+    features: [
+      'All timeframes (1m to Daily)',
+      'Unlimited watchlist',
+      'Real-time AI signals',
+      'All technical indicators',
+      'Price alerts',
+      'Priority support',
+    ],
+    limits: { watchlist: -1, signals: 'realtime', indicators: 'all' },
+  },
+  {
+    id: 'elite',
+    name: 'Elite',
+    price: 1499,
+    period: 'month',
+    features: [
+      'Everything in Pro',
+      'Signal history & accuracy stats',
+      'Custom alert strategies',
+      'API access',
+      'Advanced portfolio analytics',
+      'Dedicated support',
+    ],
+    limits: { watchlist: -1, signals: 'realtime', indicators: 'all' },
+  },
+];
 
-  useEffect(() => {
-    if (!user?.id) return;
+export default function SubscriptionPlan({ currentPlan = 'free', onSelectPlan }) {
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-    const fetchCurrentPlan = async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("current_plan")
-        .eq("id", user.id)
-        .single();
-
-      if (error) {
-        toast.error(`Failed to fetch current plan: ${error.message}`, {
-          style: { background: "#1f1f1f", color: "#ff6b6b" },
-        });
-        return;
-      }
-
-      setPlans((prevPlans) =>
-        prevPlans.map((p) => ({ ...p, current: p.name === data.current_plan }))
-      );
-    };
-
-    fetchCurrentPlan();
-  }, [user]);
-
-  const assignPlanToUser = async (planName) => {
-    if (!user?.id) {
-      toast.error("No user provided. Cannot assign plan.", {
-        style: { background: "#1f1f1f", color: "#ff6b6b" },
-      });
-      return;
-    }
-
-    setPlans((prevPlans) =>
-      prevPlans.map((p) => ({ ...p, current: p.name === planName }))
-    );
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ current_plan: planName })
-      .eq("id", user.id);
-
-    if (error) {
-      toast.error(`Failed to update plan: ${error.message}`, {
-        style: { background: "#1f1f1f", color: "#ff6b6b" },
-      });
-    } else {
-      toast.success(`Plan "${planName}" assigned successfully!`, {
-        style: { background: "#1f1f1f", color: "#4ade80" },
-      });
+  const handleSelect = async (plan) => {
+    if (plan.id === 'free' || plan.id === currentPlan) return;
+    setSelectedPlan(plan.id);
+    setLoading(true);
+    try {
+      await onSelectPlan?.(plan);
+    } finally {
+      setLoading(false);
+      setSelectedPlan(null);
     }
   };
 
   return (
-    <div className="glass-card p-6">
-      <h3 className="text-lg font-semibold mb-6 text-white">Subscription Plans</h3>
+    <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-content">Choose Your Plan</h2>
+        <p className="text-content-secondary mt-2">Unlock the full power of AI-driven trading</p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {plans.map((plan, idx) => (
-          <div
-            key={idx}
-            className={`rounded-xl p-5 border ${
-              plan.current
-                ? "border-brand bg-surface-elevated"
-                : "border-white/10 bg-surface"
-            } flex flex-col`}
-          >
-            <div className="flex justify-between items-center mb-3">
-              <h4 className="text-xl font-semibold text-white">{plan.name}</h4>
-              {plan.current && (
-                <span className="text-green-400 text-sm">Current</span>
-              )}
-            </div>
+        {PLANS.map((plan) => {
+          const isCurrent = plan.id === currentPlan;
+          const isSelected = selectedPlan === plan.id;
 
-            <p className="text-purple-400 font-medium mb-4">
-              ₹{plan.base_amount}/mo
-            </p>
-
-            <ul className="text-sm text-gray-300 space-y-2 mb-4">
-              {plan.features.map((feature, i) => (
-                <li key={i}>• {feature}</li>
-              ))}
-            </ul>
-
-            <button
-              className={`mt-auto py-2 rounded-md text-sm font-medium transition ${
-                plan.current
-                  ? "bg-gray-600 cursor-not-allowed text-gray-400"
-                  : "btn-primary hover:opacity-90"
-              }`}
-              disabled={plan.current}
-              onClick={() => assignPlanToUser(plan.name)}
+          return (
+            <Card
+              key={plan.id}
+              className={`p-6 relative ${
+                plan.popular ? 'border-brand ring-1 ring-brand/30' : ''
+              } ${isCurrent ? 'opacity-75' : ''}`}
             >
-              {plan.current ? "Current Plan" : `Select ${plan.name}`}
-            </button>
-          </div>
-        ))}
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand text-white text-xs font-bold px-3 py-1 rounded-full">
+                  Most Popular
+                </div>
+              )}
+
+              <div className="text-center mb-6">
+                <h3 className="text-content text-xl font-bold">{plan.name}</h3>
+                <div className="mt-3">
+                  <span className="text-content text-4xl font-bold">
+                    {plan.price === 0 ? 'Free' : `₹${plan.price}`}
+                  </span>
+                  {plan.price > 0 && (
+                    <span className="text-content-secondary text-sm">/{plan.period}</span>
+                  )}
+                </div>
+              </div>
+
+              <ul className="space-y-3 mb-6">
+                {plan.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <span className="text-green-400 mt-0.5">✓</span>
+                    <span className="text-content-secondary">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <Button
+                onClick={() => handleSelect(plan)}
+                disabled={isCurrent || loading}
+                variant={plan.popular ? 'primary' : 'secondary'}
+                className="w-full"
+              >
+                {isCurrent
+                  ? 'Current Plan'
+                  : isSelected
+                  ? 'Processing...'
+                  : plan.price === 0
+                  ? 'Get Started'
+                  : 'Subscribe'}
+              </Button>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
 }
-
-export default SubscriptionPlan;
