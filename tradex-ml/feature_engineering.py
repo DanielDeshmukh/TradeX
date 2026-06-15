@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import yaml
+from pathlib import Path
 from typing import List, Optional
 
 
@@ -131,6 +133,54 @@ def add_label(
     return df
 
 
+def add_risk_adjusted_label(
+    df: pd.DataFrame, horizon: int = 20, min_sharpe: float = 0.5
+) -> pd.DataFrame:
+    rolling_return = df["close"].pct_change(horizon).shift(-horizon)
+    rolling_std = df["close"].pct_change().rolling(horizon).std()
+    rolling_sharpe = (rolling_return / rolling_std.replace(0, np.nan)) * np.sqrt(252)
+    df["risk_label"] = 0
+    df.loc[rolling_sharpe > min_sharpe, "risk_label"] = 1
+    df.loc[rolling_sharpe < -min_sharpe, "risk_label"] = -1
+    return df
+
+
+def export_parquet(df: pd.DataFrame, output_path: str) -> None:
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(output_path, index=False, engine="pyarrow")
+    print(f"Exported {len(df)} rows to {output_path}")
+
+
+def load_config(config_path: str = None) -> dict:
+    if config_path is None:
+        config_path = Path(__file__).parent / "feature_config.yaml"
+    if not Path(config_path).exists():
+        return get_default_config()
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
+
+
+def get_default_config() -> dict:
+    return {
+        "sma_periods": [10, 20, 50],
+        "ema_periods": [12, 26],
+        "rsi_period": 14,
+        "macd": {"fast": 12, "slow": 26, "signal": 9},
+        "bollinger": {"period": 20, "std_dev": 2.0},
+        "atr_period": 14,
+        "stochastic": {"k_period": 14, "d_period": 3},
+        "adx_period": 14,
+        "lag_periods": [1, 3, 5],
+        "label_horizon": 5,
+        "label_threshold": 0.001,
+        "risk_label_horizon": 20,
+        "risk_min_sharpe": 0.5,
+        "normalization": "zscore",
+        "train_ratio": 0.7,
+        "val_ratio": 0.15,
+    }
+
+
 def normalize_features(
     df: pd.DataFrame, columns: Optional[List[str]] = None, method: str = "zscore"
 ) -> pd.DataFrame:
@@ -160,24 +210,36 @@ def engineer_features(
     include_lags: bool = True,
     include_time: bool = True,
     include_labels: bool = True,
+    include_risk_labels: bool = False,
     normalize: bool = True,
+    config: dict = None,
 ) -> pd.DataFrame:
+    if config is None:
+        config = get_default_config()
     df = df.copy()
 
     # Technical indicators
-    df["sma_10"] = compute_sma(df, 10)
-    df["sma_20"] = compute_sma(df, 20)
-    df["sma_50"] = compute_sma(df, 50)
-    df["ema_12"] = compute_ema(df, 12)
-    df["ema_26"] = compute_ema(df, 26)
-    df["rsi"] = compute_rsi(df)
-    df["macd"], df["macd_signal"], df["macd_hist"] = compute_macd(df)
-    df["bb_upper"], df["bb_middle"], df["bb_lower"] = compute_bollinger_bands(df)
-    df["atr"] = compute_atr(df)
+    for period in config.get("sma_periods", [10, 20, 50]):
+        df[f"sma_{period}"] = compute_sma(df, period)
+    for period in config.get("ema_periods", [12, 26]):
+        df[f"ema_{period}"] = compute_ema(df, period)
+    df["rsi"] = compute_rsi(df, config.get("rsi_period", 14))
+    macd_cfg = config.get("macd", {})
+    df["macd"], df["macd_signal"], df["macd_hist"] = compute_macd(
+        df, macd_cfg.get("fast", 12), macd_cfg.get("slow", 26), macd_cfg.get("signal", 9)
+    )
+    bb_cfg = config.get("bollinger", {})
+    df["bb_upper"], df["bb_middle"], df["bb_lower"] = compute_bollinger_bands(
+        df, bb_cfg.get("period", 20), bb_cfg.get("std_dev", 2.0)
+    )
+    df["atr"] = compute_atr(df, config.get("atr_period", 14))
     df["obv"] = compute_obv(df)
     df["vwap"] = compute_vwap(df)
-    df["stoch_k"], df["stoch_d"] = compute_stochastic(df)
-    df["adx"] = compute_adx(df)
+    stoch_cfg = config.get("stochastic", {})
+    df["stoch_k"], df["stoch_d"] = compute_stochastic(
+        df, stoch_cfg.get("k_period", 14), stoch_cfg.get("d_period", 3)
+    )
+    df["adx"] = compute_adx(df, config.get("adx_period", 14))
 
     # Price-based features
     df["returns"] = df["close"].pct_change()
@@ -186,18 +248,25 @@ def engineer_features(
     df["volatility_20"] = df["returns"].rolling(20).std()
 
     if include_lags:
-        df = add_lag_features(df, ["close", "volume", "returns", "rsi"])
+        df = add_lag_features(df, ["close", "volume", "returns", "rsi"],
+                              config.get("lag_periods", [1, 3, 5]))
 
     if include_time:
         df = add_time_features(df)
 
     if include_labels:
-        df = add_label(df)
+        df = add_label(df, config.get("label_horizon", 5),
+                       config.get("label_threshold", 0.001))
+
+    if include_risk_labels:
+        df = add_risk_adjusted_label(df, config.get("risk_label_horizon", 20),
+                                     config.get("risk_min_sharpe", 0.5))
 
     if normalize:
+        skip = ["label", "risk_label", "hour", "day_of_week", "is_market_open"]
         feature_cols = [c for c in df.select_dtypes(include=[np.number]).columns
-                       if c not in ["label", "hour", "day_of_week", "is_market_open"]]
-        df = normalize_features(df, feature_cols)
+                       if c not in skip]
+        df = normalize_features(df, feature_cols, config.get("normalization", "zscore"))
 
     df = df.dropna()
     return df
