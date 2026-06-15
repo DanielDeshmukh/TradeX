@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import supabase from '../lib/supabase';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
 function Login() {
+    const navigate = useNavigate();
     const [form, setForm] = useState({ email: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -29,7 +30,7 @@ function Login() {
                     style: { background: '#1f1f1f', color: '#4ade80' },
                 });
                 setTimeout(() => {
-                    window.location.href = '/';
+                    navigate("/main-page");
                 }, 1000);
             }
         } catch (err) {
