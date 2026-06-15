@@ -1,5 +1,4 @@
 from dhanhq import dhanhq, DhanContext
-from supabase import create_client, Client
 import pandas as pd
 import dotenv
 import os
@@ -10,9 +9,11 @@ import datetime
 import time
 from typing import List, Dict, Any
 
-# =====================================================
-#  LOGGING SETUP
-# =====================================================
+sys_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import sys
+sys.path.insert(0, sys_path)
+from db import upsert_candles, count_candles, init_db
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -20,45 +21,23 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# =====================================================
-#  LOAD ENVIRONMENT VARIABLES
-# =====================================================
 dotenv.load_dotenv()
 
 CLIENT_ID = os.getenv("DHAN_CLIENT_ID")
 ACCESS_TOKEN = os.getenv("DHAN_ACCESS_TOKEN")
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
-DEFAULT_USER_ID = os.getenv("SUPABASE_DEFAULT_USER_ID")
-EDGE_FUNCTION_WISHLIST_URL = f"{SUPABASE_URL}/functions/v1/wishlist" if SUPABASE_URL else ""
 
 if not CLIENT_ID or not ACCESS_TOKEN:
     raise ValueError("Missing Dhan credentials. Check your .env file!")
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    raise ValueError("Missing Supabase credentials. Check your .env file!")
-
-# =====================================================
-#  INITIALIZE DHAN CONTEXT AND SUPABASE CLIENT
-# =====================================================
 dhan_context = DhanContext(client_id=CLIENT_ID, access_token=ACCESS_TOKEN)
 dhan = dhanhq(dhan_context)
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # =====================================================
 #  FETCH WISHLIST FROM SUPABASE
 # =====================================================
 def fetch_wishlist_from_supabase(user_id: str) -> List[Dict[str, Any]]:
-    headers = {"Authorization": f"Bearer {SUPABASE_KEY}", "Content-Type": "application/json"}
-    payload = {"user_id": user_id, "action": "fetch"}
-    try:
-        resp = requests.post(EDGE_FUNCTION_WISHLIST_URL, headers=headers, json=payload, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        return data.get("wishlist", []) if isinstance(data.get("wishlist"), list) else []
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching wishlist: {e}")
-        return []
+    log.warning("Supabase wishlist fetch disabled. Use local security IDs instead.")
+    return []
 
 # =====================================================
 #  CLEAN SECURITY IDS
@@ -86,14 +65,7 @@ def fetch_and_save_loop(security_id: str, interval="1min", batch_days=90, max_re
 
         log.info(f"Fetching {interval} data for Security ID {security_id} [{from_date_str} to {to_date_str}]")
 
-        existing_data = supabase.table("candles")\
-            .select("timestamp", count="exact")\
-            .eq("security_id", security_id)\
-            .eq("timeframe", interval)\
-            .gte("timestamp", f"{from_date_str}T00:00:00")\
-            .lte("timestamp", f"{to_date_str}T23:59:59")\
-            .execute()
-        existing_count = getattr(existing_data, "count", 0)
+        existing_count = count_candles(security_id, interval, f"{from_date_str}T00:00:00", f"{from_date_str}T23:59:59")
 
         if existing_count >= 20000:
             log.info(f"Existing data sufficient ({existing_count} records). Skipping batch.")
@@ -186,10 +158,8 @@ def insert_candles_to_supabase(security_id: str, interval="1min") -> bool:
         else:
             print("Unexpected data format."); return False
 
-        batch_size = 1000
-        for i in range(0, len(candles), batch_size):
-            supabase.table("candles").upsert(candles[i:i+batch_size], on_conflict="security_id,timeframe,timestamp").execute()
-        print(f"Inserted {len(candles)} candles for {security_id}")
+        inserted = upsert_candles(candles)
+        print(f"Inserted {inserted} candles for {security_id}")
         return True
 
     except Exception as e:
@@ -201,10 +171,15 @@ def insert_candles_to_supabase(security_id: str, interval="1min") -> bool:
 # =====================================================
 if __name__ == "__main__":
     log.info("=== STARTING HISTORICAL DATA SYNC ===")
-    wishlist = fetch_wishlist_from_supabase(DEFAULT_USER_ID)
-    if not wishlist: log.error("No wishlist found. Exiting."); exit()
-    security_ids = clean_security_ids(wishlist)
-    if not security_ids: log.error("No NSE EQUITY IDs. Exiting."); exit()
+    try:
+        init_db()
+        log.info("Database initialized")
+    except Exception as e:
+        log.error(f"Database init failed: {e}")
+        exit(1)
+
+    security_ids = ["14366", "17963", "2277", "3456", "3499"]
+    log.info(f"Using local security IDs: {security_ids}")
 
     success, skipped, failed = 0, 0, 0
     for idx, sec_id in enumerate(security_ids, 1):

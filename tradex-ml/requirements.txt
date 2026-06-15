@@ -6,6 +6,7 @@ requests>=2.31.0
 
 # Data & Database
 supabase>=2.0.0
+psycopg2-binary>=2.9.9
 
 # Dhan Broker API
 dhanhq>=2.0.0

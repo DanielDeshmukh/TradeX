@@ -111,48 +111,28 @@ class SignalEngine:
         return signals
 
     def save_to_supabase(self, signals: list, supabase_client=None) -> list:
-        if supabase_client is None:
-            log.warning("No Supabase client, saving to local JSON only")
-            return signals
-
+        from db import upsert_signals
         saved = []
         for sig in signals:
             try:
-                result = supabase_client.table("trading_signals").insert({
-                    "security_id": sig["security_id"],
-                    "signal": sig["signal"],
-                    "confidence": sig["confidence"],
-                    "model_version": sig.get("model_version", "ppo_baseline_v1"),
-                }).execute()
+                upsert_signals([sig])
                 saved.append(sig)
             except Exception as e:
-                log.error(f"Failed to save signal to Supabase: {e}")
+                log.error(f"Failed to save signal: {e}")
         return saved
 
     def track_accuracy(self, signal_id: str, security_id: str, signal: str,
                        confidence: float, actual_return: float,
                        supabase_client=None) -> dict:
+        from db import track_signal_accuracy as db_track
         was_correct = (signal == "buy" and actual_return > 0) or \
                       (signal == "sell" and actual_return < 0) or \
                       (signal == "hold" and abs(actual_return) < 0.01)
-
-        record = {
-            "signal_id": signal_id,
-            "security_id": security_id,
-            "signal": signal,
-            "confidence": confidence,
-            "actual_return": actual_return,
-            "was_correct": was_correct,
-            "evaluated_at": datetime.utcnow().isoformat(),
-        }
-
-        if supabase_client:
-            try:
-                supabase_client.table("signal_accuracy").insert(record).execute()
-            except Exception as e:
-                log.error(f"Failed to track accuracy: {e}")
-
-        return record
+        try:
+            return db_track(signal_id, security_id, signal, confidence, actual_return)
+        except Exception as e:
+            log.error(f"Failed to track accuracy: {e}")
+            return {"was_correct": was_correct}
 
 
 class PeriodicSignalGenerator:
