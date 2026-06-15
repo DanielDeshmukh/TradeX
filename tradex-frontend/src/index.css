@@ -1,3 +1,236 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════
+   THEME SYSTEM — CSS Variables on [data-theme]
+   All themes are DARK. Only accent + surface tones change.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Default: TradeX Purple ── */
+:root,
+[data-theme="tradex"] {
+  --color-primary: #7F3DFF;
+  --color-primary-hover: #6C4FE0;
+  --color-primary-muted: #5A18E9;
+  --color-primary-glow: rgba(127, 61, 255, 0.2);
+
+  --color-bg: #0A0E15;
+  --color-bg-secondary: #0F1117;
+  --color-surface: #1A1D29;
+  --color-surface-elevated: #1C1F24;
+  --color-surface-input: #2B2B2B;
+
+  --color-text: #ffffff;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #6B7280;
+
+  --color-border: rgba(255, 255, 255, 0.05);
+  --color-border-strong: rgba(255, 255, 255, 0.1);
+
+  --color-bullish: #22c55e;
+  --color-bullish-muted: #4ade80;
+  --color-bearish: #ef4444;
+  --color-bearish-muted: #ff6b6b;
+
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-error: #ef4444;
+}
+
+/* ── Claude Dark ── */
+[data-theme="claude"] {
+  --color-primary: #cc785c;
+  --color-primary-hover: #a9583e;
+  --color-primary-muted: #b0654a;
+  --color-primary-glow: rgba(204, 120, 92, 0.2);
+
+  --color-bg: #141413;
+  --color-bg-secondary: #181715;
+  --color-surface: #1f1e1b;
+  --color-surface-elevated: #252320;
+  --color-surface-input: #2a2825;
+
+  --color-text: #faf9f5;
+  --color-text-secondary: #a09d96;
+  --color-text-muted: #6c6a64;
+
+  --color-border: rgba(250, 249, 245, 0.06);
+  --color-border-strong: rgba(250, 249, 245, 0.1);
+
+  --color-bullish: #5db872;
+  --color-bullish-muted: #6ec982;
+  --color-bearish: #c64545;
+  --color-bearish-muted: #e05555;
+
+  --color-success: #5db872;
+  --color-warning: #e8a55a;
+  --color-error: #c64545;
+}
+
+/* ── Nvidia Dark ── */
+[data-theme="nvidia"] {
+  --color-primary: #76b900;
+  --color-primary-hover: #5a8d00;
+  --color-primary-muted: #66a300;
+  --color-primary-glow: rgba(118, 185, 0, 0.2);
+
+  --color-bg: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-surface: #1a1a1a;
+  --color-surface-elevated: #242424;
+  --color-surface-input: #2a2a2a;
+
+  --color-text: #ffffff;
+  --color-text-secondary: #a7a7a7;
+  --color-text-muted: #757575;
+
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+
+  --color-bullish: #76b900;
+  --color-bullish-muted: #8dd100;
+  --color-bearish: #e52020;
+  --color-bearish-muted: #ff4444;
+
+  --color-success: #76b900;
+  --color-warning: #df6500;
+  --color-error: #e52020;
+}
+
+/* ── Ollama Dark ── */
+[data-theme="ollama"] {
+  --color-primary: #ffffff;
+  --color-primary-hover: #e5e5e5;
+  --color-primary-muted: #d4d4d4;
+  --color-primary-glow: rgba(255, 255, 255, 0.1);
+
+  --color-bg: #171717;
+  --color-bg-secondary: #1c1c1c;
+  --color-surface: #262626;
+  --color-surface-elevated: #303030;
+  --color-surface-input: #3a3a3a;
+
+  --color-text: #ffffff;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted: #737373;
+
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.1);
+
+  --color-bullish: #27c93f;
+  --color-bullish-muted: #4ade80;
+  --color-bearish: #ff5f56;
+  --color-bearish-muted: #ff7b73;
+
+  --color-success: #27c93f;
+  --color-warning: #ffbd2e;
+  --color-error: #ff5f56;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BASE STYLES — Reference CSS variables
+   ═══════════════════════════════════════════════════════════════ */
+
+html {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENT UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+@layer components {
+  .glass {
+    background: color-mix(in srgb, var(--color-bg-secondary) 70%, transparent);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-border);
+  }
+
+  .glass-card {
+    background: color-mix(in srgb, var(--color-surface) 70%, transparent);
+    backdrop-filter: blur(12px);
+    border-radius: 0.75rem;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-muted));
+    color: var(--color-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    box-shadow: 0 0 20px var(--color-primary-glow);
+  }
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-secondary {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-strong);
+    color: var(--color-text);
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover {
+    background: var(--color-surface-input);
+  }
+
+  .btn-ghost {
+    color: var(--color-text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover {
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .btn-danger {
+    background: color-mix(in srgb, var(--color-bearish) 10%, transparent);
+    color: var(--color-bearish);
+    border: 1px solid color-mix(in srgb, var(--color-bearish) 20%, transparent);
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .btn-danger:hover {
+    background: color-mix(in srgb, var(--color-bearish) 20%, transparent);
+  }
+
+  .input-base {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    background: var(--color-surface-input);
+    color: var(--color-text);
+    border: 1px solid var(--color-border-strong);
+    transition: all 0.2s;
+  }
+  .input-base::placeholder {
+    color: var(--color-text-muted);
+  }
+  .input-base:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary-glow);
+  }
+}

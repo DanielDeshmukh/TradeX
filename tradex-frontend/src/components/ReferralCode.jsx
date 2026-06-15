@@ -141,7 +141,7 @@ function ReferralCode() {
   const remaining = Math.max(0, MAX_PER_YEAR - totalGenerated);
 
   return (
-    <div className="bg-[#0F1117]/70 backdrop-blur-md p-6 rounded-xl shadow-lg">
+    <div className="glass-card p-6">
       <h3 className="text-lg font-semibold mb-4 text-white">Referral Codes</h3>
 
       <div className="mb-3 text-sm text-gray-300">
@@ -163,7 +163,7 @@ function ReferralCode() {
         {codes.map((c) => (
           <div
             key={c.id}
-            className="bg-[#1a1a1a] px-4 py-2 rounded-lg flex justify-between items-center hover:bg-[#2c2c2c] transition"
+            className="bg-surface-input px-4 py-2 rounded-lg flex justify-between items-center hover:bg-surface-elevated transition"
           >
             <span className="text-white font-mono">{c.code}</span>
             <button
@@ -180,7 +180,7 @@ function ReferralCode() {
         <button
           onClick={handleGenerate}
           disabled={generateLoading || remaining <= 0}
-          className="bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] hover:opacity-90 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50 transition"
+          className="btn-primary hover:opacity-90 px-4 py-2 rounded-lg text-sm disabled:opacity-50 transition"
         >
           {generateLoading ? "Generating..." : "Generate New Code"}
         </button>
@@ -192,7 +192,7 @@ function ReferralCode() {
           placeholder="Enter referral code to redeem"
           value={redeemCode}
           onChange={(e) => setRedeemCode(e.target.value)}
-          className="flex-1 px-3 py-2 rounded-md bg-[#1a1a1a] text-white border border-purple-500"
+          className="flex-1 px-3 py-2 rounded-md bg-surface-input text-white border border-brand"
         />
         <button
           onClick={handleUseCode}

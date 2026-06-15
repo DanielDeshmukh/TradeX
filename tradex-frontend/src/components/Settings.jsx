@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import Header from "./Header";
 import supabase from "../lib/supabase";
 import { toast } from "react-toastify";
+import { useTheme } from "../context/ThemeContext";
 import SettingsSkeleton from "./SettingsSkeleton";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -38,6 +39,7 @@ function normalizeInvokeResponse(res) {
 }
 
 const Settings = () => {
+  const { theme, setTheme, themes } = useTheme();
 
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -211,32 +213,61 @@ const Settings = () => {
   );
 
   return (
-    <div className="p-4 sm:p-6 bg-[#0B0E15] text-white min-h-screen">
+    <div className="p-4 sm:p-6 bg-bg text-white min-h-screen">
       <Header />
       <div className="w-full max-w-6xl mx-auto space-y-6 mt-6 sm:space-y-8">
-        <div className="bg-[#0F1117]/70 p-6 rounded-2xl border border-[#2D2F36]">
+        <div className="glass-card p-6">
+          <label className="block text-lg font-semibold mb-4">Theme</label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {themes.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTheme(t.id)}
+                className={`p-4 rounded-xl border text-left transition-all ${
+                  theme === t.id
+                    ? "border-brand shadow-brand bg-surface"
+                    : "border-white/10 bg-surface-input hover:border-white/20"
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <div
+                    className="w-4 h-4 rounded-full border-2"
+                    style={{
+                      borderColor: t.id === "tradex" ? "#7F3DFF" : t.id === "claude" ? "#cc785c" : t.id === "nvidia" ? "#76b900" : "#ffffff",
+                      backgroundColor: t.id === "tradex" ? "#7F3DFF" : t.id === "claude" ? "#cc785c" : t.id === "nvidia" ? "#76b900" : "#ffffff",
+                    }}
+                  />
+                  <span className="font-medium text-sm">{t.name}</span>
+                </div>
+                <p className="text-xs text-content-secondary">{t.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card p-6">
           <label className="block text-lg font-semibold mb-2">Default Chart Type</label>
           <select 
             value={settings.chartType} 
             onChange={(e) => setSettings((p) => ({ ...p, chartType: e.target.value }))} 
-            className="w-full bg-[#1a1a1a] text-white px-4 py-2 rounded-xl border border-gray-600 hover:border-purple-500 transition-all"
+            className="w-full bg-surface-input text-white px-4 py-2 rounded-xl border border-white/10 hover:border-brand/50 transition-all"
           >
             {chartTypeOptions.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
           </select>
         </div>
         
-        <div className="bg-[#0F1117]/70 p-6 rounded-2xl border border-[#2D2F36]">
+        <div className="glass-card p-6">
           <label className="block text-lg font-semibold mb-2">Default Chart Interval</label>
           <select 
             value={settings.chartInterval} 
             onChange={(e) => setSettings((p) => ({ ...p, chartInterval: e.target.value }))} 
-            className="w-full bg-[#1a1a1a] text-white px-4 py-2 rounded-xl border border-gray-600 hover:border-purple-500 transition-all"
+            className="w-full bg-surface-input text-white px-4 py-2 rounded-xl border border-white/10 hover:border-brand/50 transition-all"
           >
             {chartIntervalOptions.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
           </select>
         </div>
         
-        <div className="bg-[#0F1117]/70 p-6 rounded-2xl border border-[#2D2F36]">
+        <div className="glass-card p-6">
           <label className="flex items-center justify-between cursor-pointer">
             <span className="text-lg font-semibold">Enable Notifications</span>
             <input 
@@ -248,28 +279,28 @@ const Settings = () => {
           </label>
         </div>
         
-        <div className="bg-[#0F1117]/70 p-6 rounded-2xl border border-[#2D2F36] relative">
+        <div className="glass-card p-6 relative">
           <label className="block text-lg font-semibold mb-4">Wishlist</label>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-            <input type="text" name="keyword" value={searchForm.keyword} onChange={handleFormChange} placeholder="Symbol / Display Name" className="bg-[#1a1a1a] text-white px-3 py-2 rounded-xl border border-gray-600 hover:border-purple-500 transition-all"/>
-            <select name="exchange_id" value={searchForm.exchange_id} onChange={handleFormChange} className="bg-[#1a1a1a] text-white px-3 py-2 rounded-xl border border-gray-600 hover:border-purple-500 transition-all">
+            <input type="text" name="keyword" value={searchForm.keyword} onChange={handleFormChange} placeholder="Symbol / Display Name" className="bg-surface-input text-white px-3 py-2 rounded-xl border border-white/10 hover:border-brand/50 transition-all"/>
+            <select name="exchange_id" value={searchForm.exchange_id} onChange={handleFormChange} className="bg-surface-input text-white px-3 py-2 rounded-xl border border-white/10 hover:border-brand/50 transition-all">
               <option value="">Select Exchange</option>
               {exchangeOptions.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
             </select>
-            <select name="instrument" value={searchForm.instrument} onChange={handleFormChange} className="bg-[#1a1a1a] text-white px-3 py-2 rounded-xl border border-gray-600 hover:border-purple-500 transition-all">
+            <select name="instrument" value={searchForm.instrument} onChange={handleFormChange} className="bg-surface-input text-white px-3 py-2 rounded-xl border border-white/10 hover:border-brand/50 transition-all">
               <option value="">Select Instrument</option>
               {instrumentOptions.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
             </select>
-            <input type="text" name="security_id" value={searchForm.security_id} onChange={handleFormChange} placeholder="Security ID" className="bg-[#1a1a1a] text-white px-3 py-2 rounded-xl border border-gray-600 hover:border-purple-500 transition-all"/>
+            <input type="text" name="security_id" value={searchForm.security_id} onChange={handleFormChange} placeholder="Security ID" className="bg-surface-input text-white px-3 py-2 rounded-xl border border-white/10 hover:border-brand/50 transition-all"/>
           </div>
           
           {isSearching && <div className="text-gray-400 mb-2">Searching...</div>}
           
           {Object.keys(symbolSuggestions).length > 0 && (
-            <ul className="bg-[#1a1a1a] border border-gray-600 rounded-xl max-h-60 overflow-y-auto shadow-2xl mb-4">
+            <ul className="bg-surface-input border border-white/10 rounded-xl max-h-60 overflow-y-auto shadow-2xl mb-4">
               {Object.entries(symbolSuggestions).map(([name, variants]) => (
-                <li key={name} className="border-b border-gray-700 last:border-b-0">
-                  <div className="px-4 py-2 font-semibold text-purple-300 bg-[#0F1117]">{name}</div>
+                <li key={name} className="border-b border-white/5 last:border-b-0">
+                  <div className="px-4 py-2 font-semibold text-brand bg-bg-secondary">{name}</div>
                   <ul>
                     {variants.map((s) => (
                       <li 
@@ -295,7 +326,7 @@ const Settings = () => {
           ) : (
             <div className="flex flex-wrap gap-2">
               {settings.wishlist.map((s) => (
-                <div key={s.security_id} className="flex items-center gap-2 bg-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-600 transition-colors">
+                <div key={s.security_id} className="flex items-center gap-2 bg-brand/20 text-brand px-3 py-1.5 rounded-full hover:bg-brand/30 transition-colors">
                   <span className="text-sm">{s.display_name} ({s.exchange_segment})</span>
                   <button 
                     onClick={() => removeSymbol(s.security_id, s.display_name)} 
@@ -313,7 +344,7 @@ const Settings = () => {
         <div className="mt-4 flex justify-end">
           <button 
             onClick={saveSettings} 
-            className="px-6 py-3 bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all"
+            className="btn-primary px-6 py-3 rounded-xl font-semibold"
           >
             Save Settings
           </button>

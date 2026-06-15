@@ -125,7 +125,7 @@ function ProfileHeader() {
         <img
           src={avatarUrl}
           alt="User Avatar"
-          className="w-20 h-20 rounded-full border-4 border-purple-600 object-cover shadow-lg"
+          className="w-20 h-20 rounded-full border-4 border-brand object-cover shadow-brand"
         />
         {isEditing && (
           <input
@@ -140,19 +140,19 @@ function ProfileHeader() {
 
       <div className="text-center sm:text-left w-full sm:w-auto">
         {isEditing ? (
-          <div className="flex flex-col sm:flex-row gap-2 bg-[#0F1117]/60 backdrop-blur-md p-3 rounded-xl">
+          <div className="flex flex-col sm:flex-row gap-2 glass p-3 rounded-xl">
             <input
               type="text"
               value={username || ""}
               onChange={(e) => setUsername(e.target.value)}
-              className="px-3 py-2 rounded-md bg-[#1a1a1a] text-white border border-purple-500 flex-1 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              className="px-3 py-2 rounded-md bg-surface-input text-white border border-brand focus:ring-2 focus:ring-brand/20 focus:outline-none"
               disabled={loading}
               placeholder="Enter your username"
             />
             <button
               onClick={handleSave}
               disabled={loading}
-              className="px-4 py-2 bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] rounded-md text-white font-medium shadow-lg hover:opacity-90 transition"
+              className="px-4 py-2 btn-primary rounded-md font-medium shadow-lg"
             >
               {loading ? "Saving..." : "Save"}
             </button>
@@ -174,7 +174,7 @@ function ProfileHeader() {
             </p>
             <button
               onClick={() => setIsEditing(true)}
-              className="mt-2 px-4 py-1 bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] hover:opacity-90 rounded-md text-white font-medium w-full sm:w-auto shadow-md"
+              className="mt-2 px-4 py-1 btn-primary hover:opacity-90 rounded-md font-medium w-full sm:w-auto shadow-md"
             >
               Edit Profile
             </button>
