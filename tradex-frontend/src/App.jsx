@@ -16,12 +16,10 @@ import UpdatePassword from "./components/UpdatePassword";
 import ProfilePage from "./components/ProfilePage";
 import Settings from "./components/Settings";
 import FullscreenChartPage from "./components/FullscreenChartPage";
-import MobileComingSoon from "./components/MobileComingSoon";
 import MainPage from "./components/MainPage";
 import ChartPage from "./components/ChartPage";
 
 function App() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
   const [session, setSession] = useState(null);
   const [authReady, setAuthReady] = useState(false);
 
@@ -42,21 +40,13 @@ function App() {
 
   const userId = useMemo(() => session?.user?.id ?? null, [session]);
 
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 600);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   if (!authReady) return <SplashScreen />;
 
   return (
     <ThemeProvider>
       <QuoteProvider userId={userId}>
-        {isMobile ? (
-          <MobileComingSoon />
-        ) : (
-          <Routes>
+        <Routes>
             {/* Public pages */}
             <Route path="/landing-page" element={!session ? <TradeXLanding /> : <Navigate to="/main-page" replace />} />
             <Route path="/register" element={!session ? <Register /> : <Navigate to="/main-page" replace />} />
@@ -76,7 +66,6 @@ function App() {
             {/* Default fallback */}
             <Route path="*" element={<Navigate to={session ? "/main-page" : "/landing-page"} replace />} />
           </Routes>
-        )}
         <ToastContainer position="top-right" autoClose={3000} />
       </QuoteProvider>
     </ThemeProvider>
