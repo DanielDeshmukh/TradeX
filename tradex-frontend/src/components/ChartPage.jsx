@@ -30,7 +30,7 @@ function ChartPage() {
   const fetchOHLCV = useCallback(async (asset) => {
     if (!asset?.securityId || !asset?.exchangeSegment) return [];
     try {
-      const res = await fetch("http://127.0.0.1:8000/live_feed", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/live_feed`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

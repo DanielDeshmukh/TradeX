@@ -14,7 +14,7 @@ function MagicLink() {
             const { error } = await supabase.auth.signInWithOtp({
                 email,
                 options: {
-                    emailRedirectTo: 'http://localhost:5173/'
+                    emailRedirectTo: import.meta.env.VITE_APP_URL
                 }
             });
 

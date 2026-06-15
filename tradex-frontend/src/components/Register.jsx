@@ -23,7 +23,7 @@ function Register() {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: "http://localhost:5173/" },
+        options: { redirectTo: import.meta.env.VITE_APP_URL },
       });
 
       if (error) {
@@ -61,7 +61,7 @@ function Register() {
       const { error } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
-        options: { emailRedirectTo: "http://localhost:5173/" },
+        options: { emailRedirectTo: import.meta.env.VITE_APP_URL },
       });
 
       if (error) {

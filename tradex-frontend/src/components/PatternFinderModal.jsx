@@ -39,7 +39,7 @@ const PatternFinderModal = () => {
       if (!session) throw new Error("User not logged in");
 
       const res = await fetch(
-        "https://pqrnxozftaccuamdaavi.supabase.co/functions/v1/pattern-matcher",
+        `${import.meta.env.VITE_FUNCTION_URL}/pattern-matcher`,
         {
           method: "POST",
           headers: {
