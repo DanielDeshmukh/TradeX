@@ -8,7 +8,7 @@ requests>=2.31.0
 # Dhan Broker API
 dhanhq>=2.0.0
 
-# ML/RL (Phase 5)
-# stable-baselines3>=2.0.0
-# tensorflow>=2.15.0
-# gymnasium>=0.29.0
+# ML/RL (Phase 5+)
+stable-baselines3>=2.0.0
+gymnasium>=0.29.0
+tensorboard>=2.15.0
