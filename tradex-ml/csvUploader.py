@@ -1,12 +1,19 @@
 import pandas as pd
 from supabase import create_client, Client
+import os
+import dotenv
 
-SUPABASE_URL = "https://pqrnxozftaccuamdaavi.supabase.co"
-SUPABASE_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxcm54b3pmdGFjY3VhbWRhYXZpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTgwNjIxOCwiZXhwIjoyMDY3MzgyMjE4fQ.ufuYl_hI-TRka7I8gvbpJGHnufKtk3KyNsRtINpZwNo"
+dotenv.load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 CSV_PATH = "master_symbols_trimmed.csv"
 TABLE_NAME = "master_symbols"
 CHUNK_SIZE = 500
 SKIPPED_CSV = "skipped_rows.csv"
+
+if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+    raise ValueError("Missing SUPABASE_URL or SUPABASE_SERVICE_KEY in .env")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
