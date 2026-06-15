@@ -1,8 +1,9 @@
 // src/components/WishlistTable.jsx
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import supabase from "../lib/supabase";
+import SignalBadge from "./SignalBadge";
 
-const AssetRow = React.memo(({ asset, flash }) => {
+const AssetRow = React.memo(({ asset, flash, signal }) => {
   const handleClick = () => {
     const url = `/chart?securityId=${encodeURIComponent(asset.securityId)}&exchangeSegment=${encodeURIComponent(asset.exchangeSegment)}&displayName=${encodeURIComponent(asset.name)}`;
     window.open(url, "_blank");
@@ -31,6 +32,11 @@ const AssetRow = React.memo(({ asset, flash }) => {
       <td className="px-4 py-3 text-right text-content-muted text-xs font-mono">
         {asset.volume > 0 ? formatVolume(asset.volume) : <span className="text-content-muted">-</span>}
       </td>
+      <td className="px-4 py-3 text-right">
+        {signal && (
+          <SignalBadge signal={signal.signal} confidence={signal.confidence} size="sm" />
+        )}
+      </td>
     </tr>
   );
 });
@@ -48,6 +54,7 @@ function WishlistTable({ userId }) {
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [flash, setFlash] = useState({});
+  const [signals, setSignals] = useState({});
   const [error, setError] = useState(null);
   const assetsRef = useRef({});
 
@@ -127,6 +134,34 @@ function WishlistTable({ userId }) {
 
       setAssets(updatedAssets);
       setError(null);
+
+      // Fetch AI signals for each security
+      try {
+        const signalsObj = {};
+        await Promise.all(
+          updatedAssets.map(async (asset) => {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session) return;
+              const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-signal`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({ securityId: asset.securityId }),
+              });
+              if (res.ok) {
+                const data = await res.json();
+                if (data?.signal) {
+                  signalsObj[asset.securityId] = data;
+                }
+              }
+            } catch {}
+          })
+        );
+        setSignals(signalsObj);
+      } catch {}
     } catch (err) {
       console.error("Error fetching watchlist:", err);
       setError("Failed to update watchlist");
@@ -171,10 +206,11 @@ function WishlistTable({ userId }) {
               <th className="text-right px-4 py-2 font-medium">Price</th>
               <th className="text-right px-4 py-2 font-medium">Change</th>
               <th className="text-right px-4 py-2 font-medium">Volume</th>
+              <th className="text-right px-4 py-2 font-medium">Signal</th>
             </tr>
           </thead>
           <tbody>
-            {assets.map(asset => <AssetRow key={asset.securityId} asset={asset} flash={flash} />)}
+            {assets.map(asset => <AssetRow key={asset.securityId} asset={asset} flash={flash} signal={signals[asset.securityId]} />)}
           </tbody>
         </table>
       </div>
