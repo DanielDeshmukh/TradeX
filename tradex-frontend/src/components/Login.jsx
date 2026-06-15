@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import supabase from '../lib/supabase';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function Login() {
     const [form, setForm] = useState({ email: '', password: '' });
@@ -44,16 +44,6 @@ function Login() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0D0E11]">
-            <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar
-                newestOnTop
-                closeOnClick
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
             <form onSubmit={handleLogin} className="bg-[#1C1C1C] p-8 mx-4 rounded-2xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl text-white font-bold mb-6">Login</h2>
 

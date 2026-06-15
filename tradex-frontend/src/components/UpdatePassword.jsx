@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import supabase from "../lib/supabase";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 const UpdatePassword = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -46,16 +46,6 @@ const UpdatePassword = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#0D0E11] text-white px-4">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       <form
         onSubmit={handleUpdatePassword}
         className="bg-[#1C1C1C] p-8 rounded-xl shadow-lg w-full max-w-md"

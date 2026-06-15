@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import supabase from "../lib/supabase";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 function Register() {
   const navigate = useNavigate();
@@ -85,16 +85,6 @@ function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0D0E11]">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       <form
         onSubmit={handleRegister}
         className="bg-[#1C1C1C] mx-4 p-8 rounded-2xl shadow-lg w-full max-w-md"
