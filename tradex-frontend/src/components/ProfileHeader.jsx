@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import supabase from "../lib/supabase";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 function ProfileHeader() {
   const [session, setSession] = useState(null);
@@ -121,16 +121,6 @@ function ProfileHeader() {
 
   return (
     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       <div className="relative">
         <img
           src={avatarUrl}

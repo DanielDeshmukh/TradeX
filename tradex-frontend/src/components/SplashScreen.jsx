@@ -1,41 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import banner from "../assets/tab-icon.png";
-import supabase from "../lib/supabase";
 
 const SplashScreen = () => {
-  const navigate = useNavigate();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const asyncTasks = [
-      async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        await new Promise((res) => setTimeout(res, 300)); 
-        return session;
-      },
-      async () => {
-        const { data } = await supabase.from("profiles").select("*").limit(1);
-        await new Promise((res) => setTimeout(res, 300));
-        return data;
-      },
-      async () => {
-        await new Promise((res) => setTimeout(res, 300));
-        return true;
-      }
-    ];
-
-    const runTasks = async () => {
-      for (let i = 0; i < asyncTasks.length; i++) {
-        await asyncTasks[i]();
-        setProgress(Math.floor(((i + 1) / asyncTasks.length) * 100));
-      }
-
-      navigate("/main-page");
-    };
-
-    runTasks();
-  }, [navigate]);
+    const steps = 3;
+    let current = 0;
+    const interval = setInterval(() => {
+      current++;
+      setProgress(Math.floor((current / steps) * 100));
+      if (current >= steps) clearInterval(interval);
+    }, 300);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="flex items-center justify-center bg-[#0A0E15] h-screen w-screen relative">

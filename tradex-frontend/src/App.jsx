@@ -15,7 +15,7 @@ import UpdatePassword from "./components/UpdatePassword";
 import ProfilePage from "./components/ProfilePage";
 import Settings from "./components/Settings";
 import FullscreenChartPage from "./components/FullscreenChartPage";
-import MobileComingSoon from "./components/MobileCommingSoon";
+import MobileComingSoon from "./components/MobileComingSoon";
 import MainPage from "./components/MainPage";
 import ChartPage from "./components/ChartPage";
 

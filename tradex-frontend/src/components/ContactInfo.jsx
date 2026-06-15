@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import supabase from "../lib/supabase";
 import { RiCloseLargeLine } from "react-icons/ri";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 function ContactInfo() {
   const [email, setEmail] = useState("");
@@ -79,17 +79,6 @@ function ContactInfo() {
 
   return (
     <div className="bg-[#0F1117]/70 backdrop-blur-md p-6 rounded-xl shadow-lg">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-white">Contact Information</h3>
         <button
