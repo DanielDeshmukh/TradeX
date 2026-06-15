@@ -191,7 +191,7 @@ const ChartContainer = ({ selectedAsset }) => {
               setShowTimeModal((p) => !p);
               setShowChartModal(false);
             }}
-            className="bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] text-white text-sm px-4 py-1 rounded-lg hover:opacity-90 transition shadow-lg"
+            className="btn-primary text-sm px-4 py-1 rounded-lg transition shadow-lg"
           >
             Timeframes
           </button>
@@ -200,13 +200,13 @@ const ChartContainer = ({ selectedAsset }) => {
               setShowChartModal((p) => !p);
               setShowTimeModal(false);
             }}
-            className="bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] text-white text-sm px-4 py-1 rounded-lg hover:opacity-90 transition shadow-lg"
+            className="btn-primary text-sm px-4 py-1 rounded-lg transition shadow-lg"
           >
             Charts
           </button>
         </div>
       </div>
-      <div className="w-full h-[500px] md:h-[600px] rounded-2xl bg-[#1C1F24]/70 backdrop-blur-sm p-4 shadow-inner shadow-[#7F3DFF]/20 relative flex items-center justify-center">
+      <div className="w-full h-[500px] md:h-[600px] rounded-2xl bg-surface-elevated/70 backdrop-blur-sm p-4 shadow-inner shadow-brand/20 relative flex items-center justify-center">
         <Chart candles={ohlcvData} chartType={chartType} overlays={matchedSegments} onReady={handleChartReady} />
       </div>
       {showTimeModal && <TimeFrameModal selected={timeFrame} onSelect={setTimeFrame} onClose={() => setShowTimeModal(false)} />}
