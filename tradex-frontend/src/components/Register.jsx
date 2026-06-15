@@ -84,10 +84,10 @@ function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0D0E11]">
+    <div className="min-h-screen flex items-center justify-center bg-bg">
       <form
         onSubmit={handleRegister}
-        className="bg-[#1C1C1C] mx-4 p-8 rounded-2xl shadow-lg w-full max-w-md"
+        className="bg-surface-elevated mx-4 p-8 rounded-2xl shadow-lg w-full max-w-md"
       >
         <h2 className="text-2xl text-white font-bold mb-6">Create Account</h2>
 
@@ -96,7 +96,7 @@ function Register() {
           placeholder="Email"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
-          className="w-full p-3 mb-4 rounded-xl bg-[#2B2B2B] text-white"
+          className="w-full p-3 mb-4 rounded-xl bg-surface-input text-white"
           required
         />
 
@@ -106,13 +106,13 @@ function Register() {
             placeholder="Create Password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full p-3 mb-4 rounded-xl bg-[#2B2B2B] text-white"
+            className="w-full p-3 mb-4 rounded-xl bg-surface-input text-white"
             required
           />
           <button
             type="button"
             onClick={togglePasswordVisibility}
-            className="text-[#A24EFF] absolute top-4 right-4"
+            className="text-brand absolute top-4 right-4"
           >
             {showPassword ? <FaEye /> : <FaEyeSlash />}
           </button>
@@ -120,7 +120,7 @@ function Register() {
 
         <button
           type="submit"
-          className="w-full bg-[#A24EFF] text-white p-3 rounded-xl hover:opacity-90"
+          className="w-full bg-brand text-white p-3 rounded-xl hover:opacity-90"
           disabled={loading}
         >
           {loading ? "Signing Up..." : "Sign Up"}
@@ -131,7 +131,7 @@ function Register() {
           <button
             onClick={signupWithGoogle}
             type="button"
-            className="w-full my-2 bg-[#A24EFF] text-white p-3 rounded-xl hover:opacity-90 flex items-center justify-center space-x-2"
+            className="w-full my-2 bg-brand text-white p-3 rounded-xl hover:opacity-90 flex items-center justify-center space-x-2"
             disabled={loading}
           >
             <FaGoogle className="text-white" />

@@ -12,12 +12,12 @@ function Header() {
   return (
     <header 
       className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3
-                 bg-[#0F1117]/60 backdrop-blur-md border-b border-[#6C4FE0]/20 gap-3 sm:gap-0
-                 shadow-lg shadow-[#7F3DFF]/20"
+                 bg-bg-secondary/60 backdrop-blur-md border-b border-brand/20 gap-3 sm:gap-0
+                 shadow-brand"
     >
       <div className="flex items-center justify-around">
         <Link to="/main-page">
-          <h1 className="text-xl my-1 font-bold text-[#7F3DFF] drop-shadow-lg">
+          <h1 className="text-xl my-1 font-bold text-brand drop-shadow-lg">
             Trade<span className="text-white">X</span>
           </h1>
         </Link>
@@ -27,8 +27,7 @@ function Header() {
         {showFindChartButton && (
           <button 
             onClick={open} 
-            className="bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] text-white text-sm font-semibold
-                       px-4 py-2 rounded-md shadow-lg hover:opacity-90 transition flex items-center justify-center gap-x-2 w-full sm:w-auto"
+            className="btn-primary text-sm font-semibold px-4 py-2 rounded-md flex items-center justify-center gap-x-2 w-full sm:w-auto"
           >
             <FaChartBar />
             Find Chart Patterns
