@@ -8,27 +8,32 @@ export default {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#7F3DFF',
-          hover: '#6C4FE0',
-          muted: '#5A18E9',
-          glow: 'rgba(127, 61, 255, 0.2)',
+          DEFAULT: 'var(--color-primary)',
+          hover: 'var(--color-primary-hover)',
+          muted: 'var(--color-primary-muted)',
+          glow: 'var(--color-primary-glow)',
         },
         surface: {
-          DEFAULT: '#1A1D29',
-          input: '#2B2B2B',
-          elevated: '#1C1F24',
+          DEFAULT: 'var(--color-surface)',
+          input: 'var(--color-surface-input)',
+          elevated: 'var(--color-surface-elevated)',
         },
         bg: {
-          DEFAULT: '#0A0E15',
-          secondary: '#0F1117',
+          DEFAULT: 'var(--color-bg)',
+          secondary: 'var(--color-bg-secondary)',
         },
         bullish: {
-          DEFAULT: '#22c55e',
-          muted: '#4ade80',
+          DEFAULT: 'var(--color-bullish)',
+          muted: 'var(--color-bullish-muted)',
         },
         bearish: {
-          DEFAULT: '#ef4444',
-          muted: '#ff6b6b',
+          DEFAULT: 'var(--color-bearish)',
+          muted: 'var(--color-bearish-muted)',
+        },
+        content: {
+          DEFAULT: 'var(--color-text)',
+          secondary: 'var(--color-text-secondary)',
+          muted: 'var(--color-text-muted)',
         },
       },
       fontFamily: {
@@ -36,8 +41,8 @@ export default {
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
       },
       boxShadow: {
-        'brand': '0 0 20px rgba(127, 61, 255, 0.2)',
-        'brand-lg': '0 0 40px rgba(127, 61, 255, 0.3)',
+        'brand': '0 0 20px var(--color-primary-glow)',
+        'brand-lg': '0 0 40px var(--color-primary-glow)',
       },
       backdropBlur: {
         xs: '2px',

@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "./context/ThemeContext";
 import { QuoteProvider } from "./context/QuoteContext";
 import supabase from "./lib/supabase";
 
@@ -50,33 +51,35 @@ function App() {
   if (!authReady) return <SplashScreen />;
 
   return (
-    <QuoteProvider userId={userId}>
-      {isMobile ? (
-        <MobileComingSoon />
-      ) : (
-        <Routes>
-          {/* Public pages */}
-          <Route path="/landing-page" element={!session ? <TradeXLanding /> : <Navigate to="/main-page" replace />} />
-          <Route path="/register" element={!session ? <Register /> : <Navigate to="/main-page" replace />} />
-          <Route path="/login" element={!session ? <Login /> : <Navigate to="/main-page" replace />} />
-          <Route path="/forgot-password" element={!session ? <ForgotPassword /> : <Navigate to="/main-page" replace />} />
-          <Route path="/magic-link" element={!session ? <MagicLink /> : <Navigate to="/main-page" replace />} />
-          <Route path="/update-password" element={!session ? <UpdatePassword /> : <Navigate to="/main-page" replace />} />
+    <ThemeProvider>
+      <QuoteProvider userId={userId}>
+        {isMobile ? (
+          <MobileComingSoon />
+        ) : (
+          <Routes>
+            {/* Public pages */}
+            <Route path="/landing-page" element={!session ? <TradeXLanding /> : <Navigate to="/main-page" replace />} />
+            <Route path="/register" element={!session ? <Register /> : <Navigate to="/main-page" replace />} />
+            <Route path="/login" element={!session ? <Login /> : <Navigate to="/main-page" replace />} />
+            <Route path="/forgot-password" element={!session ? <ForgotPassword /> : <Navigate to="/main-page" replace />} />
+            <Route path="/magic-link" element={!session ? <MagicLink /> : <Navigate to="/main-page" replace />} />
+            <Route path="/update-password" element={!session ? <UpdatePassword /> : <Navigate to="/main-page" replace />} />
 
-          {/* Authenticated pages */}
-          <Route path="/main-page" element={session ? <MainPage userId={userId} /> : <Navigate to="/landing-page" replace />} />
-          <Route path="/chart" element={session ? <ChartPage /> : <Navigate to="/landing-page" replace />} />
-          <Route path="/fullscreen-chart" element={session ? <FullscreenChartPage /> : <Navigate to="/landing-page" replace />} />
-          <Route path="/profile-page" element={session ? <ProfilePage /> : <Navigate to="/landing-page" replace />} />
-          <Route path="/notifications" element={session ? <Notifications /> : <Navigate to="/landing-page" replace />} />
-          <Route path="/settings-page" element={session ? <Settings /> : <Navigate to="/landing-page" replace />} />
+            {/* Authenticated pages */}
+            <Route path="/main-page" element={session ? <MainPage userId={userId} /> : <Navigate to="/landing-page" replace />} />
+            <Route path="/chart" element={session ? <ChartPage /> : <Navigate to="/landing-page" replace />} />
+            <Route path="/fullscreen-chart" element={session ? <FullscreenChartPage /> : <Navigate to="/landing-page" replace />} />
+            <Route path="/profile-page" element={session ? <ProfilePage /> : <Navigate to="/landing-page" replace />} />
+            <Route path="/notifications" element={session ? <Notifications /> : <Navigate to="/landing-page" replace />} />
+            <Route path="/settings-page" element={session ? <Settings /> : <Navigate to="/landing-page" replace />} />
 
-          {/* Default fallback */}
-          <Route path="*" element={<Navigate to={session ? "/main-page" : "/landing-page"} replace />} />
-        </Routes>
-      )}
-      <ToastContainer position="top-right" autoClose={3000} />
-    </QuoteProvider>
+            {/* Default fallback */}
+            <Route path="*" element={<Navigate to={session ? "/main-page" : "/landing-page"} replace />} />
+          </Routes>
+        )}
+        <ToastContainer position="top-right" autoClose={3000} />
+      </QuoteProvider>
+    </ThemeProvider>
   );
 }
 
