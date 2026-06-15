@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import supabase from '../lib/supabase';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -13,7 +13,7 @@ function ForgotPassword() {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'http://localhost:5173/update-password'
+        redirectTo: `${import.meta.env.VITE_APP_URL}/update-password`
       });
 
       if (error) {
@@ -37,16 +37,6 @@ function ForgotPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0D0E11]">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
       <form onSubmit={handleReset} className="bg-[#1C1C1C] mx-4 p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h2 className="text-2xl text-white font-bold mb-6">Forgot Password</h2>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import supabase from '../lib/supabase';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function MagicLink() {
     const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ function MagicLink() {
             const { error } = await supabase.auth.signInWithOtp({
                 email,
                 options: {
-                    emailRedirectTo: 'http://localhost:5173/'
+                    emailRedirectTo: import.meta.env.VITE_APP_URL
                 }
             });
 
@@ -39,16 +39,6 @@ function MagicLink() {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0D0E11]">
-            <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar
-                newestOnTop
-                closeOnClick
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
             <form onSubmit={handleMagicLink} className="bg-[#1C1C1C] p-8 rounded-2xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl text-white font-bold mb-6">One Tap Login</h2>
 

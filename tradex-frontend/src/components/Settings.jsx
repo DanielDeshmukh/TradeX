@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import Header from "./Header";
 import supabase from "../lib/supabase";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import SettingsSkeleton from "./SettingsSkeleton";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -319,7 +319,6 @@ const Settings = () => {
           </button>
         </div>
       </div>
-      <ToastContainer position="top-right" autoClose={2500} theme="dark"/>
     </div>
   );
 };

@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .glass {
+    @apply bg-bg-secondary/70 backdrop-blur-md border border-white/5;
+  }
+
+  .glass-card {
+    @apply bg-surface/70 backdrop-blur-md rounded-xl border border-white/5 shadow-lg;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-brand to-brand-muted text-white px-4 py-2 rounded-xl font-medium hover:opacity-90 transition-all shadow-brand disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-surface border border-white/10 text-white px-4 py-2 rounded-xl font-medium hover:bg-surface-input transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    @apply text-gray-400 hover:text-white px-4 py-2 rounded-xl font-medium hover:bg-white/5 transition-all;
+  }
+
+  .btn-danger {
+    @apply bg-bearish/10 text-bearish border border-bearish/20 px-4 py-2 rounded-xl font-medium hover:bg-bearish/20 transition-all;
+  }
+
+  .input-base {
+    @apply w-full px-3 py-2 rounded-xl bg-surface-input text-white border border-white/10 focus:border-brand focus:ring-2 focus:ring-brand/20 focus:outline-none transition-all placeholder:text-gray-500;
+  }
+}

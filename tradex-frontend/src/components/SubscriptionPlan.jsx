@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import supabase from "../lib/supabase";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 
 function SubscriptionPlan({ user }) {
   const [plans, setPlans] = useState([
@@ -88,17 +88,6 @@ function SubscriptionPlan({ user }) {
 
   return (
     <div className="bg-[#0F1117]/70 backdrop-blur-md p-6 rounded-xl shadow-lg">
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-
       <h3 className="text-lg font-semibold mb-6 text-white">Subscription Plans</h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {plans.map((plan, idx) => (
