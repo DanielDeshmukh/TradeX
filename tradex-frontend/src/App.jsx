@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -13,11 +13,12 @@ import Notifications from "./components/Notifications";
 import ForgotPassword from "./components/ForgotPassword";
 import MagicLink from "./components/MagicLink";
 import UpdatePassword from "./components/UpdatePassword";
-import ProfilePage from "./components/ProfilePage";
-import Settings from "./components/Settings";
-import FullscreenChartPage from "./components/FullscreenChartPage";
-import MainPage from "./components/MainPage";
-import ChartPage from "./components/ChartPage";
+
+const ProfilePage = lazy(() => import("./components/ProfilePage"));
+const Settings = lazy(() => import("./components/Settings"));
+const FullscreenChartPage = lazy(() => import("./components/FullscreenChartPage"));
+const MainPage = lazy(() => import("./components/MainPage"));
+const ChartPage = lazy(() => import("./components/ChartPage"));
 
 function App() {
   const [session, setSession] = useState(null);
@@ -46,26 +47,28 @@ function App() {
   return (
     <ThemeProvider>
       <QuoteProvider userId={userId}>
-        <Routes>
-            {/* Public pages */}
-            <Route path="/landing-page" element={!session ? <TradeXLanding /> : <Navigate to="/main-page" replace />} />
-            <Route path="/register" element={!session ? <Register /> : <Navigate to="/main-page" replace />} />
-            <Route path="/login" element={!session ? <Login /> : <Navigate to="/main-page" replace />} />
-            <Route path="/forgot-password" element={!session ? <ForgotPassword /> : <Navigate to="/main-page" replace />} />
-            <Route path="/magic-link" element={!session ? <MagicLink /> : <Navigate to="/main-page" replace />} />
-            <Route path="/update-password" element={!session ? <UpdatePassword /> : <Navigate to="/main-page" replace />} />
+        <Suspense fallback={<SplashScreen />}>
+          <Routes>
+              {/* Public pages */}
+              <Route path="/landing-page" element={!session ? <TradeXLanding /> : <Navigate to="/main-page" replace />} />
+              <Route path="/register" element={!session ? <Register /> : <Navigate to="/main-page" replace />} />
+              <Route path="/login" element={!session ? <Login /> : <Navigate to="/main-page" replace />} />
+              <Route path="/forgot-password" element={!session ? <ForgotPassword /> : <Navigate to="/main-page" replace />} />
+              <Route path="/magic-link" element={!session ? <MagicLink /> : <Navigate to="/main-page" replace />} />
+              <Route path="/update-password" element={!session ? <UpdatePassword /> : <Navigate to="/main-page" replace />} />
 
-            {/* Authenticated pages */}
-            <Route path="/main-page" element={session ? <MainPage userId={userId} /> : <Navigate to="/landing-page" replace />} />
-            <Route path="/chart" element={session ? <ChartPage /> : <Navigate to="/landing-page" replace />} />
-            <Route path="/fullscreen-chart" element={session ? <FullscreenChartPage /> : <Navigate to="/landing-page" replace />} />
-            <Route path="/profile-page" element={session ? <ProfilePage /> : <Navigate to="/landing-page" replace />} />
-            <Route path="/notifications" element={session ? <Notifications /> : <Navigate to="/landing-page" replace />} />
-            <Route path="/settings-page" element={session ? <Settings /> : <Navigate to="/landing-page" replace />} />
+              {/* Authenticated pages */}
+              <Route path="/main-page" element={session ? <MainPage userId={userId} /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/chart" element={session ? <ChartPage /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/fullscreen-chart" element={session ? <FullscreenChartPage /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/profile-page" element={session ? <ProfilePage /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/notifications" element={session ? <Notifications /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/settings-page" element={session ? <Settings /> : <Navigate to="/landing-page" replace />} />
 
-            {/* Default fallback */}
-            <Route path="*" element={<Navigate to={session ? "/main-page" : "/landing-page"} replace />} />
-          </Routes>
+              {/* Default fallback */}
+              <Route path="*" element={<Navigate to={session ? "/main-page" : "/landing-page"} replace />} />
+            </Routes>
+        </Suspense>
         <ToastContainer position="top-right" autoClose={3000} />
       </QuoteProvider>
     </ThemeProvider>
