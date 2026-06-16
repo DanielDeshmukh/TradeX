@@ -147,7 +147,7 @@ const Settings = () => {
         toast.success(`${symbol.display_name} added successfully`);
       }
       else toast.error(res?.error || "Failed to add symbol");
-    } catch (err) {
+    } catch {
       toast.error("Error adding symbol");
     } finally { toast.dismiss(toastId); }
   };

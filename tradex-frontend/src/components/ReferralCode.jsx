@@ -104,7 +104,7 @@ function ReferralCode() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase.functions.invoke("use-referral", {
+      const { error } = await supabase.functions.invoke("use-referral", {
         headers: { Authorization: `Bearer ${session.access_token}` },
         body: { code: trimmedCode }
       });

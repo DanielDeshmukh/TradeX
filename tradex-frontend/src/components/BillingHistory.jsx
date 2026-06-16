@@ -31,7 +31,9 @@ export default function BillingHistory() {
         });
         if (res?.data?.billing) setBilling(res.data.billing);
         if (res?.data?.next_billing_date) setNextBilling(res.data.next_billing_date);
-      } catch {} finally {
+      } catch {
+        // Silently handle billing fetch errors
+      } finally {
         setLoading(false);
       }
     })();

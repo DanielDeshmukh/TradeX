@@ -157,11 +157,15 @@ function WishlistTable({ userId }) {
                   signalsObj[asset.securityId] = data;
                 }
               }
-            } catch {}
+            } catch {
+              // Silently handle signal fetch errors for individual assets
+            }
           })
         );
         setSignals(signalsObj);
-      } catch {}
+      } catch {
+        // Silently handle signals batch fetch errors
+      }
     } catch (err) {
       console.error("Error fetching watchlist:", err);
       setError("Failed to update watchlist");

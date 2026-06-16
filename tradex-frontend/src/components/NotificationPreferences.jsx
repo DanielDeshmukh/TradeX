@@ -34,7 +34,9 @@ export default function NotificationPreferences() {
           if (notifPrefs && typeof notifPrefs === "object") {
             setPreferences((prev) => ({ ...prev, ...notifPrefs }));
           }
-        } catch {}
+        } catch {
+          // Silently handle notification preferences fetch errors
+        }
       }
       setLoading(false);
     })();
@@ -50,7 +52,9 @@ export default function NotificationPreferences() {
           notification_preferences: preferences,
         },
       });
-    } catch {} finally {
+    } catch {
+      // Silently handle notification preferences save errors
+    } finally {
       setSaving(false);
     }
   }, [userId, preferences]);
