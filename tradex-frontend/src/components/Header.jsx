@@ -4,6 +4,7 @@ import { Bell, Settings, User, BellRing } from 'lucide-react';
 import { usePatternFinderStore } from '../store/usePatternFinderStore';
 import { FaChartBar, FaRegLightbulb } from "react-icons/fa";
 import AlertPreferences from './AlertPreferences';
+import SearchBar from './SearchBar';
 
 function Header() {
   const { open } = usePatternFinderStore();
@@ -28,13 +29,16 @@ function Header() {
 
       <div className="flex flex-wrap sm:flex-nowrap items-center justify-start sm:justify-end gap-3">
         {showFindChartButton && (
-          <button 
-            onClick={open} 
-            className="btn-primary text-sm font-semibold px-4 py-2 rounded-md flex items-center justify-center gap-x-2 w-full sm:w-auto"
-          >
-            <FaChartBar />
-            Find Chart Patterns
-          </button>
+          <>
+            <SearchBar />
+            <button 
+              onClick={open} 
+              className="btn-primary text-sm font-semibold px-4 py-2 rounded-md flex items-center justify-center gap-x-2 w-full sm:w-auto"
+            >
+              <FaChartBar />
+              Find Chart Patterns
+            </button>
+          </>
         )}
 
         <div className="relative group sm:justify-around cursor-pointer">
