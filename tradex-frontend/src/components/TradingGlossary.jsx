@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import Input from "./ui/Input";
 import Card from "./ui/Card";
+import VirtualList from "./ui/VirtualList";
 
 const GLOSSARY = [
   { term: "ATL", definition: "All-Time Low — the lowest price a security has ever traded at." },
@@ -84,6 +85,24 @@ export default function TradingGlossary() {
           <Card className="p-8 text-center">
             <p className="text-content-secondary text-sm">No matching terms found</p>
           </Card>
+        ) : filtered.length > 20 ? (
+          <VirtualList
+            items={filtered}
+            height={Math.min(filtered.length * 80, 600)}
+            itemHeight={80}
+            renderItem={(item) => (
+              <Card className="p-4 mb-2">
+                <div className="flex items-start gap-3">
+                  <span className="text-brand font-semibold text-sm shrink-0 min-w-[80px]">
+                    {item.term}
+                  </span>
+                  <span className="text-content-secondary text-sm leading-relaxed">
+                    {item.definition}
+                  </span>
+                </div>
+              </Card>
+            )}
+          />
         ) : (
           filtered.map((item) => (
             <Card key={item.term} className="p-4">
