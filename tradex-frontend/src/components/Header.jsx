@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, Settings, User } from 'lucide-react';
+import { Bell, Settings, User, BellRing } from 'lucide-react';
 import { usePatternFinderStore } from '../store/usePatternFinderStore';
 import { FaChartBar, FaRegLightbulb } from "react-icons/fa";
+import AlertPreferences from './AlertPreferences';
 
 function Header() {
   const { open } = usePatternFinderStore();
   const location = useLocation();
+  const [showAlertPrefs, setShowAlertPrefs] = useState(false);
 
   const showFindChartButton = ["/main-page","/fullscreen-chart"].includes(location.pathname);
 
@@ -44,6 +47,16 @@ function Header() {
           </div>
         </div>
 
+        <div className="relative">
+          <button onClick={() => setShowAlertPrefs(prev => !prev)}>
+            <BellRing className="text-[#C1C1FF] hover:text-white cursor-pointer drop-shadow-md" size={20} />
+          </button>
+          {showAlertPrefs && (
+            <div className="absolute top-full right-0 mt-2 z-50">
+              <AlertPreferences onClose={() => setShowAlertPrefs(false)} />
+            </div>
+          )}
+        </div>
         <Link to='/notifications'>
           <Bell className="text-[#C1C1FF] hover:text-white cursor-pointer drop-shadow-md" size={20} />
         </Link>
