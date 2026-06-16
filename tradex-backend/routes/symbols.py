@@ -7,9 +7,9 @@ router = APIRouter(tags=["symbols"])
 @router.get("/symbols")
 async def get_symbols():
     query = """
-        SELECT DISTINCT symbol, exchange, instrument_type
+        SELECT display_name, symbol_name, exchange_id, instrument, security_id
         FROM master_symbols
-        ORDER BY symbol
+        ORDER BY display_name
     """
     rows = fetch_all(query)
     return {
@@ -20,13 +20,13 @@ async def get_symbols():
 @router.get("/symbols/search")
 async def search_symbols(q: str = Query(..., min_length=1, description="Search query")):
     query = """
-        SELECT DISTINCT symbol, exchange, instrument_type
+        SELECT display_name, symbol_name, exchange_id, instrument, security_id
         FROM master_symbols
-        WHERE symbol ILIKE %s
-        ORDER BY symbol
+        WHERE symbol_name ILIKE %s OR display_name ILIKE %s
+        ORDER BY display_name
         LIMIT 20
     """
-    rows = fetch_all(query, (f"%{q}%",))
+    rows = fetch_all(query, (f"%{q}%", f"%{q}%"))
     return {
         "query": q,
         "symbols": [dict(r) for r in rows],

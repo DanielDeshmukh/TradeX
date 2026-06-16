@@ -12,8 +12,8 @@ async def get_features(
     query = """
         SELECT *
         FROM features
-        WHERE symbol = %s
-        ORDER BY time DESC
+        WHERE security_id = %s
+        ORDER BY timestamp DESC
         LIMIT %s
     """
     rows = fetch_all(query, (symbol, limit))

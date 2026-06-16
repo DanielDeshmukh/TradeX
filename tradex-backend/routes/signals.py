@@ -10,10 +10,10 @@ async def get_signals(
     limit: int = Query(50, ge=1, le=200, description="Number of signals"),
 ):
     query = """
-        SELECT time, signal, confidence, model_version
+        SELECT created_at, signal, confidence, model_version
         FROM trading_signals
-        WHERE symbol = %s
-        ORDER BY time DESC
+        WHERE security_id = %s
+        ORDER BY created_at DESC
         LIMIT %s
     """
     rows = fetch_all(query, (symbol, limit))
@@ -26,10 +26,10 @@ async def get_signals(
 @router.get("/signals/latest")
 async def get_latest_signal(symbol: str = Query(..., description="Symbol name")):
     query = """
-        SELECT time, signal, confidence, model_version
+        SELECT created_at, signal, confidence, model_version
         FROM trading_signals
-        WHERE symbol = %s
-        ORDER BY time DESC
+        WHERE security_id = %s
+        ORDER BY created_at DESC
         LIMIT 1
     """
     row = fetch_one(query, (symbol,))
