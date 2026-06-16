@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createChart, CrosshairMode, CandlestickSeries, LineSeries, AreaSeries } from "lightweight-charts";
+import CrosshairTooltip from "./CrosshairTooltip";
 
 // Technical indicator calculations
 export function calculateSMA(data, period) {
@@ -91,10 +92,11 @@ const Chart = ({ chartType = "candlestick", candles = [], onReady, indicators = 
   const chartRef = useRef(null);
   const seriesRef = useRef(null);
   const overlaySeriesRef = useRef({});
-  const tooltipRef = useRef(null);
   const currentChartTypeRef = useRef(chartType);
   const previousCandlesRef = useRef([]);
   const [loading, setLoading] = useState(true);
+  const [crosshairData, setCrosshairData] = useState(null);
+  const [crosshairVisible, setCrosshairVisible] = useState(false);
 
   const normalizeCandles = (data) => {
     if (!Array.isArray(data)) return [];
@@ -184,16 +186,6 @@ const Chart = ({ chartType = "candlestick", candles = [], onReady, indicators = 
     });
     chartRef.current = chart;
 
-    const tooltip = document.createElement("div");
-    Object.assign(tooltip.style, {
-      position: "absolute", display: "none", pointerEvents: "none",
-      padding: "8px", fontSize: "12px", borderRadius: "4px",
-      background: "rgba(0,0,0,0.8)", color: "#fff", zIndex: 10,
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif",
-    });
-    containerRef.current.appendChild(tooltip);
-    tooltipRef.current = tooltip;
-
     const onResize = () => {
       if (chartRef.current && containerRef.current) {
         chartRef.current.applyOptions({ width: containerRef.current.clientWidth, height: containerRef.current.clientHeight });
@@ -204,46 +196,35 @@ const Chart = ({ chartType = "candlestick", candles = [], onReady, indicators = 
     return () => {
       window.removeEventListener("resize", onResize);
       chart.remove();
-      if (tooltip.parentNode) tooltip.remove();
     };
   }, []);
 
   useEffect(() => {
-    if (!chartRef.current || !tooltipRef.current) return;
+    if (!chartRef.current) return;
     const chart = chartRef.current;
-    const tooltip = tooltipRef.current;
     const crosshairHandler = (param) => {
       const series = seriesRef.current;
       if (!param || !param.time || !series || !param.seriesData.has(series)) {
-        tooltip.style.display = "none";
+        setCrosshairVisible(false);
         return;
       }
       const d = param.seriesData.get(series);
-      if (!d) { tooltip.style.display = "none"; return; }
-      tooltip.style.display = "block";
-      const type = currentChartTypeRef.current.toLowerCase();
-      if (type === "candlestick") {
-        tooltip.innerHTML = `
-          <div class="text-xs font-mono">O: ${d.open?.toFixed(2)}</div>
-          <div class="text-xs font-mono">H: ${d.high?.toFixed(2)}</div>
-          <div class="text-xs font-mono">L: ${d.low?.toFixed(2)}</div>
-          <div class="text-xs font-mono">C: ${d.close?.toFixed(2)}</div>
-          <div class="text-xs font-semibold text-[#7F3DFF]">${param.time}</div>`;
-      } else {
-        tooltip.innerHTML = `
-          <div class="text-xs font-semibold text-white">Time: ${param.time}</div>
-          <div class="text-sm text-white mt-1">Price: ${d.value?.toFixed(2) ?? "--"}</div>`;
+      if (!d) {
+        setCrosshairVisible(false);
+        return;
       }
       const { x, y } = param.point || {};
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (x != null && y != null && rect) {
-        let left = x + 12;
-        if (left + 140 > rect.width) left = x - 150;
-        let top = y + 12;
-        if (top + 80 > rect.height) top = y - 90;
-        tooltip.style.left = `${left}px`;
-        tooltip.style.top = `${top}px`;
-      }
+      setCrosshairData({
+        open: d.open,
+        high: d.high,
+        low: d.low,
+        close: d.close,
+        volume: d.volume,
+        time: param.time,
+        x: x || 0,
+        y: y || 0,
+      });
+      setCrosshairVisible(true);
     };
     chart.subscribeCrosshairMove(crosshairHandler);
     return () => chart.unsubscribeCrosshairMove(crosshairHandler);
@@ -302,6 +283,7 @@ const Chart = ({ chartType = "candlestick", candles = [], onReady, indicators = 
       {!loading && (!candles || candles.length === 0) && (
         <div className="text-white font-semibold text-center">Apologies, no data available for the selected symbol.</div>
       )}
+      <CrosshairTooltip data={crosshairData} visible={crosshairVisible} />
     </div>
   );
 };

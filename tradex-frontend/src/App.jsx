@@ -19,6 +19,12 @@ const Settings = lazy(() => import("./components/Settings"));
 const FullscreenChartPage = lazy(() => import("./components/FullscreenChartPage"));
 const MainPage = lazy(() => import("./components/MainPage"));
 const ChartPage = lazy(() => import("./components/ChartPage"));
+const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./components/TermsOfService"));
+const BillingHistory = lazy(() => import("./components/BillingHistory"));
+const TradingGlossary = lazy(() => import("./components/TradingGlossary"));
+const MobileSettings = lazy(() => import("./components/MobileSettings"));
+const NotificationPreferences = lazy(() => import("./components/NotificationPreferences"));
 
 function App() {
   const [session, setSession] = useState(null);
@@ -64,6 +70,14 @@ function App() {
               <Route path="/profile-page" element={session ? <ProfilePage /> : <Navigate to="/landing-page" replace />} />
               <Route path="/notifications" element={session ? <Notifications /> : <Navigate to="/landing-page" replace />} />
               <Route path="/settings-page" element={session ? <Settings /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/mobile-settings" element={session ? <MobileSettings /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/notification-preferences" element={session ? <NotificationPreferences /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/billing-history" element={session ? <BillingHistory /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/glossary" element={session ? <TradingGlossary /> : <Navigate to="/landing-page" replace />} />
+
+              {/* Public legal pages (accessible without auth) */}
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
 
               {/* Default fallback */}
               <Route path="*" element={<Navigate to={session ? "/main-page" : "/landing-page"} replace />} />
