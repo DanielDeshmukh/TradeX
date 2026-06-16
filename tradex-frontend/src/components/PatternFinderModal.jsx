@@ -19,7 +19,7 @@ const PatternFinderModal = () => {
     const canvas = canvasRef.current;
     const canvasHeight = canvas.height;
 
-    const normalizedDrawn = drawnPoints.map(([x, y], index) => {
+    const normalizedDrawn = drawnPoints.map(([, y], index) => {
       const relativeY = 1 - y / canvasHeight;
       return [index, relativeY];
     });

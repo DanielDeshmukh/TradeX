@@ -34,7 +34,9 @@ export default function MobileSettings() {
             notificationsEnabled: d.notification_permission || false,
           });
         }
-      } catch {}
+      } catch {
+        // Silently handle settings fetch errors
+      }
     })();
   }, [userId]);
 
@@ -51,7 +53,9 @@ export default function MobileSettings() {
           refresh_rate: 30,
         },
       });
-    } catch {} finally {
+    } catch {
+      // Silently handle save errors
+    } finally {
       setSaving(false);
     }
   }, [userId, settings]);

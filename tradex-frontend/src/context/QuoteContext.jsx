@@ -58,7 +58,7 @@ export function QuoteProvider({ children, userId }) {
         });
       });
       setError(null);
-    } catch (err) {
+    } catch {
       setError("Failed to load wishlist");
     } finally {
       setLoading(false);

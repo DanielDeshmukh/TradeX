@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const NAV_ITEMS = [
   { key: 'chart', label: 'Chart', icon: ChartIcon },

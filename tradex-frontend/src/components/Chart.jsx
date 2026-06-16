@@ -117,7 +117,9 @@ const Chart = ({ chartType = "candlestick", candles = [], onReady, indicators = 
   const updateOverlays = useCallback((chart, normalized) => {
     // Remove old overlays
     Object.values(overlaySeriesRef.current).forEach((s) => {
-      try { chart.removeSeries(s); } catch {}
+      try { chart.removeSeries(s); } catch {
+        // Series may not exist, ignore error
+      }
     });
     overlaySeriesRef.current = {};
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import BottomNav from "./BottomNav";
 
 export default function MobileLayout({ children, activeTab, onTabChange }) {

@@ -151,18 +151,6 @@ const FullscreenChartPage = () => {
         smoothScrollTo(range.from + 20, range.to + 20);
     };
 
-    const triggerShortcut = (keyCombo) => {
-        switch (keyCombo) {
-            case "Shift + ArrowUp": zoomIn(); break;
-            case "Shift + ArrowDown": zoomOut(); break;
-            case "Shift + ArrowLeft": scrollLeft(); break;
-            case "Shift + ArrowRight": scrollRight(); break;
-            case "Shift + R": resetView(); break;
-            case "Shift + F": window.close(); break;
-            case "Ctrl + /": setShowShortcuts(true); break;
-        }
-    };
-
     // Bind hotkeys
     useKeyPress(["Ctrl + /"], () => setShowShortcuts(true));
     useKeyPress(["Shift + ArrowUp"], () => chartReady && zoomIn());

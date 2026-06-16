@@ -19,7 +19,7 @@ const SIGNAL_CONFIG = {
   },
 };
 
-export default function SignalBadge({ signal, confidence, modelVersion, timestamp, size = 'md' }) {
+export default function SignalBadge({ signal, confidence, size = 'md' }) {
   const [animate, setAnimate] = useState(false);
   const config = SIGNAL_CONFIG[signal] || SIGNAL_CONFIG.hold;
 
@@ -59,8 +59,6 @@ export default function SignalBadge({ signal, confidence, modelVersion, timestam
 
 export function SignalPanel({ signal, securityId }) {
   if (!signal) return null;
-
-  const config = SIGNAL_CONFIG[signal.signal] || SIGNAL_CONFIG.hold;
 
   return (
     <div className="bg-surface-secondary rounded-xl p-4 border border-border">
