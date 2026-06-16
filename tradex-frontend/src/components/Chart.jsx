@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createChart, CrosshairMode, CandlestickSeries, LineSeries, AreaSeries } from "lightweight-charts";
 import CrosshairTooltip from "./CrosshairTooltip";
+import { debounce } from "../utils/debounce";
 
 // Technical indicator calculations
 export function calculateSMA(data, period) {
@@ -188,15 +189,16 @@ const Chart = ({ chartType = "candlestick", candles = [], onReady, indicators = 
     });
     chartRef.current = chart;
 
-    const onResize = () => {
+    const onResize = debounce(() => {
       if (chartRef.current && containerRef.current) {
         chartRef.current.applyOptions({ width: containerRef.current.clientWidth, height: containerRef.current.clientHeight });
       }
-    };
+    }, 200);
     window.addEventListener("resize", onResize);
 
     return () => {
       window.removeEventListener("resize", onResize);
+      onResize.cancel();
       chart.remove();
     };
   }, []);
