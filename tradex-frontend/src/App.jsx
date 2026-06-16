@@ -1,10 +1,21 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./context/ThemeContext";
 import { QuoteProvider } from "./context/QuoteContext";
 import supabase from "./lib/supabase";
 import ErrorBoundary from "./components/ErrorBoundary";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const SplashScreen = lazy(() => import("./components/SplashScreen"));
 const TradeXLanding = lazy(() => import("./components/TradeXLanding"));
@@ -52,6 +63,7 @@ function App() {
   if (!authReady) return <SplashScreen />;
 
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <QuoteProvider userId={userId}>
         <ErrorBoundary>
@@ -93,6 +105,7 @@ function App() {
         <ToastContainer position="top-right" autoClose={3000} />
       </QuoteProvider>
     </ThemeProvider>
+    </QueryClientProvider>
   );
 }
 
