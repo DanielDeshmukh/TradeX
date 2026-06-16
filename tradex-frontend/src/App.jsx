@@ -4,18 +4,17 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { QuoteProvider } from "./context/QuoteContext";
 import supabase from "./lib/supabase";
-
-import SplashScreen from "./components/SplashScreen";
-import TradeXLanding from "./components/TradeXLanding";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import Notifications from "./components/Notifications";
-import ForgotPassword from "./components/ForgotPassword";
-import MagicLink from "./components/MagicLink";
-import UpdatePassword from "./components/UpdatePassword";
 import ErrorBoundary from "./components/ErrorBoundary";
-import NotFoundPage from "./components/NotFoundPage";
 
+const SplashScreen = lazy(() => import("./components/SplashScreen"));
+const TradeXLanding = lazy(() => import("./components/TradeXLanding"));
+const Register = lazy(() => import("./components/Register"));
+const Login = lazy(() => import("./components/Login"));
+const Notifications = lazy(() => import("./components/Notifications"));
+const ForgotPassword = lazy(() => import("./components/ForgotPassword"));
+const MagicLink = lazy(() => import("./components/MagicLink"));
+const UpdatePassword = lazy(() => import("./components/UpdatePassword"));
+const NotFoundPage = lazy(() => import("./components/NotFoundPage"));
 const ProfilePage = lazy(() => import("./components/ProfilePage"));
 const Settings = lazy(() => import("./components/Settings"));
 const FullscreenChartPage = lazy(() => import("./components/FullscreenChartPage"));
@@ -56,7 +55,11 @@ function App() {
     <ThemeProvider>
       <QuoteProvider userId={userId}>
         <ErrorBoundary>
-          <Suspense fallback={<SplashScreen />}>
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-bg">
+              <div className="text-brand text-xl font-bold animate-pulse">TradeX</div>
+            </div>
+          }>
             <Routes>
               {/* Public pages */}
               <Route path="/landing-page" element={!session ? <TradeXLanding /> : <Navigate to="/main-page" replace />} />
