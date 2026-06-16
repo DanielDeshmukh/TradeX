@@ -50,7 +50,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 ├── feature/user-notification-prefs     ← merged (Phase 34)
 ├── feature/billing-mock                ← merged (Phase 35)
 ├── feature/search-discover             ← merged (Phase 36)
-├── feature/pattern-discovery           ← in progress (Phase 37)
+├── feature/pattern-discovery           ← merged (Phase 37)
 ```
 
 ---
@@ -228,14 +228,14 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - Created `SearchBar` component with 300ms debounce, dropdown results, loading/clear states
 - Integrated `SearchBar` into Header for main-page and fullscreen-chart
 
+### Phase 37: Pattern Discovery ✅
+- Backend: `GET /api/patterns` with pattern detection (uptrend, downtrend, higher-highs-lows, lower-highs-lows, consolidation)
+- Created `PatternDiscovery` component with pattern list grouped by symbol, filter dropdown, click-to-select
+- Registered patterns router in main.py
+
 ---
 
 ## What's NOT Done (Remaining to 100%)
-
-### Phase 37: Pattern Discovery (IN PROGRESS)
-- Create `PatternDiscovery` sidebar component with detected patterns list
-- Backend `GET /api/patterns` for recent pattern detections
-- Pattern type badges (head & shoulders, triangle, wedge, etc.)
 
 ### Phase 38: User Settings Backend
 - User preferences API (theme, notifications, currency)
@@ -363,7 +363,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 34 | User Notification Prefs DB | ✅ Done | `feature/user-notification-prefs` |
 | 35 | Billing/Subscription Mock | ✅ Done | `feature/billing-mock` |
 | 36 | Search & Discover | ✅ Done | `feature/search-discover` |
-| 37 | Pattern Discovery | 🔨 In Progress | `feature/pattern-discovery` |
+| 37 | Pattern Discovery | ✅ Done | `feature/pattern-discovery` |
 | 38 | User Settings Backend | ⏳ Pending | — |
 | 39 | Profile & Settings Wiring | ⏳ Pending | — |
 | 40 | Watchlist CRUD Backend | ⏳ Pending | — |
@@ -384,10 +384,10 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 55 | Monitoring & Logging | ⏳ Pending | — |
 | 56 | Documentation & Beta | ⏳ Pending | — |
 
-**Total: 26 phases (6 done, 1 in progress, 19 pending)**
+**Total: 26 phases (7 done, 19 pending)**
 
 ---
 
 *Last updated: June 16, 2026*
 *Project: TradeX — AI-Powered Trading Platform*
-*24 phase branches preserved, 0 deleted*
+*25 phase branches preserved, 0 deleted*
