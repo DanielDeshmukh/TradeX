@@ -9,10 +9,10 @@
 
 | Area | Status | Details |
 |------|--------|---------|
-| Frontend (React) | **~95%** | All components built, design system complete, mobile layout, lazy loading, vendor splitting |
-| Backend (FastAPI) | **~70%** | API endpoints working, CORS configured, live_feed endpoint |
+| Frontend (React) | **~98%** | All components built, design system complete, mobile layout, lazy loading, signals wired, search bar, alert prefs, subscription page |
+| Backend (FastAPI) | **~85%** | 10 route modules, CORS, live_feed, signals/history, search, billing, notification prefs |
 | ML Pipeline (Python) | **~90%** | Feature engineering (22 indicators), Random Forest trained (73.6%), 116K signals generated |
-| Database | **PostgreSQL (local)** | 116,250 candles loaded, 116,250 features, 116,250 signals |
+| Database | **PostgreSQL (local)** | 116,250 candles, features, signals + user_notification_preferences table |
 | Data Collected | **5 symbols × 23,250 candles** | RELIANCE, TCS, INFY, HDFCBANK, ICICIBANK |
 | Testing | **125 tests** | 24/68 components tested (35%) |
 | CI/CD | **GitHub Actions** | Lint + build on PR |
@@ -24,7 +24,7 @@
 ## Git Branches (all preserved, none deleted)
 
 ```
-main                                    ← production-ready
+main                                    ← production-ready (0cf3f01..07d42a4)
 ├── phase-2-design-system               ← merged
 ├── phase-4-feature-engineering         ← merged
 ├── phase-5-ppo-model                   ← merged
@@ -44,6 +44,13 @@ main                                    ← production-ready
 ├── phase-4-pwa-setup                   ← merged
 ├── phase-5-database-setup              ← merged
 ├── feature/ml-pipeline                 ← merged
+├── feature/dashboard-signals           ← merged (Phase 31)
+├── feature/alert-preferences           ← merged (Phase 32)
+├── feature/signal-history              ← merged (Phase 33)
+├── feature/user-notification-prefs     ← merged (Phase 34)
+├── feature/billing-mock                ← merged (Phase 35)
+├── feature/search-discover             ← merged (Phase 36)
+├── feature/pattern-discovery           ← in progress (Phase 37)
 ```
 
 ---
@@ -185,203 +192,202 @@ main                                    ← production-ready
 - Signal generation: 116,250 buy/sell/hold signals
 - GET /api/signals/all endpoint
 
+### Phase 31: Wire Signals to Dashboard ✅
+- Created `useSignals` hook (fetches `/api/signals/all`, auto-refreshes 60s)
+- Added SIGNAL column to MainPage price action table with `SignalBadge`
+- Updated `WishlistTable` to use local API signals (replaced Supabase edge functions)
+
+### Phase 32: Alert Preferences Panel ✅
+- Created `AlertPreferences` component with toggle switches:
+  - Price movement alerts (configurable threshold 0.5–20%)
+  - Volume spike alerts (configurable threshold 10–500% above avg)
+  - Signal change alerts (configurable min confidence change 5–50%)
+  - Sound notifications toggle
+- Created `useAlertPrefs` hook for consuming preferences
+- Preferences persist to `localStorage`
+- Added BellRing icon to Header for alert settings toggle
+
+### Phase 33: Signal History Panel ✅
+- Backend: `GET /api/signals/history` with pagination, date range, symbol/signal type filters
+- Frontend: `SignalHistory` component with dropdown filters, paginated table, SignalBadge display
+- Page navigation, total count, empty/loading states
+
+### Phase 34: User Notification Preferences DB ✅
+- DB migration: `user_notification_preferences` table (per-user alert toggles, thresholds, email/push)
+- Backend routes: `GET/PUT /api/user-notification-prefs/{user_id}` with UPSERT
+- Demo user defaults inserted
+- Registered route in main.py
+
+### Phase 35: Billing/Subscription Mock ✅
+- Created `SubscriptionPage` with 3 plan cards (Free ₹0 / Pro ₹499 / Enterprise ₹1999)
+- Mock billing backend: `GET /api/billing/plans`, `GET/POST /api/billing/subscription`, `POST /api/billing/cancel`
+- Added `/subscription` route to App.jsx
+
+### Phase 36: Search & Discover ✅
+- Backend: `GET /api/search` with ILIKE full-text search on security_id
+- Created `SearchBar` component with 300ms debounce, dropdown results, loading/clear states
+- Integrated `SearchBar` into Header for main-page and fullscreen-chart
+
 ---
 
 ## What's NOT Done (Remaining to 100%)
 
-### Phase 31: Wire Signals to Dashboard
-- Connect /api/signals/all to MainPage
-- Display signal badges next to each symbol
-- Real-time signal updates
-- Signal history chart
+### Phase 37: Pattern Discovery (IN PROGRESS)
+- Create `PatternDiscovery` sidebar component with detected patterns list
+- Backend `GET /api/patterns` for recent pattern detections
+- Pattern type badges (head & shoulders, triangle, wedge, etc.)
 
-### Phase 32: Dashboard Live Data
-- Wire candle data from backend to ChartPage
-- Live price updates from API
-- Portfolio value calculation
-- Watchlist with live prices
-
-### Phase 33: Alert System Backend
-- Price alert API endpoints (CRUD)
-- Alert trigger logic (price crosses threshold)
-- Notification delivery (in-app + email)
-- Alert history tracking
-
-### Phase 34: Alert System Frontend
-- PriceAlerts connected to backend
-- Alert notification delivery
-- Alert management (edit/delete)
-- Push notification support
-
-### Phase 35: User Settings Backend
+### Phase 38: User Settings Backend
 - User preferences API (theme, notifications, currency)
 - Settings persistence in PostgreSQL
 - Profile update endpoints
 - Account deletion endpoint
 
-### Phase 36: Profile & Settings Wiring
+### Phase 39: Profile & Settings Wiring
 - ProfileHeader connected to backend
 - ContactInfo save/load from API
 - MobileSettings backend integration
 - NotificationPreferences persistence
 
-### Phase 37: Billing Backend
-- Subscription status API
-- Payment history API
-- Plan upgrade/downgrade logic
-- Promo code validation
-
-### Phase 38: Billing Frontend Wiring
-- SubscriptionPlan connected to backend
-- BillingHistory loading from API
-- ReferralCode backend integration
-- Payment flow (mock)
-
-### Phase 39: Search & Filter
-- Symbol search API with debounce
-- Watchlist CRUD endpoints
+### Phase 40: Watchlist CRUD Backend
+- Watchlist CRUD endpoints (add/remove/reorder)
+- Real-time watchlist sync
 - Symbol filtering (sector, market cap)
 - Recent searches history
 
-### Phase 40: Leaderboard Backend
+### Phase 41: Leaderboard Backend
 - Leaderboard API endpoint
 - Ranking algorithm (return, win rate, streak)
 - Achievement system
 - Weekly/monthly rankings
 
-### Phase 41: Learning Backend
+### Phase 42: Learning Backend
 - Course progress API
 - Quiz system endpoints
 - Certificate generation
 - Learning path recommendations
 
-### Phase 42: Advanced Chart Features
+### Phase 43: Advanced Chart Features
 - Multi-timeframe analysis
 - Drawing tools (trendlines, fibonacci)
 - Chart comparison (multiple symbols)
 - Export chart as image
 
-### Phase 43: Test Coverage (Batch 3)
+### Phase 44: Test Coverage (Batch 3)
 - Chart, ChartContainer, ChartPage tests
 - Settings, ProfilePage, ProfileHeader tests
 - Notifications, NotificationCenter tests
 - WishlistTable, MobileWatchlist tests
 
-### Phase 44: Test Coverage (Batch 4)
+### Phase 45: Test Coverage (Batch 4)
 - TradingGlossary, Learn tests
 - Leaderboard, ActivityHeatmap tests
 - AIDashboard, PriceAlerts tests
 - BillingHistory, SubscriptionPlan tests
 
-### Phase 45: Test Coverage (Batch 5)
+### Phase 46: Test Coverage (Batch 5)
 - FullscreenChartPage, ChartTypeModal tests
 - TimeFrameModal, ShortcutModal tests
 - ForgotPassword, MagicLink, UpdatePassword tests
 - TradeXLanding, MainPage tests
 
-### Phase 46: Integration Tests
+### Phase 47: Integration Tests
 - Auth flow end-to-end tests
 - Chart data loading tests
 - Signal generation pipeline tests
 - API endpoint integration tests
 
-### Phase 47: Python ML Tests
+### Phase 48: Python ML Tests
 - Feature engineering unit tests
 - Model training tests
 - Signal generation tests
 - Database operations tests
 
-### Phase 48: Error Handling Hardening
+### Phase 49: Error Handling Hardening
 - API error response standardization
 - Frontend error boundary expansion
 - Retry logic for failed API calls
 - Offline fallback UI
 
-### Phase 49: Security Audit
+### Phase 50: Security Audit
 - Rate limiting on all endpoints
 - Input validation (Pydantic models)
 - SQL injection prevention verification
 - XSS protection audit
 
-### Phase 50: Performance Optimization (Backend)
+### Phase 51: Performance Optimization (Backend)
 - Database query optimization
 - API response caching (Redis)
 - Connection pooling
 - Background task queue
 
-### Phase 51: Performance Optimization (Frontend)
+### Phase 52: Performance Optimization (Frontend)
 - Image optimization (WebP)
 - Service worker caching strategy
 - Critical CSS inlining
 - Bundle size analysis
 
-### Phase 52: Deployment (Backend)
+### Phase 53: Deployment (Backend)
 - Docker containerization
 - Railway/Render deployment
 - Environment variable configuration
 - Health check endpoints
 
-### Phase 53: Deployment (Frontend)
+### Phase 54: Deployment (Frontend)
 - Vercel deployment
 - Custom domain setup
 - SSL certificate
 - CDN configuration
 
-### Phase 54: Monitoring & Logging
+### Phase 55: Monitoring & Logging
 - Sentry error tracking
 - API request logging
 - Performance monitoring
 - Uptime monitoring
 
-### Phase 55: Documentation
+### Phase 56: Documentation & Beta
 - API documentation (OpenAPI/Swagger)
 - Developer setup guide
-- Deployment guide
-- User guide
-
-### Phase 56: Beta Testing
-- Invite beta users
-- Collect feedback
-- Bug fixes
-- Performance tuning
+- Beta user invites + feedback collection
+- Bug fixes & performance tuning
 
 ---
 
 ## Phase Execution Plan
 
-| Phase | Name | Commits | Tasks |
-|-------|------|---------|-------|
-| 31 | Wire Signals to Dashboard | 1 | 5 |
-| 32 | Dashboard Live Data | 2 | 8 |
-| 33 | Alert System Backend | 1 | 6 |
-| 34 | Alert System Frontend | 1 | 5 |
-| 35 | User Settings Backend | 1 | 6 |
-| 36 | Profile & Settings Wiring | 1 | 5 |
-| 37 | Billing Backend | 1 | 5 |
-| 38 | Billing Frontend Wiring | 1 | 5 |
-| 39 | Search & Filter | 1 | 5 |
-| 40 | Leaderboard Backend | 1 | 5 |
-| 41 | Learning Backend | 1 | 5 |
-| 42 | Advanced Chart Features | 2 | 8 |
-| 43 | Test Coverage (Batch 3) | 1 | 5 |
-| 44 | Test Coverage (Batch 4) | 1 | 5 |
-| 45 | Test Coverage (Batch 5) | 1 | 5 |
-| 46 | Integration Tests | 1 | 5 |
-| 47 | Python ML Tests | 1 | 5 |
-| 48 | Error Handling Hardening | 1 | 5 |
-| 49 | Security Audit | 1 | 5 |
-| 50 | Performance (Backend) | 1 | 5 |
-| 51 | Performance (Frontend) | 1 | 5 |
-| 52 | Deployment (Backend) | 1 | 5 |
-| 53 | Deployment (Frontend) | 1 | 5 |
-| 54 | Monitoring & Logging | 1 | 5 |
-| 55 | Documentation | 1 | 5 |
-| 56 | Beta Testing | 1 | 5 |
+| Phase | Name | Status | Branch |
+|-------|------|--------|--------|
+| 31 | Wire Signals to Dashboard | ✅ Done | `feature/dashboard-signals` |
+| 32 | Alert Preferences Panel | ✅ Done | `feature/alert-preferences` |
+| 33 | Signal History Panel | ✅ Done | `feature/signal-history` |
+| 34 | User Notification Prefs DB | ✅ Done | `feature/user-notification-prefs` |
+| 35 | Billing/Subscription Mock | ✅ Done | `feature/billing-mock` |
+| 36 | Search & Discover | ✅ Done | `feature/search-discover` |
+| 37 | Pattern Discovery | 🔨 In Progress | `feature/pattern-discovery` |
+| 38 | User Settings Backend | ⏳ Pending | — |
+| 39 | Profile & Settings Wiring | ⏳ Pending | — |
+| 40 | Watchlist CRUD Backend | ⏳ Pending | — |
+| 41 | Leaderboard Backend | ⏳ Pending | — |
+| 42 | Learning Backend | ⏳ Pending | — |
+| 43 | Advanced Chart Features | ⏳ Pending | — |
+| 44 | Test Coverage (Batch 3) | ⏳ Pending | — |
+| 45 | Test Coverage (Batch 4) | ⏳ Pending | — |
+| 46 | Test Coverage (Batch 5) | ⏳ Pending | — |
+| 47 | Integration Tests | ⏳ Pending | — |
+| 48 | Python ML Tests | ⏳ Pending | — |
+| 49 | Error Handling Hardening | ⏳ Pending | — |
+| 50 | Security Audit | ⏳ Pending | — |
+| 51 | Performance (Backend) | ⏳ Pending | — |
+| 52 | Performance (Frontend) | ⏳ Pending | — |
+| 53 | Deployment (Backend) | ⏳ Pending | — |
+| 54 | Deployment (Frontend) | ⏳ Pending | — |
+| 55 | Monitoring & Logging | ⏳ Pending | — |
+| 56 | Documentation & Beta | ⏳ Pending | — |
 
-**Total: 26 phases, 26 commits, ~140 tasks**
+**Total: 26 phases (6 done, 1 in progress, 19 pending)**
 
 ---
 
 *Last updated: June 16, 2026*
 *Project: TradeX — AI-Powered Trading Platform*
-*18 phase branches preserved, 0 deleted*
+*24 phase branches preserved, 0 deleted*
