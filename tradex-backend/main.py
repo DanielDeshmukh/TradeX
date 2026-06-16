@@ -7,6 +7,7 @@ from routes.candles import router as candles_router
 from routes.signals import router as signals_router
 from routes.features import router as features_router
 from routes.symbols import router as symbols_router
+from routes.live_feed import router as live_feed_router
 
 load_dotenv()
 
@@ -28,6 +29,7 @@ app.include_router(candles_router, prefix="/api")
 app.include_router(signals_router, prefix="/api")
 app.include_router(features_router, prefix="/api")
 app.include_router(symbols_router, prefix="/api")
+app.include_router(live_feed_router)
 
 
 @app.get("/health")
