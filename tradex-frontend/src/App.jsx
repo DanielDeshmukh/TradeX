@@ -35,6 +35,7 @@ const ChartPage = lazy(() => import("./components/ChartPage"));
 const PrivacyPolicy = lazy(() => import("./components/PrivacyPolicy"));
 const TermsOfService = lazy(() => import("./components/TermsOfService"));
 const BillingHistory = lazy(() => import("./components/BillingHistory"));
+const SubscriptionPage = lazy(() => import("./pages/SubscriptionPage"));
 const TradingGlossary = lazy(() => import("./components/TradingGlossary"));
 const MobileSettings = lazy(() => import("./components/MobileSettings"));
 const NotificationPreferences = lazy(() => import("./components/NotificationPreferences"));
@@ -97,6 +98,7 @@ function App() {
               <Route path="/mobile-settings" element={session ? <MobileSettings /> : <Navigate to="/landing-page" replace />} />
               <Route path="/notification-preferences" element={session ? <NotificationPreferences /> : <Navigate to="/landing-page" replace />} />
               <Route path="/billing-history" element={session ? <BillingHistory /> : <Navigate to="/landing-page" replace />} />
+              <Route path="/subscription" element={session ? <SubscriptionPage /> : <Navigate to="/landing-page" replace />} />
               <Route path="/glossary" element={session ? <TradingGlossary /> : <Navigate to="/landing-page" replace />} />
 
               {/* 404 - Not Found */}
