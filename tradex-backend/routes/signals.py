@@ -37,3 +37,17 @@ async def get_latest_signal(symbol: str = Query(..., description="Symbol name"))
         "symbol": symbol,
         "signal": dict(row) if row else None,
     }
+
+
+@router.get("/signals/all")
+async def get_all_latest_signals():
+    query = """
+        SELECT DISTINCT ON (security_id)
+            security_id, signal, confidence, model_version, created_at
+        FROM trading_signals
+        ORDER BY security_id, created_at DESC
+    """
+    rows = fetch_all(query)
+    return {
+        "signals": [dict(r) for r in rows],
+    }
