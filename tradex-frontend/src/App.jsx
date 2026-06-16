@@ -6,6 +6,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { QuoteProvider } from "./context/QuoteContext";
 import supabase from "./lib/supabase";
 import ErrorBoundary from "./components/ErrorBoundary";
+import DemoBanner from "./components/DemoBanner";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,6 +68,7 @@ function App() {
     <ThemeProvider>
       <QuoteProvider userId={userId}>
         <ErrorBoundary>
+          <DemoBanner />
           <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-bg">
               <div className="text-brand text-xl font-bold animate-pulse">TradeX</div>

@@ -5,6 +5,7 @@ import Login from "../components/Login";
 
 vi.mock("../lib/supabase", () => ({
   default: { auth: { signInWithPassword: vi.fn() } },
+  isDemoMode: false,
 }));
 
 vi.mock("react-toastify", () => ({

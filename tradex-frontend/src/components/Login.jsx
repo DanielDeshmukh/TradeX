@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import supabase from '../lib/supabase';
+import supabase, { isDemoMode } from '../lib/supabase';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 
@@ -47,6 +47,14 @@ function Login() {
         <div className="min-h-screen flex items-center justify-center bg-bg">
             <form onSubmit={handleLogin} className="bg-surface-elevated p-8 mx-4 rounded-2xl shadow-lg w-full max-w-md">
                 <h2 className="text-2xl text-white font-bold mb-6">Login</h2>
+
+                {isDemoMode && (
+                    <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-sm text-amber-400">
+                        <p className="font-medium mb-1">Demo Mode Active</p>
+                        <p className="text-xs">Email: test@tradex.dev</p>
+                        <p className="text-xs">Password: TradeX123!</p>
+                    </div>
+                )}
 
                 <input
                     type="email"
