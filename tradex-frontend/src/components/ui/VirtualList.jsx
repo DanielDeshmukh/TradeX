@@ -1,4 +1,4 @@
-import { FixedSizeList as List } from "react-window";
+import { List } from "react-window";
 
 export default function VirtualList({ items, height = 400, itemHeight = 50, renderItem }) {
   if (items.length === 0) return null;
