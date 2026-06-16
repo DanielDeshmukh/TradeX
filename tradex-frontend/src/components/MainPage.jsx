@@ -6,9 +6,12 @@ import ChartContainer from "../components/ChartContainer";
 import WishlistTable from "../components/WishlistTable";
 import MainPageSkeleton from "./MainPageSkeleton";
 import { useQuotes } from "../context/QuoteContext";
+import { useSignals } from "../hooks/useSignals";
+import SignalBadge from "./SignalBadge";
 
 function MainPage({ userId: propUserId }) {
   const { wishlistSymbols: rawWishlistSymbols, getPrice, getChange, getVolume, loading, error } = useQuotes();
+  const { signals } = useSignals();
 
   // Stabilize wishlistSymbols reference
   const wishlistSymbols = useMemo(
@@ -136,6 +139,7 @@ function MainPage({ userId: propUserId }) {
                     <th className="text-left py-2 px-3 font-medium">SYMBOL</th>
                     <th className="text-right py-2 px-2 font-medium">LTP</th>
                     <th className="text-right py-2 px-2 font-medium">CHG%</th>
+                    <th className="text-center py-2 px-2 font-medium">SIGNAL</th>
                     <th className="text-right py-2 px-2 font-medium">VOL</th>
                   </tr>
                 </thead>
@@ -178,6 +182,17 @@ function MainPage({ userId: propUserId }) {
                             <span className="text-[10px]">{Math.abs(row.change).toFixed(2)}%</span>
                           </div>
                         ) : <span className="text-content-muted text-[10px]">-</span>}
+                      </td>
+                      <td className="text-center px-2">
+                        {signals[row.securityId] ? (
+                          <SignalBadge
+                            signal={signals[row.securityId].signal}
+                            confidence={signals[row.securityId].confidence}
+                            size="sm"
+                          />
+                        ) : (
+                          <span className="text-content-muted text-[10px]">—</span>
+                        )}
                       </td>
                       <td className="text-right px-2 text-yellow-400/80">
                         {row.price > 0 ? formatVolume(row.vol) : <span className="text-content-muted text-[10px]">-</span>}
