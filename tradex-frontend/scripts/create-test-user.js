@@ -1,13 +1,15 @@
 #!/usr/bin/env node
+/* eslint-env node */
+/* eslint-disable no-undef */
 
 /**
  * TradeX Test User Creator
- * 
+ *
  * Creates a test user for development.
- * 
+ *
  * Usage:
  *   node create-test-user.js
- * 
+ *
  * Environment Variables:
  *   VITE_SUPABASE_URL - Supabase project URL
  *   VITE_SUPABASE_ANON_KEY - Supabase anonymous key
@@ -15,7 +17,6 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { config } from 'dotenv';
@@ -58,7 +59,7 @@ async function createTestUser() {
   try {
     console.log('📧 Creating test user...');
     
-    const { data, error } = await supabase.auth.admin.createUser({
+    const { error } = await supabase.auth.admin.createUser({
       email: TEST_USER.email,
       password: TEST_USER.password,
       email_confirm: true,
