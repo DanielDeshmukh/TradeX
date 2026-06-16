@@ -9,14 +9,15 @@
 
 | Area | Status | Details |
 |------|--------|---------|
-| Frontend (React) | **~95%** | All components built, design system complete, mobile layout, lazy loading, vendor splitting, vitest configured |
-| ML Pipeline (Python) | **~80%** | Feature engineering, PPO training, backtesting, signal engine, ensemble model all built. Needs real training data + actual model training |
-| Database | **PostgreSQL (local)** | Migrated from Supabase for ML data. Schema ready (candles, signals, features, master_symbols). Auth still on Supabase |
-| Data Collected | **5 symbols × ~375 candles** | 14366, 17963, 2277, 3456, 3499. Need 100+ symbols for production |
-| Dhan Subscription | **Not available** | Using collected/sample data for development |
-| Supabase Backend | **Auth only** | ML data moved to PostgreSQL. Frontend auth, Edge Functions, Storage still on Supabase |
-| CI/CD | **GitHub Actions** | Lint + build on PR. Vercel config ready |
-| Testing | **Vitest setup** | Button tests written. Need full component + integration coverage |
+| Frontend (React) | **~95%** | All components built, design system complete, mobile layout, lazy loading, vendor splitting |
+| Backend (FastAPI) | **~70%** | API endpoints working, CORS configured, live_feed endpoint |
+| ML Pipeline (Python) | **~90%** | Feature engineering (22 indicators), Random Forest trained (73.6%), 116K signals generated |
+| Database | **PostgreSQL (local)** | 116,250 candles loaded, 116,250 features, 116,250 signals |
+| Data Collected | **5 symbols × 23,250 candles** | RELIANCE, TCS, INFY, HDFCBANK, ICICIBANK |
+| Testing | **125 tests** | 24/68 components tested (35%) |
+| CI/CD | **GitHub Actions** | Lint + build on PR |
+| Demo Mode | **Active** | Mock Supabase client for offline testing |
+| CLI | **tradex** | tradex run, tradex test-user |
 
 ---
 
@@ -31,12 +32,23 @@ main                                    ← production-ready
 ├── phase-7-signal-engine               ← merged
 ├── phase-8-15-frontend-complete        ← merged
 ├── phase-16-20-complete                ← merged
-└── migration-supabase-to-postgres      ← merged
+├── migration-supabase-to-postgres      ← merged
+├── feature/routing-pages               ← merged
+├── feature/error-handling              ← merged
+├── feature/component-tests             ← merged
+├── feature/database-setup              ← merged
+├── feature/lint-fixes                  ← merged
+├── phase-1-more-tests                  ← merged
+├── phase-2-performance                 ← merged
+├── phase-3-fastapi-backend             ← merged
+├── phase-4-pwa-setup                   ← merged
+├── phase-5-database-setup              ← merged
+├── feature/ml-pipeline                 ← merged
 ```
 
 ---
 
-## What's Done (Phases 1–20)
+## What's Done (Phases 1–20 + Additional)
 
 ### Phase 1: Foundation Cleanup ✅
 - Fixed filename bugs (double-dot, typos)
@@ -64,23 +76,20 @@ main                                    ← production-ready
 - Config-driven pipeline
 
 ### Phase 5: ML/RL Model ✅
-- `tradex_env.py` — Gymnasium env, Discrete(3) action space, 3 reward modes (PnL, Sharpe, asymmetric)
-- Slippage modeling, position tracking (long/short/flat)
-- `train_ppo.py` — Configurable hyperparams, curriculum learning, TensorBoard, checkpoint saving
+- `tradex_env.py` — Gymnasium env, Discrete(3) action space, 3 reward modes
+- Slippage modeling, position tracking
+- `train_ppo.py` — Configurable hyperparams, curriculum learning, TensorBoard
 - PPO with Stable-Baselines3
 
 ### Phase 6: Backtesting ✅
 - `backtester.py` — Walk-forward validation
 - `evaluation.py` — CAGR, Sortino, Calmar, profit factor, win rate
-- 3 benchmarks (buy-and-hold, SMA crossover, random walk)
-- Performance thresholds, trade log, monthly breakdown
-- JSON report output
+- 3 benchmarks, performance thresholds, trade log
 
 ### Phase 7: Signal Engine ✅
 - `signal_engine.py` — Load model, compute features, generate signals
-- Supabase migration SQL for `trading_signals` + `signal_accuracy` tables
+- Supabase migration SQL
 - `get-signals` Edge Function
-- Periodic signal generation, accuracy tracking
 
 ### Phase 8: Signal Display ✅
 - `SignalBadge.jsx` — BUY/SELL/HOLD with confidence + pulse animation
@@ -90,221 +99,289 @@ main                                    ← production-ready
 ### Phase 9: Charting ✅
 - SMA, EMA, Bollinger Bands, VWAP indicator overlays
 - Buy/sell signal markers
-- `ChartControls.jsx` — Chart type, timeframe, indicator toggles
-- `CrosshairTooltip.jsx` — OHLCV + indicators + IST time
+- `ChartControls.jsx`, `CrosshairTooltip.jsx`
 
 ### Phase 10: Mobile ✅
-- `BottomNav.jsx` — Mobile tab bar
-- `MobileWatchlist.jsx` — Card-based layout
-- `MobileLayout.jsx` — Wrapper with bottom nav
-- `MobileSettings.jsx` — Mobile-optimized settings
+- `BottomNav.jsx`, `MobileWatchlist.jsx`, `MobileLayout.jsx`, `MobileSettings.jsx`
 - Mobile gate removed from App.jsx
 
 ### Phase 11: Security ✅
 - `security.js` — Session refresh, rate limiting, input sanitization, CSRF, audit logging
-- `useAuth.js` — Centralized auth state (import path fixed)
+- `useAuth.js` — Centralized auth state
 - `PrivacyPolicy.jsx`, `TermsOfService.jsx`
 
 ### Phase 12: Notifications ✅
-- `NotificationCenter.jsx` — Bell icon, unread badge, dropdown
-- `PriceAlerts.jsx` — Set above/below targets, modal, active/triggered lists
-- `NotificationPreferences.jsx` — Toggle switches for 6 types
+- `NotificationCenter.jsx`, `PriceAlerts.jsx`, `NotificationPreferences.jsx`
 
 ### Phase 13: Payments ✅
-- `SubscriptionPlan.jsx` — Free/Pro/Elite tiers, ₹499/₹1499 pricing
+- `SubscriptionPlan.jsx` — Free/Pro/Elite tiers
 - `BillingHistory.jsx` — Payment history table
 
 ### Phase 14: Social ✅
-- `ProfileStats.jsx` — Portfolio value, return, trades, win rate
-- `Leaderboard.jsx` — Top traders, achievement badges
-- `ActivityHeatmap.jsx` — GitHub-style contribution grid
+- `ProfileStats.jsx`, `Leaderboard.jsx`, `ActivityHeatmap.jsx`
 
 ### Phase 15: Learning ✅
-- `Learn.jsx` — 6 chapters (stock market, candlesticks, indicators, risk, sentiment, trading plan)
-- Progress tracking, chapter navigation
+- `Learn.jsx` — 6 chapters, progress tracking
 - `TradingGlossary.jsx` — 36 searchable trading terms
 
 ### Phase 16: Performance ✅
-- `React.lazy` + `Suspense` for heavy routes
-- Vendor chunk splitting in vite.config.js (react, charting, UI, data)
+- `React.lazy` + `Suspense`, vendor chunk splitting
 
-### Phase 17: Testing ✅
-- `vitest.config.js` — jsdom environment
-- `Button.test.jsx` — 3 basic tests
-- test scripts in package.json
+### Phase 17: Testing ✅ (Initial)
+- `vitest.config.js`, 73 tests across 12 files
 
 ### Phase 18: DevOps ✅
-- `.github/workflows/ci.yml` — Lint + build on PR/push
-- `vercel.json` — Deployment config
+- `.github/workflows/ci.yml`, `vercel.json`
 
 ### Phase 19: Analytics ✅
 - `analytics.js` — localStorage-based event tracking
 
 ### Phase 20: Advanced AI ✅
-- `ensemble.py` — Combines PPO + SMA crossover with weighted voting
+- `ensemble.py` — PPO + SMA crossover ensemble
+
+### Phase 21: Routing & Navigation ✅
+- 8 new routes, BottomNav wired to useNavigate/useLocation
+- CrosshairTooltip integrated into Chart
+
+### Phase 22: Error Handling ✅
+- ErrorBoundary.jsx, NotFoundPage.jsx, NetworkErrorPage.jsx, AuthErrorPage.jsx
+- Wrapped App.jsx Routes with ErrorBoundary
+
+### Phase 23: Component Tests (Batch 1) ✅
+- 21 tests: SignalBadge, Card, BottomNav, Button
+
+### Phase 24: Database Setup ✅
+- PostgreSQL running, tradex database created
+- Schema applied (6 tables, 12 indexes)
+- 116,250 candles loaded from JSON
+
+### Phase 25: Backend API ✅
+- FastAPI with CORS, 4 route modules
+- POST /live_feed endpoint matching frontend expectations
+- GET /api/candles, /api/symbols, /api/signals
+
+### Phase 26: PWA Setup ✅
+- manifest.json, service-worker.js, SVG icons
+- index.html meta tags
+
+### Phase 27: Performance Optimization ✅
+- Lazy load all 17 route components
+- React Query provider (30s staleTime)
+- Debounce chart resize (200ms)
+- Virtual scrolling for TradingGlossary
+
+### Phase 28: Component Tests (Batch 2) ✅
+- 52 new tests: DemoBanner, Footer, SplashScreen, MiniModal, MobileComingSoon, ErrorBoundary, PrivacyPolicy, TermsOfService, ProfileStats, Input, Select
+
+### Phase 29: Demo Mode & CLI ✅
+- Mock Supabase client for offline testing
+- tradex CLI (tradex.bat, tradex.ps1)
+- DemoBanner component, Login shows demo credentials
+- Test user: test@tradex.dev / TradeX123!
+
+### Phase 30: ML Pipeline ✅
+- Feature engineering: 22 technical indicators
+- Random Forest model: 73.6% accuracy
+- Signal generation: 116,250 buy/sell/hold signals
+- GET /api/signals/all endpoint
 
 ---
 
 ## What's NOT Done (Remaining to 100%)
 
-### 🔴 Critical (Must complete for launch)
+### Phase 31: Wire Signals to Dashboard
+- Connect /api/signals/all to MainPage
+- Display signal badges next to each symbol
+- Real-time signal updates
+- Signal history chart
 
-1. **Database Setup**
-   - [ ] Install PostgreSQL locally or on a server
-   - [ ] Create database: `CREATE DATABASE tradex;`
-   - [ ] Run schema: `psql -U postgres -d tradex -f tradex-ml/schema.sql`
-   - [ ] Add `PG_PASSWORD` to `tradex-ml/.env`
-   - [ ] Test connection with `python tradex-ml/db.py`
+### Phase 32: Dashboard Live Data
+- Wire candle data from backend to ChartPage
+- Live price updates from API
+- Portfolio value calculation
+- Watchlist with live prices
 
-2. **Data Collection (Real Data)**
-   - [ ] Get Dhan API subscription (₹200/month for historical data)
-   - [ ] Fetch 100+ NSE equity symbols × 6 months 1-min data
-   - [ ] Store in PostgreSQL `candles` table
-   - [ ] Validate data integrity (gaps, duplicates, outliers)
+### Phase 33: Alert System Backend
+- Price alert API endpoints (CRUD)
+- Alert trigger logic (price crosses threshold)
+- Notification delivery (in-app + email)
+- Alert history tracking
 
-3. **Train the PPO Model**
-   - [ ] Run: `python tradex-ml/train_ppo.py --data data/data/14366_1min.csv --timesteps 100000`
-   - [ ] Train on all 5 symbols, iterate on hyperparams
-   - [ ] Run backtesting: `python tradex-ml/backtester.py --model models/ppo_baseline/ppo_final --data data/data/14366_1min.csv`
-   - [ ] Achieve Sharpe > 1.0, Win Rate > 50%
+### Phase 34: Alert System Frontend
+- PriceAlerts connected to backend
+- Alert notification delivery
+- Alert management (edit/delete)
+- Push notification support
 
-4. **Wire Components into App.jsx Routes**
-   - [ ] Add routes for: PrivacyPolicy, TermsOfService, BillingHistory, TradingGlossary
-   - [ ] Add routes for: MobileSettings, NotificationPreferences
-   - [ ] Connect CrosshairTooltip to Chart component
-   - [ ] Wire BottomNav to actual page navigation
+### Phase 35: User Settings Backend
+- User preferences API (theme, notifications, currency)
+- Settings persistence in PostgreSQL
+- Profile update endpoints
+- Account deletion endpoint
 
-5. **Frontend-PostgreSQL Integration**
-   - [ ] Create FastAPI backend (or Supabase Edge Functions) that connects to PostgreSQL
-   - [ ] API endpoints: `/candles`, `/signals`, `/features`, `/symbols`
-   - [ ] Replace Supabase data queries in frontend with API calls
+### Phase 36: Profile & Settings Wiring
+- ProfileHeader connected to backend
+- ContactInfo save/load from API
+- MobileSettings backend integration
+- NotificationPreferences persistence
 
-### 🟡 Important (Should complete before beta)
+### Phase 37: Billing Backend
+- Subscription status API
+- Payment history API
+- Plan upgrade/downgrade logic
+- Promo code validation
 
-6. **Testing**
-   - [ ] Write tests for: Chart, WishlistTable, Settings, Login, Register
-   - [ ] Write integration tests for auth flow
-   - [ ] Write Python tests for feature_engineering, tradex_env, backtester
-   - [ ] Run `npm test` and `python -m pytest` in CI
+### Phase 38: Billing Frontend Wiring
+- SubscriptionPlan connected to backend
+- BillingHistory loading from API
+- ReferralCode backend integration
+- Payment flow (mock)
 
-7. **Mobile Responsiveness**
-   - [ ] Test on iPhone SE, iPhone 14, Samsung Galaxy S21, Pixel 7
-   - [ ] Fix any layout issues
-   - [ ] Add PWA manifest + service worker
+### Phase 39: Search & Filter
+- Symbol search API with debounce
+- Watchlist CRUD endpoints
+- Symbol filtering (sector, market cap)
+- Recent searches history
 
-8. **Error Handling**
-   - [ ] Add error boundaries in React
-   - [ ] Add try/catch in all API calls
-   - [ ] Add fallback UI for loading failures
+### Phase 40: Leaderboard Backend
+- Leaderboard API endpoint
+- Ranking algorithm (return, win rate, streak)
+- Achievement system
+- Weekly/monthly rankings
 
-9. **Performance**
-   - [ ] Lazy load all routes (not just heavy ones)
-   - [ ] Add React Query for data caching
-   - [ ] Debounce chart resize
-   - [ ] Virtual scrolling for large lists
+### Phase 41: Learning Backend
+- Course progress API
+- Quiz system endpoints
+- Certificate generation
+- Learning path recommendations
 
-### 🟢 Nice to Have (Can ship without)
+### Phase 42: Advanced Chart Features
+- Multi-timeframe analysis
+- Drawing tools (trendlines, fibonacci)
+- Chart comparison (multiple symbols)
+- Export chart as image
 
-10. **Advanced Features**
-    - [ ] Sentiment analysis (news + social media)
-    - [ ] Candlestick pattern detection
-    - [ ] Natural language queries ("What's the trend for Reliance?")
-    - [ ] Risk scoring per security
+### Phase 43: Test Coverage (Batch 3)
+- Chart, ChartContainer, ChartPage tests
+- Settings, ProfilePage, ProfileHeader tests
+- Notifications, NotificationCenter tests
+- WishlistTable, MobileWatchlist tests
 
-11. **Monetization**
-    - [ ] Razorpay integration
-    - [ ] Subscription management flow
-    - [ ] Referral credit system
-    - [ ] Promo code support
+### Phase 44: Test Coverage (Batch 4)
+- TradingGlossary, Learn tests
+- Leaderboard, ActivityHeatmap tests
+- AIDashboard, PriceAlerts tests
+- BillingHistory, SubscriptionPlan tests
 
-12. **Community**
-    - [ ] User search/discovery
-    - [ ] Follow other traders
-    - [ ] Community watchlists
+### Phase 45: Test Coverage (Batch 5)
+- FullscreenChartPage, ChartTypeModal tests
+- TimeFrameModal, ShortcutModal tests
+- ForgotPassword, MagicLink, UpdatePassword tests
+- TradeXLanding, MainPage tests
+
+### Phase 46: Integration Tests
+- Auth flow end-to-end tests
+- Chart data loading tests
+- Signal generation pipeline tests
+- API endpoint integration tests
+
+### Phase 47: Python ML Tests
+- Feature engineering unit tests
+- Model training tests
+- Signal generation tests
+- Database operations tests
+
+### Phase 48: Error Handling Hardening
+- API error response standardization
+- Frontend error boundary expansion
+- Retry logic for failed API calls
+- Offline fallback UI
+
+### Phase 49: Security Audit
+- Rate limiting on all endpoints
+- Input validation (Pydantic models)
+- SQL injection prevention verification
+- XSS protection audit
+
+### Phase 50: Performance Optimization (Backend)
+- Database query optimization
+- API response caching (Redis)
+- Connection pooling
+- Background task queue
+
+### Phase 51: Performance Optimization (Frontend)
+- Image optimization (WebP)
+- Service worker caching strategy
+- Critical CSS inlining
+- Bundle size analysis
+
+### Phase 52: Deployment (Backend)
+- Docker containerization
+- Railway/Render deployment
+- Environment variable configuration
+- Health check endpoints
+
+### Phase 53: Deployment (Frontend)
+- Vercel deployment
+- Custom domain setup
+- SSL certificate
+- CDN configuration
+
+### Phase 54: Monitoring & Logging
+- Sentry error tracking
+- API request logging
+- Performance monitoring
+- Uptime monitoring
+
+### Phase 55: Documentation
+- API documentation (OpenAPI/Swagger)
+- Developer setup guide
+- Deployment guide
+- User guide
+
+### Phase 56: Beta Testing
+- Invite beta users
+- Collect feedback
+- Bug fixes
+- Performance tuning
 
 ---
 
-## Quick Start (What to do right now)
+## Phase Execution Plan
 
-```bash
-# 1. Setup PostgreSQL
-psql -U postgres -c "CREATE DATABASE tradex;"
-psql -U postgres -d tradex -f tradex-ml/schema.sql
+| Phase | Name | Commits | Tasks |
+|-------|------|---------|-------|
+| 31 | Wire Signals to Dashboard | 1 | 5 |
+| 32 | Dashboard Live Data | 2 | 8 |
+| 33 | Alert System Backend | 1 | 6 |
+| 34 | Alert System Frontend | 1 | 5 |
+| 35 | User Settings Backend | 1 | 6 |
+| 36 | Profile & Settings Wiring | 1 | 5 |
+| 37 | Billing Backend | 1 | 5 |
+| 38 | Billing Frontend Wiring | 1 | 5 |
+| 39 | Search & Filter | 1 | 5 |
+| 40 | Leaderboard Backend | 1 | 5 |
+| 41 | Learning Backend | 1 | 5 |
+| 42 | Advanced Chart Features | 2 | 8 |
+| 43 | Test Coverage (Batch 3) | 1 | 5 |
+| 44 | Test Coverage (Batch 4) | 1 | 5 |
+| 45 | Test Coverage (Batch 5) | 1 | 5 |
+| 46 | Integration Tests | 1 | 5 |
+| 47 | Python ML Tests | 1 | 5 |
+| 48 | Error Handling Hardening | 1 | 5 |
+| 49 | Security Audit | 1 | 5 |
+| 50 | Performance (Backend) | 1 | 5 |
+| 51 | Performance (Frontend) | 1 | 5 |
+| 52 | Deployment (Backend) | 1 | 5 |
+| 53 | Deployment (Frontend) | 1 | 5 |
+| 54 | Monitoring & Logging | 1 | 5 |
+| 55 | Documentation | 1 | 5 |
+| 56 | Beta Testing | 1 | 5 |
 
-# 2. Configure .env
-cd tradex-ml
-echo "PG_PASSWORD=your_postgres_password" >> .env
-
-# 3. Test DB connection
-python -c "from db import init_db; init_db(); print('DB OK')"
-
-# 4. Load existing data into PostgreSQL
-python -c "
-import json, pandas as pd
-from db import upsert_candles
-for sym in ['14366','17963','2277','3456','3499']:
-    df = pd.read_csv(f'data/data/{sym}_1min.csv', index_col=0).T
-    cols = df.iloc[:,0].tolist()
-    data = df.iloc[:,1:].T; data.columns = cols
-    for c in ['open','high','low','close','volume']:
-        data[c] = pd.to_numeric(data[c], errors='coerce')
-    data = data.reset_index(drop=True)
-    data['security_id'] = sym
-    data['timeframe'] = '1min'
-    candles = data[['security_id','timeframe','timestamp','open','high','low','close','volume']].to_dict('records')
-    n = upsert_candles(candles)
-    print(f'{sym}: {n} candles inserted')
-"
-
-# 5. Train PPO model
-python train_ppo.py --data data/data/14366_1min.csv --timesteps 50000
-
-# 6. Run backtest
-python backtester.py --model models/ppo_baseline/ppo_final --data data/data/14366_1min.csv
-
-# 7. Start frontend
-cd ../tradex-frontend
-npm install
-npm run dev
-```
+**Total: 26 phases, 26 commits, ~140 tasks**
 
 ---
 
-## File Structure
-
-```
-TradeX/
-├── .github/workflows/ci.yml          ← CI/CD
-├── .gitignore
-├── PROJECT_GOALS.md                  ← This file
-├── supabase/
-│   ├── functions/get-signals/index.ts ← Edge Function
-│   └── migrations/                    ← SQL migrations
-├── tradex-frontend/
-│   ├── src/
-│   │   ├── components/               ← 35+ React components
-│   │   ├── context/ThemeContext.jsx   ← 4-theme system
-│   │   ├── hooks/useAuth.js          ← Auth state
-│   │   ├── utils/security.js         ← Security utilities
-│   │   └── App.jsx                   ← Routes + lazy loading
-│   ├── vitest.config.js
-│   └── vite.config.js                ← Vendor chunk splitting
-└── tradex-ml/
-    ├── db.py                         ← PostgreSQL module
-    ├── schema.sql                    ← Database schema
-    ├── feature_engineering.py        ← 20+ indicators
-    ├── tradex_env.py                 ← Gymnasium env
-    ├── train_ppo.py                  ← PPO training
-    ├── backtester.py                 ← Walk-forward validation
-    ├── evaluation.py                 ← Metrics + benchmarks
-    ├── signal_engine.py              ← Signal generation
-    ├── ensemble.py                   ← PPO + SMA ensemble
-    ├── feature_config.yaml           ← Feature parameters
-    └── data/data/                    ← 5 symbols CSV + JSON
-```
-
----
-
-*Last updated: June 2026*
+*Last updated: June 16, 2026*
 *Project: TradeX — AI-Powered Trading Platform*
-*15 commits on main, 7 phase branches preserved*
+*18 phase branches preserved, 0 deleted*
