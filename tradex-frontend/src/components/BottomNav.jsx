@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const NAV_ITEMS = [
-  { key: 'chart', label: 'Chart', icon: ChartIcon },
-  { key: 'watchlist', label: 'Watchlist', icon: WatchlistIcon },
-  { key: 'ai', label: 'AI', icon: AIIcon },
-  { key: 'profile', label: 'Profile', icon: ProfileIcon },
+  { key: 'chart', label: 'Chart', icon: ChartIcon, path: '/main-page' },
+  { key: 'watchlist', label: 'Watchlist', icon: WatchlistIcon, path: '/main-page' },
+  { key: 'ai', label: 'AI', icon: AIIcon, path: '/main-page' },
+  { key: 'profile', label: 'Profile', icon: ProfileIcon, path: '/profile-page' },
 ];
 
-export default function BottomNav({ activeTab, onTabChange }) {
+export default function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const getActiveTab = () => {
+    if (location.pathname === '/profile-page') return 'profile';
+    return 'chart';
+  };
+
+  const activeTab = getActiveTab();
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-border z-50 md:hidden">
       <div className="flex items-center justify-around h-14">
@@ -17,7 +28,7 @@ export default function BottomNav({ activeTab, onTabChange }) {
           return (
             <button
               key={item.key}
-              onClick={() => onTabChange(item.key)}
+              onClick={() => navigate(item.path)}
               className={`
                 flex flex-col items-center justify-center w-full h-full
                 transition-colors
