@@ -249,7 +249,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - MobileSettings backend integration
 - NotificationPreferences persistence
 
-### Phase 40: Watchlist CRUD Backend
+### Phase 40: Watchlist CRUD Backend ✅
 - Watchlist CRUD endpoints (add/remove/reorder)
 - Real-time watchlist sync
 - Symbol filtering (sector, market cap)
@@ -366,7 +366,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 37 | Pattern Discovery | ✅ Done | `feature/pattern-discovery` |
 | 38 | User Settings Backend | ✅ Done | `feature/user-settings-backend` |
 | 39 | Profile & Settings Wiring | ✅ Done | `feature/profile-settings-wiring` |
-| 40 | Watchlist CRUD Backend | ⏳ Pending | — |
+| 40 | Watchlist CRUD Backend | ✅ Done | `feature/watchlist-crud-backend` |
 | 41 | Leaderboard Backend | ⏳ Pending | — |
 | 42 | Learning Backend | ⏳ Pending | — |
 | 43 | Advanced Chart Features | ⏳ Pending | — |
