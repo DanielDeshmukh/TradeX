@@ -291,7 +291,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - ForgotPassword, MagicLink, UpdatePassword tests
 - TradeXLanding, MainPage tests
 
-### Phase 47: Integration Tests
+### Phase 47: Integration Tests ✅
 - Auth flow end-to-end tests
 - Chart data loading tests
 - Signal generation pipeline tests
@@ -373,7 +373,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 44 | Test Coverage (Batch 3) | ✅ Done | `feature/test-coverage-batch3` |
 | 45 | Test Coverage (Batch 4) | ✅ Done | `feature/test-coverage-batch4` |
 | 46 | Test Coverage (Batch 5) | ✅ Done | `feature/test-coverage-batch5` |
-| 47 | Integration Tests | ⏳ Pending | — |
+| 47 | Integration Tests | ✅ Done | `feature/integration-tests` |
 | 48 | Python ML Tests | ⏳ Pending | — |
 | 49 | Error Handling Hardening | ⏳ Pending | — |
 | 50 | Security Audit | ⏳ Pending | — |
