@@ -273,7 +273,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - Chart comparison (multiple symbols)
 - Export chart as image
 
-### Phase 44: Test Coverage (Batch 3)
+### Phase 44: Test Coverage (Batch 3) ✅
 - Chart, ChartContainer, ChartPage tests
 - Settings, ProfilePage, ProfileHeader tests
 - Notifications, NotificationCenter tests
@@ -370,7 +370,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 41 | Leaderboard Backend | ✅ Done | `feature/leaderboard-backend` |
 | 42 | Learning Backend | ✅ Done | `feature/learning-backend` |
 | 43 | Advanced Chart Features | ✅ Done | `feature/advanced-chart-features` |
-| 44 | Test Coverage (Batch 3) | ⏳ Pending | — |
+| 44 | Test Coverage (Batch 3) | ✅ Done | `feature/test-coverage-batch3` |
 | 45 | Test Coverage (Batch 4) | ⏳ Pending | — |
 | 46 | Test Coverage (Batch 5) | ⏳ Pending | — |
 | 47 | Integration Tests | ⏳ Pending | — |
