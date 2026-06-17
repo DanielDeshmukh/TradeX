@@ -3,6 +3,7 @@ import Header from "./Header";
 import { toast } from "react-toastify";
 import { useTheme } from "../context/ThemeContext";
 import { useUserSettings } from "../hooks/useUserSettings";
+import { useWatchlist } from "../hooks/useWatchlist";
 import SettingsSkeleton from "./SettingsSkeleton";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -44,10 +45,11 @@ const Settings = () => {
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
   const { settings: userSettings, updateSettings } = useUserSettings(userId);
+  const { watchlist, addToWatchlist, removeFromWatchlist } = useWatchlist(userId);
   const [isSearching, setIsSearching] = useState(false);
   const [symbolSuggestions, setSymbolSuggestions] = useState({});
   const [searchForm, setSearchForm] = useState({ keyword: "", exchange_id: "", instrument: "", security_id: "" });
-  const [settings, setSettings] = useState({ chartType: "candlestick", chartInterval: "5m", notificationsEnabled: false, wishlist: [] });
+  const [settings, setSettings] = useState({ chartType: "candlestick", chartInterval: "5m", notificationsEnabled: false });
 
   const searchTimeout = useRef(null);
 
@@ -107,42 +109,34 @@ const Settings = () => {
     if (!userId) return toast.error("User not logged in");
     if (!symbol?.security_id || !symbol.display_name) return toast.error("Invalid symbol data");
     
-    const payload = { 
-      user_id: userId, 
-      security_id: String(symbol.security_id), 
-      exchange_id: symbol.exchange_segment || "", 
-      instrument: symbol.instrument_type || "", 
-      symbol_name: symbol.symbol_name || "", 
-      display_name: symbol.display_name || "", 
-      action: "add" 
-    };
-    
     const toastId = toast.loading(`Adding ${symbol.display_name}...`);
     try {
-      const res = normalizeInvokeResponse(await supabase.functions.invoke("wishlist", { body: payload }));
-      if (res?.wishlist) {
-        setSettings((prev) => ({ ...prev, wishlist: res.wishlist }));
-        toast.success(`${symbol.display_name} added successfully`);
-      }
-      else toast.error(res?.error || "Failed to add symbol");
-    } catch {
-      toast.error("Error adding symbol");
-    } finally { toast.dismiss(toastId); }
+      await addToWatchlist({
+        security_id: String(symbol.security_id),
+        display_name: symbol.display_name,
+        symbol_name: symbol.symbol_name || "",
+        exchange_id: symbol.exchange_segment || "",
+        instrument: symbol.instrument_type || "",
+      });
+      toast.success(`${symbol.display_name} added successfully`);
+    } catch (error) {
+      toast.error(error.message || "Failed to add symbol");
+    } finally { 
+      toast.dismiss(toastId); 
+    }
   };
 
   const removeSymbol = async (security_id, displayName) => {
     if (!userId) return toast.error("User not logged in");
     const toastId = toast.loading("Removing symbol...");
     try {
-      const res = normalizeInvokeResponse(await supabase.functions.invoke("wishlist", { body: { user_id: userId, security_id: String(security_id), action: "remove" } }));
-      if (res?.wishlist) { 
-        setSettings((prev) => ({ ...prev, wishlist: res.wishlist })); 
-        toast.success(`${displayName || "Symbol"} removed`); 
-      }
-      else toast.error(res?.error || "Failed to remove symbol");
-    } catch {
-      toast.error("Error removing symbol");
-    } finally { toast.dismiss(toastId); }
+      await removeFromWatchlist(security_id);
+      toast.success(`${displayName || "Symbol"} removed`);
+    } catch (error) {
+      toast.error(error.message || "Failed to remove symbol");
+    } finally { 
+      toast.dismiss(toastId); 
+    }
   };
 
   const handleFormChange = (e) => { 
@@ -157,7 +151,7 @@ const Settings = () => {
       try {
         const res = normalizeInvokeResponse(await supabase.functions.invoke("symbols", { body: { action: "fetchSymbolDetails", symbol_name: searchForm.keyword, exchange_id: searchForm.exchange_id, instrument: searchForm.instrument, security_id: searchForm.security_id } }));
         const instruments = res?.instruments || [];
-        const filtered = instruments.filter((s) => !settings.wishlist.some((w) => String(w.security_id) === String(s.security_id)));
+        const filtered = instruments.filter((s) => !watchlist.some((w) => String(w.security_id) === String(s.security_id)));
         const grouped = filtered.reduce((acc, row) => { 
           const name = row.display_name || "Unknown"; 
           if (!acc[name]) acc[name] = []; 
@@ -171,7 +165,7 @@ const Settings = () => {
         setIsSearching(false); 
       }
     }, 500);
-  }, [searchForm, settings.wishlist]);
+  }, [searchForm, watchlist]);
 
   useEffect(() => {
     if (searchForm.keyword.trim() || searchForm.exchange_id.trim() || searchForm.instrument.trim() || searchForm.security_id.trim()) searchSymbols();
@@ -296,14 +290,14 @@ const Settings = () => {
             </ul>
           )}
           
-          {settings.wishlist.length === 0 ? (
+          {watchlist.length === 0 ? (
             <div className="text-center py-8 text-content-secondary">
               <p>Your wishlist is empty</p>
               <p className="text-sm mt-2">Search and add symbols above</p>
             </div>
           ) : (
             <div className="flex flex-wrap gap-2">
-              {settings.wishlist.map((s) => (
+              {watchlist.map((s) => (
                 <div key={s.security_id} className="flex items-center gap-2 bg-brand/20 text-brand px-3 py-1.5 rounded-full hover:bg-brand/30 transition-colors">
                   <span className="text-sm">{s.display_name} ({s.exchange_segment})</span>
                   <button 
