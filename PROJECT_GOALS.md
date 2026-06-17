@@ -267,7 +267,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - Certificate generation
 - Learning path recommendations
 
-### Phase 43: Advanced Chart Features
+### Phase 43: Advanced Chart Features ✅
 - Multi-timeframe analysis
 - Drawing tools (trendlines, fibonacci)
 - Chart comparison (multiple symbols)
@@ -369,7 +369,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 40 | Watchlist CRUD Backend | ✅ Done | `feature/watchlist-crud-backend` |
 | 41 | Leaderboard Backend | ✅ Done | `feature/leaderboard-backend` |
 | 42 | Learning Backend | ✅ Done | `feature/learning-backend` |
-| 43 | Advanced Chart Features | ⏳ Pending | — |
+| 43 | Advanced Chart Features | ✅ Done | `feature/advanced-chart-features` |
 | 44 | Test Coverage (Batch 3) | ⏳ Pending | — |
 | 45 | Test Coverage (Batch 4) | ⏳ Pending | — |
 | 46 | Test Coverage (Batch 5) | ⏳ Pending | — |
