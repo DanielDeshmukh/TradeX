@@ -279,7 +279,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - Notifications, NotificationCenter tests
 - WishlistTable, MobileWatchlist tests
 
-### Phase 45: Test Coverage (Batch 4)
+### Phase 45: Test Coverage (Batch 4) ✅
 - TradingGlossary, Learn tests
 - Leaderboard, ActivityHeatmap tests
 - AIDashboard, PriceAlerts tests
@@ -371,7 +371,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 42 | Learning Backend | ✅ Done | `feature/learning-backend` |
 | 43 | Advanced Chart Features | ✅ Done | `feature/advanced-chart-features` |
 | 44 | Test Coverage (Batch 3) | ✅ Done | `feature/test-coverage-batch3` |
-| 45 | Test Coverage (Batch 4) | ⏳ Pending | — |
+| 45 | Test Coverage (Batch 4) | ✅ Done | `feature/test-coverage-batch4` |
 | 46 | Test Coverage (Batch 5) | ⏳ Pending | — |
 | 47 | Integration Tests | ⏳ Pending | — |
 | 48 | Python ML Tests | ⏳ Pending | — |
