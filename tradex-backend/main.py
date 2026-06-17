@@ -3,6 +3,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from error_handling import APIError, api_error_handler, global_exception_handler
+from security import rate_limit_middleware
+from fastapi import Request
+from fastapi.responses import JSONResponse
 
 from routes.candles import router as candles_router
 from routes.signals import router as signals_router
@@ -36,6 +39,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_rate_limiting(request: Request, call_next):
+    return await rate_limit_middleware(request, call_next)
 
 app.include_router(candles_router, prefix="/api")
 app.include_router(signals_router, prefix="/api")
