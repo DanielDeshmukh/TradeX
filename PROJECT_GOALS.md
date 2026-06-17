@@ -237,7 +237,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 
 ## What's NOT Done (Remaining to 100%)
 
-### Phase 38: User Settings Backend
+### Phase 38: User Settings Backend ✅
 - User preferences API (theme, notifications, currency)
 - Settings persistence in PostgreSQL
 - Profile update endpoints
@@ -364,7 +364,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 35 | Billing/Subscription Mock | ✅ Done | `feature/billing-mock` |
 | 36 | Search & Discover | ✅ Done | `feature/search-discover` |
 | 37 | Pattern Discovery | ✅ Done | `feature/pattern-discovery` |
-| 38 | User Settings Backend | ⏳ Pending | — |
+| 38 | User Settings Backend | ✅ Done | `feature/user-settings-backend` |
 | 39 | Profile & Settings Wiring | ⏳ Pending | — |
 | 40 | Watchlist CRUD Backend | ⏳ Pending | — |
 | 41 | Leaderboard Backend | ⏳ Pending | — |
