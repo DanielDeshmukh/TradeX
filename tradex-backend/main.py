@@ -15,6 +15,7 @@ from routes.patterns import router as patterns_router
 from routes.user_settings import router as user_settings_router
 from routes.watchlist import router as watchlist_router
 from routes.leaderboard import router as leaderboard_router
+from routes.learning import router as learning_router
 
 load_dotenv()
 
@@ -44,6 +45,7 @@ app.include_router(patterns_router, prefix="/api")
 app.include_router(user_settings_router, prefix="/api")
 app.include_router(watchlist_router, prefix="/api")
 app.include_router(leaderboard_router, prefix="/api")
+app.include_router(learning_router, prefix="/api")
 
 
 @app.get("/health")

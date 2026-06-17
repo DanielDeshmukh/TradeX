@@ -261,7 +261,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - Achievement system
 - Weekly/monthly rankings
 
-### Phase 42: Learning Backend
+### Phase 42: Learning Backend ✅
 - Course progress API
 - Quiz system endpoints
 - Certificate generation
@@ -368,7 +368,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 39 | Profile & Settings Wiring | ✅ Done | `feature/profile-settings-wiring` |
 | 40 | Watchlist CRUD Backend | ✅ Done | `feature/watchlist-crud-backend` |
 | 41 | Leaderboard Backend | ✅ Done | `feature/leaderboard-backend` |
-| 42 | Learning Backend | ⏳ Pending | — |
+| 42 | Learning Backend | ✅ Done | `feature/learning-backend` |
 | 43 | Advanced Chart Features | ⏳ Pending | — |
 | 44 | Test Coverage (Batch 3) | ⏳ Pending | — |
 | 45 | Test Coverage (Batch 4) | ⏳ Pending | — |
