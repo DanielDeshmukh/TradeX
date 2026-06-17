@@ -285,7 +285,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - AIDashboard, PriceAlerts tests
 - BillingHistory, SubscriptionPlan tests
 
-### Phase 46: Test Coverage (Batch 5)
+### Phase 46: Test Coverage (Batch 5) ✅
 - FullscreenChartPage, ChartTypeModal tests
 - TimeFrameModal, ShortcutModal tests
 - ForgotPassword, MagicLink, UpdatePassword tests
@@ -372,7 +372,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 43 | Advanced Chart Features | ✅ Done | `feature/advanced-chart-features` |
 | 44 | Test Coverage (Batch 3) | ✅ Done | `feature/test-coverage-batch3` |
 | 45 | Test Coverage (Batch 4) | ✅ Done | `feature/test-coverage-batch4` |
-| 46 | Test Coverage (Batch 5) | ⏳ Pending | — |
+| 46 | Test Coverage (Batch 5) | ✅ Done | `feature/test-coverage-batch5` |
 | 47 | Integration Tests | ⏳ Pending | — |
 | 48 | Python ML Tests | ⏳ Pending | — |
 | 49 | Error Handling Hardening | ⏳ Pending | — |
