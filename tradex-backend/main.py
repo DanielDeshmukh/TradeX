@@ -13,6 +13,7 @@ from routes.billing import router as billing_router
 from routes.search import router as search_router
 from routes.patterns import router as patterns_router
 from routes.user_settings import router as user_settings_router
+from routes.watchlist import router as watchlist_router
 
 load_dotenv()
 
@@ -40,6 +41,7 @@ app.include_router(billing_router, prefix="/api")
 app.include_router(search_router, prefix="/api")
 app.include_router(patterns_router, prefix="/api")
 app.include_router(user_settings_router, prefix="/api")
+app.include_router(watchlist_router, prefix="/api")
 
 
 @app.get("/health")
