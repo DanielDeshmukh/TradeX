@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from error_handling import APIError, api_error_handler, global_exception_handler
 
 from routes.candles import router as candles_router
 from routes.signals import router as signals_router
@@ -24,6 +25,9 @@ app = FastAPI(
     description="Backend API for TradeX trading platform",
     version="1.0.0",
 )
+
+app.add_exception_handler(APIError, api_error_handler)
+app.add_exception_handler(Exception, global_exception_handler)
 
 app.add_middleware(
     CORSMiddleware,
