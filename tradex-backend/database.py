@@ -30,3 +30,14 @@ def fetch_all(query, params=None):
             return cur.fetchall()
     finally:
         conn.close()
+
+
+def execute(query, params=None):
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(query, params)
+            conn.commit()
+            return cur.rowcount
+    finally:
+        conn.close()
