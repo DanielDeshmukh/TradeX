@@ -1,176 +1,151 @@
 ---
 
-# TradeX: Guided Trading Platform for Beginners
+# TradeX: AI-Powered SaaS Trading Platform for the Indian Stock Market
+
+> Target: Beginner retail investors (ages 18–35)
 
 ---
 
-## Problem Statement
+## Current Status
 
-India’s retail investor base is expanding rapidly, yet a large segment of potential traders remains underserved due to:
-
-* Limited trading experience and financial literacy
-* Fear of capital loss from unstructured exposure
-* Overwhelming or complex trading interfaces
-* Lack of accessible, low-risk pricing models
-
-These challenges result in missed opportunities, poor initial trading experiences, and high user churn for brokerages.
-
----
-
-## Proposed Solution – TradeX
-
-**TradeX** is an AI-powered, beginner-first SaaS trading platform designed to provide a safe, structured, and engaging experience for first-time traders.
-
-### Key Pillars
-
-* **Tiered Subscription Model**: Affordable monthly plans with daily trade limits and add-ons
-* **AI-Guided Trading Assistance**: Reinforcement Learning-based alerts and nudges
-* **Gamified Referral System**: Drives organic user growth and ongoing engagement
-* **Brokerage Integration via Dhan**: Regulation-compliant and scalable infrastructure
+| Area | Status | Details |
+|------|--------|---------|
+| Frontend (React) | **~98%** | All components built, design system complete, mobile layout |
+| Backend (FastAPI) | **~95%** | 13 route modules, CORS, live feed, signals, billing |
+| ML Pipeline (Python) | **~90%** | Feature engineering (22 indicators), Random Forest trained |
+| Database | **PostgreSQL** | 116,250 candles, features, signals + user tables |
+| Testing | **150+ tests** | Component, integration, and ML tests |
 
 ---
 
-## Technical Architecture & Stack
+## Quick Start
 
-### Frontend
+### Prerequisites
+- Node.js 18+
+- Python 3.11+
+- PostgreSQL 15+
 
-* **Framework**: ReactJS with TailwindCSS for modern UI/UX
-* **Charting**: TradingView Lightweight Charts for market visualizations
+### Backend Setup
+```bash
+cd tradex-backend
+pip install -r requirements.txt
+# Configure .env with DATABASE_URL
+python -m uvicorn main:app --reload
+```
 
+### Frontend Setup
+```bash
+cd tradex-frontend
+npm install
+npm run dev
+```
 
-### Backend
-
-* **Core Logic**: Node.js for API routing and data handling
-* **Real-Time Data**: WebSocket for live trade feeds
-* **Database**: Supabase for relational data and real-time hooks
-
-
-### PPO (RL) Model
-* **Proximal Policy Optimization**:  reinforcement learning algorithm that trains an agent 
-* **Functionality**: Generates buy/sell/hold signals using market indicators
-* **Evaluation**: Trained on historical data, validated via backtesting
-* **Frameworks**: Stable-Baselines3, TensorFlow, pandas, NumPy
-
-> *Note: AI suggestions are for educational purposes and not SEBI-registered advisory.*
-
----
-
-## Security Measures
-
-To maintain system integrity and user trust, TradeX enforces:
-
-* **Device Binding**: One user per authenticated device
-* **Multi-Factor Authentication**: Secured via Clerk
-* **Session Management**: Token invalidation and timeouts
-* **Access Control**: IP rate limiting and RBAC
-* **Device Transfers**: Manually approved upon user request
+### Docker Setup
+```bash
+cd tradex-backend
+docker-compose up -d
+```
 
 ---
 
-## Subscription Plans
+## API Endpoints
 
-| Plan  | Price/Month | Trades/Day | Alerts/Month | Add-On Options    |
-| ----- | ----------- | ---------- | ------------ | ----------------- |
-| Base  | ₹199        | 15         | 5            | +10 trades @ ₹49  |
-| Pro   | ₹499        | 30         | 10           | +20 trades @ ₹99  |
-| Elite | ₹999      | 50         | 20           | +30 trades @ ₹299 |
-
----
-
-## New User Discount
-
-* **50% discount on the first month** across all plans.
-
----
-
-## Referral Program
-
-Each user receives three referral codes annually.
-
-| Referral Use | Benefit             |
-| ------------ | ------------------- |
-| 1st Use      | 50% off next month  |
-| 2nd Use      | 50% off next month  |
-| 3rd Use      | 100% off next month |
-
-> *Note: Only one referral redemption is allowed per month.*
+| Module | Endpoint | Method | Description |
+|--------|----------|--------|-------------|
+| Candles | `/api/candles` | GET | OHLCV candle data |
+| Signals | `/api/signals/all` | GET | Trading signals |
+| Search | `/api/search` | GET | Symbol search |
+| Settings | `/api/user-settings/{id}` | GET/PUT | User settings |
+| Profile | `/api/user-profile/{id}` | GET/PUT | User profile |
+| Watchlist | `/api/watchlist/{id}` | GET/POST/DELETE | Watchlist CRUD |
+| Leaderboard | `/api/leaderboard` | GET | Rankings |
+| Learning | `/api/courses` | GET | Course list |
+| Billing | `/api/billing/plans` | GET | Subscription plans |
 
 ---
 
-## Mobile App (Planned)
+## Project Structure
 
-TradeX will extend its core capabilities to mobile platforms.
-
-### Planned Features:
-
-* Replicates full web functionality
-* Real-time push notifications and trade alerts
-* Optimized for mobile-first user experience
-* Device control and authentication parity
-* Built using React Native for cross-platform efficiency
-
----
-
-## TradeX for Business (Enterprise Tier)
-
-Designed for analysts, professional traders, and institutional teams.
-
-| Plan                | Price        | Devices/User | Additional Device Cost |
-| ------------------- | ------------ | ------------ | ---------------------- |
-| TradeX for Business | ₹1,000/month | Up to 5      | ₹999/device            |
-
-### Additional Benefits:
-
-* Centralized team dashboards
-* Shared watchlists and trade delegation
-* SLA-backed priority support
-* Planned integration with institutional APIs
+```
+TradeX/
+├── tradex-backend/          # FastAPI backend
+│   ├── main.py             # App entry point
+│   ├── database.py         # PostgreSQL connection
+│   ├── error_handling.py   # Error middleware
+│   ├── security.py         # Rate limiting, validation
+│   ├── cache.py            # Caching layer
+│   ├── routes/             # API route modules
+│   └── migrations/         # SQL migrations
+├── tradex-frontend/         # React frontend
+│   ├── src/
+│   │   ├── components/     # React components
+│   │   ├── hooks/          # Custom hooks
+│   │   ├── context/        # React contexts
+│   │   └── utils/          # Utilities
+│   └── vercel.json         # Deployment config
+├── tradex-ml/               # ML pipeline
+│   ├── feature_engineering.py
+│   ├── signal_engine.py
+│   ├── train_model.py
+│   └── test_ml_pipeline.py
+└── PROJECT_GOALS.md         # Roadmap
+```
 
 ---
 
-## Powered by Dhan
+## Testing
 
-TradeX is built on top of **Dhan**, which offers unmatched flexibility for independent platforms.
+### Frontend Tests
+```bash
+cd tradex-frontend
+npm test                    # Run all tests
+npm run test:watch          # Watch mode
+```
 
-| Feature                     | Dhan | Zerodha |
-| --------------------------- | ---- | ------- |
-| SaaS Monetization Support   | ✅    | ❌       |
-| Webhooks & Notifications    | ✅    | ⚠️      |
-| Referral/Onboarding Control | ✅    | ❌       |
-| Developer APIs              | ✅    | ⚠️      |
-| Partnership Program         | ✅    | ❌       |
+### Backend Integration Tests
+```bash
+cd tradex-frontend
+npm run test:integration    # API integration tests
+```
 
-Dhan’s open infrastructure enables TradeX to offer tiered subscriptions, dynamic access control, and transparent user tracking.
-
----
-
-## Target Audience
-
-* First-time retail investors (ages 18–35)
-* Students and early-career professionals
-* Risk-averse individuals seeking structured exposure
-* Independent analysts using enterprise tools
+### ML Pipeline Tests
+```bash
+cd tradex-ml
+pytest test_ml_pipeline.py
+```
 
 ---
 
-## Scope & Future Enhancements
+## Deployment
 
-| Feature              | Description                                    |
-| -------------------- | ---------------------------------------------- |
-| Real-time RL Signals | Live trading suggestions from AI agents        |
-| Learning Modules     | In-app education on markets and trading basics |
-| Mobile App           | Full-featured mobile version with secure login |
-| Business Tier        | Advanced team management and analytics tools   |
-| Community Layer      | Simulated contests, leaderboards, mentorship   |
+### Backend (Docker)
+```bash
+cd tradex-backend
+docker-compose up -d
+```
 
----
-
-## Conclusion
-
-**TradeX** offers a safe, structured, and educational trading environment tailored for beginners. By integrating AI guidance, gamification, and secure access controls, it empowers users to build confidence through experience.
-
-With strategic support from Dhan and a roadmap focused on accessibility, scalability, and community engagement, TradeX is positioned to become India’s premier gateway for first-time traders.
+### Frontend (Vercel)
+```bash
+cd tradex-frontend
+vercel deploy
+```
 
 ---
 
+## Tech Stack
 
+| Layer | Technologies |
+|-------|-------------|
+| Frontend | React 19, Tailwind CSS, Vite, TradingView Charts |
+| Backend | FastAPI, Python 3.11, PostgreSQL, psycopg2 |
+| ML | scikit-learn, pandas, numpy, Stable-Baselines3 |
+| Testing | Vitest, pytest, React Testing Library |
+| Deployment | Docker, Vercel, GitHub Actions |
+
+---
+
+## License
+
+MIT License
+
+---
