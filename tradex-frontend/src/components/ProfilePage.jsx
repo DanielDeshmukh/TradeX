@@ -6,45 +6,28 @@ import ReferralCode from "../components/ReferralCode";
 import ProfilePageSkeleton from "./ProfilePageSkeleton";
 import ActivityHeatmap from "../components/ActivityHeatmap";
 import Header from "./Header";
-import supabase from "../lib/supabase";
-
-const signOut = async () => {
-  try {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error signing out:", error.message);
-    } else {
-      console.log("User signed out successfully");
-      window.location.href = "/register";
-    }
-  } catch (err) {
-    console.error("Unexpected error signing out:", err);
-  }
-};
+import { useUserSettings } from "../hooks/useUserSettings";
 
 function ProfilePage() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+  const { profile, loading } = useUserSettings(userId);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.error("Failed to fetch user:", error);
-        setUser(null);
-      } else {
-        setUser(data.user || null);
-      }
-      setLoading(false);
-    };
-
-    fetchUser();
+    setUserId("demo-user");
   }, []);
 
   if (loading)
     return <ProfilePageSkeleton />;
-  if (!user)
+  if (!userId)
     return <p className="text-center mt-10 text-content-secondary">User not logged in.</p>;
+
+  const user = {
+    id: userId,
+    email: profile?.email || "demo@tradex.dev",
+    user_metadata: {
+      display_name: profile?.display_name || "Demo Trader",
+    },
+  };
 
   return (
     <div className="min-h-screen bg-[#0B0E15] text-white p-4 sm:p-6">
@@ -63,7 +46,9 @@ function ProfilePage() {
 
         <div className="flex justify-center sm:justify-end">
           <button
-            onClick={signOut}
+            onClick={() => {
+              window.location.href = "/register";
+            }}
             className="px-4 py-2 bg-gradient-to-r from-[#7F3DFF] to-[#5A18E9] 
                        hover:opacity-90 rounded-lg font-semibold shadow-lg transition w-full sm:w-auto"
           >

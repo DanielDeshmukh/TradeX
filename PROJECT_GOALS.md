@@ -243,7 +243,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - Profile update endpoints
 - Account deletion endpoint
 
-### Phase 39: Profile & Settings Wiring
+### Phase 39: Profile & Settings Wiring ✅
 - ProfileHeader connected to backend
 - ContactInfo save/load from API
 - MobileSettings backend integration
@@ -365,7 +365,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 36 | Search & Discover | ✅ Done | `feature/search-discover` |
 | 37 | Pattern Discovery | ✅ Done | `feature/pattern-discovery` |
 | 38 | User Settings Backend | ✅ Done | `feature/user-settings-backend` |
-| 39 | Profile & Settings Wiring | ⏳ Pending | — |
+| 39 | Profile & Settings Wiring | ✅ Done | `feature/profile-settings-wiring` |
 | 40 | Watchlist CRUD Backend | ⏳ Pending | — |
 | 41 | Leaderboard Backend | ⏳ Pending | — |
 | 42 | Learning Backend | ⏳ Pending | — |

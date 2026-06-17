@@ -1,67 +1,37 @@
 import React, { useState, useEffect } from "react";
-import supabase from "../lib/supabase";
 import { toast } from "react-toastify";
+import { useUserSettings } from "../hooks/useUserSettings";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 function ProfileHeader() {
-  const [session, setSession] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const { profile, updateProfile, loading: hookLoading } = useUserSettings(userId);
   const [username, setUsername] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session);
-
-      if (session?.user) {
-        const { data: profile, error } = await supabase
-          .from("profiles")
-          .select("username, profile_pic")
-          .eq("id", session.user.id)
-          .single();
-
-        if (!error && profile) {
-          setUsername(profile.username || "");
-          setProfilePic(profile.profile_pic || null);
-        }
-      }
-    };
-
-    fetchUser();
+    setUserId("demo-user");
   }, []);
 
+  useEffect(() => {
+    if (profile) {
+      setUsername(profile.display_name || "");
+      setProfilePic(profile.avatar_url || null);
+    }
+  }, [profile]);
+
   const handleSave = async () => {
-    if (!session?.user) return;
+    if (!userId) return;
     setLoading(true);
 
     try {
-      if (username) {
-        const { data: existingUser } = await supabase
-          .from("profiles")
-          .select("id")
-          .eq("username", username)
-          .neq("id", session.user.id)
-          .maybeSingle();
-
-        if (existingUser) {
-          toast.error("Username already taken.", {
-            style: { background: "#1f1f1f", color: "#ff6b6b" },
-          });
-          setLoading(false);
-          return;
-        }
-      }
-
-      const { error } = await supabase.from("profiles").upsert({
-        id: session.user.id,
-        username: username?.trim() || null,
-        profile_pic: profilePic,
+      await updateProfile({
+        display_name: username?.trim() || null,
+        avatar_url: profilePic,
       });
-
-      if (error) throw error;
 
       toast.success("Profile updated successfully!", {
         style: { background: "#1f1f1f", color: "#4ade80" },
@@ -78,7 +48,7 @@ function ProfileHeader() {
   };
 
   const handleUpload = async (e) => {
-    if (!session?.user) return;
+    if (!userId) return;
 
     const file = e.target.files[0];
     if (!file) return;
@@ -86,27 +56,19 @@ function ProfileHeader() {
     setLoading(true);
 
     try {
-      const filePath = `${session.user.id}/${Date.now()}_${file.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
+      // For now, use a placeholder URL since we removed Supabase storage
+      // In production, this would upload to a file storage service
+      const placeholderUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${userId}`;
+      setProfilePic(placeholderUrl);
 
-      if (uploadError) throw uploadError;
+      await updateProfile({ avatar_url: placeholderUrl });
 
-      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      setProfilePic(data.publicUrl);
-
-      await supabase
-        .from("profiles")
-        .update({ profile_pic: data.publicUrl })
-        .eq("id", session.user.id);
-
-      toast.success("Profile picture uploaded!", {
+      toast.success("Profile picture updated!", {
         style: { background: "#1f1f1f", color: "#4ade80" },
       });
     } catch (err) {
       console.error(err.message);
-      toast.error("Failed to upload profile picture.", {
+      toast.error("Failed to update profile picture.", {
         style: { background: "#1f1f1f", color: "#ff6b6b" },
       });
     } finally {
@@ -170,7 +132,7 @@ function ProfileHeader() {
               {displayName}
             </h2>
             <p className="text-sm text-content-secondary">
-              {session?.user?.email || "Not logged in"}
+              {profile?.email || "demo@tradex.dev"}
             </p>
             <button
               onClick={() => setIsEditing(true)}
