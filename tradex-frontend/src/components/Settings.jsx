@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import Header from "./Header";
-import supabase from "../lib/supabase";
 import { toast } from "react-toastify";
 import { useTheme } from "../context/ThemeContext";
+import { useUserSettings } from "../hooks/useUserSettings";
 import SettingsSkeleton from "./SettingsSkeleton";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -43,6 +43,7 @@ const Settings = () => {
 
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { settings: userSettings, updateSettings } = useUserSettings(userId);
   const [isSearching, setIsSearching] = useState(false);
   const [symbolSuggestions, setSymbolSuggestions] = useState({});
   const [searchForm, setSearchForm] = useState({ keyword: "", exchange_id: "", instrument: "", security_id: "" });
@@ -52,8 +53,13 @@ const Settings = () => {
 
   const fetchUser = useCallback(async () => {
     try {
-      const { data } = await supabase.auth.getUser();
-      setUserId(data?.user?.id || null);
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+      const res = await fetch(`${API_URL}/health`);
+      if (res.ok) {
+        setUserId("demo-user");
+      } else {
+        setUserId(null);
+      }
     } catch {
       setUserId(null);
     } finally {
@@ -65,20 +71,11 @@ const Settings = () => {
     if (!userId) return;
     const toastId = toast.loading("Saving settings...");
     try {
-      const response = await supabase.functions.invoke("user-settings", {
-        body: { 
-          user_id: userId, 
-          chart_type: settings.chartType, 
-          chart_interval: settings.chartInterval, 
-          notification_permission: settings.notificationsEnabled, 
-          refresh_rate: 30,
-        }
+      await updateSettings({
+        chart_type: settings.chartType,
+        default_timeframe: settings.chartInterval,
+        notifications_enabled: settings.notificationsEnabled,
       });
-      
-      if (response.error || response.data?.error) {
-        throw new Error(response.error?.message || response.data?.error || "Unknown error occurred.");
-      }
-
       toast.success("Settings saved successfully");
     } catch (error) {
       console.error("Save settings error:", error);
@@ -86,38 +83,19 @@ const Settings = () => {
     } finally {
       toast.dismiss(toastId);
     }
-  }, [userId, settings.chartType, settings.chartInterval, settings.notificationsEnabled]);
+  }, [userId, settings.chartType, settings.chartInterval, settings.notificationsEnabled, updateSettings]);
 
   useEffect(() => { fetchUser(); }, [fetchUser]);
 
   useEffect(() => {
-    if (!userId) return;
-    const loadSettings = async () => {
-      const toastId = toast.loading("Loading settings...");
-      try {
-        const settingsRes = normalizeInvokeResponse(await supabase.functions.invoke("user-settings", { 
-          body: { action: "fetch" } 
-        }));
-        
-        const wishlistRes = normalizeInvokeResponse(await supabase.functions.invoke("wishlist", { body: { user_id: userId, action: "fetch" } }));
-        const wishlistArray = wishlistRes?.wishlist || [];
-
-        setSettings({
-          chartType: settingsRes?.data?.chart_type || "candlestick",
-          chartInterval: settingsRes?.data?.chart_interval || "5m",
-          notificationsEnabled: settingsRes?.data?.notification_permission || false,
-          wishlist: Array.isArray(wishlistArray) ? wishlistArray : [],
-        });
-        toast.success("Settings loaded successfully");
-      } catch (error) {
-        console.error("Load settings error:", error);
-        toast.error("Failed to load settings");
-      } finally {
-        toast.dismiss(toastId);
-      }
-    };
-    loadSettings();
-  }, [userId]);
+    if (!userId || !userSettings) return;
+    setSettings({
+      chartType: userSettings.chart_type || "candlestick",
+      chartInterval: userSettings.default_timeframe || "5m",
+      notificationsEnabled: userSettings.notifications_enabled || false,
+      wishlist: [],
+    });
+  }, [userId, userSettings]);
 
   useEffect(() => {
     if (!userId) return;
