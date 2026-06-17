@@ -255,7 +255,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 - Symbol filtering (sector, market cap)
 - Recent searches history
 
-### Phase 41: Leaderboard Backend
+### Phase 41: Leaderboard Backend ✅
 - Leaderboard API endpoint
 - Ranking algorithm (return, win rate, streak)
 - Achievement system
@@ -367,7 +367,7 @@ main                                    ← production-ready (0cf3f01..07d42a4)
 | 38 | User Settings Backend | ✅ Done | `feature/user-settings-backend` |
 | 39 | Profile & Settings Wiring | ✅ Done | `feature/profile-settings-wiring` |
 | 40 | Watchlist CRUD Backend | ✅ Done | `feature/watchlist-crud-backend` |
-| 41 | Leaderboard Backend | ⏳ Pending | — |
+| 41 | Leaderboard Backend | ✅ Done | `feature/leaderboard-backend` |
 | 42 | Learning Backend | ⏳ Pending | — |
 | 43 | Advanced Chart Features | ⏳ Pending | — |
 | 44 | Test Coverage (Batch 3) | ⏳ Pending | — |
