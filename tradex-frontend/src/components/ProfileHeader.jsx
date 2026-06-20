@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 function ProfileHeader() {
   const [userId, setUserId] = useState(null);
-  const { profile, updateProfile, loading: hookLoading } = useUserSettings(userId);
+  const { profile, updateProfile } = useUserSettings(userId);
   const [username, setUsername] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
   const [isEditing, setIsEditing] = useState(false);

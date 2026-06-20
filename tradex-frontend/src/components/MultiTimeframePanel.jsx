@@ -11,7 +11,7 @@ const TIMEFRAMES = [
   { value: "1W", label: "Weekly" },
 ];
 
-function MultiTimeframePanel({ symbol, onSelectTimeframe }) {
+function MultiTimeframePanel({ onSelectTimeframe }) {
   const [selectedTimeframes, setSelectedTimeframes] = useState(["1m", "5m", "15m", "1D"]);
   const [activeTimeframe, setActiveTimeframe] = useState("1m");
 

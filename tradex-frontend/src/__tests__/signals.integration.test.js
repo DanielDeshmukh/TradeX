@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { describe, it, expect } from "vitest";
 
 describe("Signal Generation Pipeline Integration", () => {

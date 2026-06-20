@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+/* eslint-disable no-undef */
+import { describe, it, expect } from "vitest";
 
 const API_URL = process.env.VITE_API_URL || "http://localhost:8000";
 

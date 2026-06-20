@@ -54,7 +54,7 @@ function DrawingTools({ onDrawingComplete, onClearDrawings }) {
         ctx.lineTo(drawing.start.x, ctx.canvas.height);
         ctx.stroke();
         break;
-      case "fibonacci":
+      case "fibonacci": {
         const height = drawing.end.y - drawing.start.y;
         FIBONACCI_LEVELS.forEach((level) => {
           const y = drawing.start.y + height * level;
@@ -68,6 +68,7 @@ function DrawingTools({ onDrawingComplete, onClearDrawings }) {
           ctx.fillText(`${(level * 100).toFixed(1)}%`, drawing.start.x - 40, y + 4);
         });
         break;
+      }
       case "rectangle":
         ctx.strokeRect(
           drawing.start.x,
@@ -76,9 +77,7 @@ function DrawingTools({ onDrawingComplete, onClearDrawings }) {
           drawing.end.y - drawing.start.y
         );
         break;
-      case "parallel":
-        const dx = drawing.end.x - drawing.start.x;
-        const dy = drawing.end.y - drawing.start.y;
+      case "parallel": {
         ctx.beginPath();
         ctx.moveTo(drawing.start.x, drawing.start.y);
         ctx.lineTo(drawing.end.x, drawing.end.y);
@@ -88,6 +87,7 @@ function DrawingTools({ onDrawingComplete, onClearDrawings }) {
         ctx.lineTo(drawing.end.x, drawing.end.y + 50);
         ctx.stroke();
         break;
+      }
     }
     ctx.setLineDash([]);
   };

@@ -5,6 +5,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useUserSettings } from "../hooks/useUserSettings";
 import { useWatchlist } from "../hooks/useWatchlist";
 import SettingsSkeleton from "./SettingsSkeleton";
+import supabase from "../lib/supabase";
 import "react-toastify/dist/ReactToastify.css";
 
 const chartTypeOptions = [

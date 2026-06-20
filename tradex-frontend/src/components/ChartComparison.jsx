@@ -11,12 +11,11 @@ const COMPARISON_COLORS = [
   "#ec4899",
 ];
 
-function ChartComparison({ currentSymbol, onRemoveSymbol }) {
+function ChartComparison({ onRemoveSymbol }) {
   const [symbols, setSymbols] = useState([]);
   const [compareSymbols, setCompareSymbols] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     const fetchSymbols = async () => {
@@ -100,7 +99,7 @@ function ChartComparison({ currentSymbol, onRemoveSymbol }) {
 
       {compareSymbols.length > 0 ? (
         <div className="space-y-2">
-          {compareSymbols.map((symbol, index) => (
+          {compareSymbols.map((symbol) => (
             <div
               key={symbol.security_id}
               className="flex items-center justify-between p-2 rounded-lg border border-white/10"
