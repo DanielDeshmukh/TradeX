@@ -1,5 +1,3 @@
----
-
 # TradeX: AI-Powered SaaS Trading Platform for the Indian Stock Market
 
 > Target: Beginner retail investors (ages 18–35)
